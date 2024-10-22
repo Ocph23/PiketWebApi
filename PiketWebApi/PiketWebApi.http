@@ -1,0 +1,6 @@
+@PiketWebApi_HostAddress = http://localhost:5001
+
+GET {{PiketWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
