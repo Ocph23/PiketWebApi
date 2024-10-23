@@ -2,9 +2,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using PiketWebApi;
 using PiketWebApi.Api;
@@ -98,7 +95,8 @@ using (var scope = app.Services.CreateScope())
     if (!dbcontext.Roles.Any())
     {
         await roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
-        await roleManager.CreateAsync(new IdentityRole { Name = "User" });
+        await roleManager.CreateAsync(new IdentityRole { Name = "Teacher" });
+        await roleManager.CreateAsync(new IdentityRole { Name = "Student" });
     }
 
     if (!dbcontext.Users.Any())
@@ -123,4 +121,9 @@ app.UseAuthorization();
 
 app.MapGroup("/api/auth").MapAuthApi().WithOpenApi().WithTags("auth");
 app.MapGroup("/api/teacher").MapTeacherApi().WithOpenApi();
+app.MapGroup("/api/student").MapStudentApi().WithOpenApi();
+app.MapGroup("/api/schoolyear").MapSchoolYearApi().WithOpenApi();
+app.MapGroup("/api/department").MapDepartmentApi().WithOpenApi();
+app.MapGroup("/api/classroom").MapClassRoomApi().WithOpenApi();
+app.MapGroup("/api/schedule").MapScheduleApi().WithOpenApi();
 app.Run();

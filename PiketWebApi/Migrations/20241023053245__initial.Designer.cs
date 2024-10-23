@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PiketWebApi.Data;
@@ -11,9 +12,11 @@ using PiketWebApi.Data;
 namespace PiketWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241023053245__initial")]
+    partial class _initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -279,32 +282,6 @@ namespace PiketWebApi.Migrations
                     b.ToTable("Departments");
                 });
 
-            modelBuilder.Entity("PiketWebApi.Models.Schedule", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DayOfWeek")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SchoolYearId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SchoolYearId");
-
-                    b.HasIndex("TeacherId");
-
-                    b.ToTable("Schedules");
-                });
-
             modelBuilder.Entity("PiketWebApi.Models.SchoolYear", b =>
                 {
                     b.Property<int>("Id")
@@ -490,25 +467,6 @@ namespace PiketWebApi.Migrations
                     b.Navigation("HomeroomTeacher");
 
                     b.Navigation("SchoolYear");
-                });
-
-            modelBuilder.Entity("PiketWebApi.Models.Schedule", b =>
-                {
-                    b.HasOne("PiketWebApi.Models.SchoolYear", "SchoolYear")
-                        .WithMany()
-                        .HasForeignKey("SchoolYearId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PiketWebApi.Models.Teacher", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SchoolYear");
-
-                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("PiketWebApi.Models.Student", b =>
