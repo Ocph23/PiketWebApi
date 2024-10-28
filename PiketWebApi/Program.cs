@@ -24,10 +24,16 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-
+string policyName = "all";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "all",policy =>{policy.WithOrigins("*");});
+    options.AddPolicy(policyName, policy =>
+    {
+        policy.WithOrigins("*")
+        .AllowAnyHeader()
+        .AllowAnyMethod(); ;
+    })
+    ;
 });
 
 
@@ -118,7 +124,7 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors(policyName);
 app.MapGroup("/api/auth").MapAuthApi().WithOpenApi().WithTags("auth");
 app.MapGroup("/api/teacher").MapTeacherApi().WithOpenApi();
 app.MapGroup("/api/student").MapStudentApi().WithOpenApi();

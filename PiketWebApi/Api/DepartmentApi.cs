@@ -27,8 +27,9 @@ namespace PiketWebApi.Api
                 {
                     dbContext.Remove(result);
                     dbContext.SaveChanges();
+                    return Results.Ok(true);
                 }
-                return Results.Ok(true);
+                throw new Exception("Data Not Found !");
             }
             catch (Exception ex)
             {
@@ -45,8 +46,10 @@ namespace PiketWebApi.Api
                 {
                     dbContext.Entry(result).CurrentValues.SetValues(model);
                     dbContext.SaveChanges();
+                    return Results.Ok(true);
                 }
-                return Results.Ok(true);
+                throw new Exception("Data Not Found !");
+
             }
             catch (Exception ex)
             {
