@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,20 @@ namespace PiketWebApi.Api
         {
             group.MapPost("/login", LoginAction);
             group.MapPost("/register", RegisterAction);
+            group.MapGet("/active", ActiveAccout);
             return group;
+        }
+
+        private static IResult ActiveAccout(HttpContext context)
+        {
+            try
+            {
+                return TypedResults.Ok();
+            }
+            catch (Exception)
+            {
+                return TypedResults.Unauthorized();
+            }
         }
 
         private static async Task RegisterAction(HttpContext context)

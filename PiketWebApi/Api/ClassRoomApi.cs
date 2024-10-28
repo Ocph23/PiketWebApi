@@ -15,7 +15,49 @@ namespace PiketWebApi.Api
             group.MapPost("/", PostClassRoom);
             group.MapPut("/{id}", PutClassRoom);
             group.MapDelete("/{id}", DeleteClassRoom);
+
+            group.MapPost("/addstudent/{classroomId}", AddStudentToClassRoom);
+            group.MapDelete("/removestudent/{classroomId}/{studedentId}", RemoveStudentFromClassRoom);
             return group.WithTags("classroom").RequireAuthorization(); ;
+        }
+
+        private static IResult RemoveStudentFromClassRoom(HttpContext context, ApplicationDbContext dbContext, int classroomId, int studentId)
+        {
+            try
+            {
+                var classroom = dbContext.ClassRooms.SingleOrDefault(x => x.Id == classroomId);
+                if (classroom == null)
+                    throw new SystemException("Class Room Not Found");
+
+                var student = dbContext.Students.Where(x => x.Id == studentId).SingleOrDefault();
+                if (student == null)
+                    throw new SystemException("Student  Not Found");
+
+                classroom.Students.Remove(student);
+                dbContext.SaveChanges();
+                return TypedResults.Ok();
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.BadRequest(ex.Message);
+            }
+        }
+
+        private static IResult AddStudentToClassRoom(HttpContext context, ApplicationDbContext dbContext, int classroomId, Student studemt)
+        {
+            try
+            {
+                var classroom = dbContext.ClassRooms.SingleOrDefault(x => x.Id == classroomId);
+                if (classroom == null)
+                    throw new SystemException("Class Room Not Found");
+                classroom.Students.Add(studemt);
+                dbContext.SaveChanges();
+                return TypedResults.Ok();
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.BadRequest(ex.Message);
+            }
         }
 
         private static IResult DeleteClassRoom(HttpContext context, ApplicationDbContext dbContext, int id)
@@ -40,7 +82,7 @@ namespace PiketWebApi.Api
         {
             try
             {
-                var result = dbContext.ClassRooms.SingleOrDefault(x=>x.Id==id);
+                var result = dbContext.ClassRooms.SingleOrDefault(x => x.Id == id);
                 if (result != null)
                 {
                     dbContext.Entry(result).CurrentValues.SetValues(model);
