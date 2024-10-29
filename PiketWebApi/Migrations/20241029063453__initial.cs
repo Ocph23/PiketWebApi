@@ -207,6 +207,33 @@ namespace PiketWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Schedules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SchoolYearId = table.Column<int>(type: "integer", nullable: false),
+                    DayOfWeek = table.Column<int>(type: "integer", nullable: false),
+                    TeacherId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Schedules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Schedules_SchoolYears_SchoolYearId",
+                        column: x => x.SchoolYearId,
+                        principalTable: "SchoolYears",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Schedules_Teachers_TeacherId",
+                        column: x => x.TeacherId,
+                        principalTable: "Teachers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClassRooms",
                 columns: table => new
                 {
@@ -325,6 +352,16 @@ namespace PiketWebApi.Migrations
                 column: "SchoolYearId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Schedules_SchoolYearId",
+                table: "Schedules",
+                column: "SchoolYearId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Schedules_TeacherId",
+                table: "Schedules",
+                column: "TeacherId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SchoolYears_Year",
                 table: "SchoolYears",
                 column: "Year",
@@ -373,6 +410,9 @@ namespace PiketWebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Schedules");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

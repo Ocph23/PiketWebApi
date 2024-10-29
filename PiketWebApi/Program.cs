@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using PiketWebApi;
 using PiketWebApi.Api;
 using PiketWebApi.Data;
+using PiketWebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,9 @@ builder.Services.AddSwaggerGen(setup =>
 
 });
 builder.Services.AddSignalR();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IPicketService,PicketService>();
+
 
 var app = builder.Build();
 
@@ -101,13 +105,15 @@ using (var scope = app.Services.CreateScope())
     if (!dbcontext.Roles.Any())
     {
         await roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
+        await roleManager.CreateAsync(new IdentityRole { Name = "HeadOfSchool" });
         await roleManager.CreateAsync(new IdentityRole { Name = "Teacher" });
         await roleManager.CreateAsync(new IdentityRole { Name = "Student" });
     }
 
     if (!dbcontext.Users.Any())
     {
-        var user = new ApplicationUser("admin@gmail.com") { Name = "Admin", Email = "admin@gmail.com", EmailConfirmed = true };
+        var user = new ApplicationUser("admin@picket.ocph23.tech") { Name = "Admin", Email = "admin@picket.ocph23.tech", 
+            EmailConfirmed = true };
         var result = await userManager.CreateAsync(user, "Password@123");
         if (result.Succeeded)
         {
@@ -125,6 +131,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors(policyName);
+
 app.MapGroup("/api/auth").MapAuthApi().WithOpenApi().WithTags("auth");
 app.MapGroup("/api/teacher").MapTeacherApi().WithOpenApi();
 app.MapGroup("/api/student").MapStudentApi().WithOpenApi();
@@ -132,4 +139,6 @@ app.MapGroup("/api/schoolyear").MapSchoolYearApi().WithOpenApi();
 app.MapGroup("/api/department").MapDepartmentApi().WithOpenApi();
 app.MapGroup("/api/classroom").MapClassRoomApi().WithOpenApi();
 app.MapGroup("/api/schedule").MapScheduleApi().WithOpenApi();
+app.MapGroup("/api/picket").MapPickerApi().WithOpenApi();
+
 app.Run();

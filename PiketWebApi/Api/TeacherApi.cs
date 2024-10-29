@@ -13,10 +13,29 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapTeacherApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAllTeacher);
+            group.MapGet("/search/{searchtext}", SearchTeacher);
             group.MapPost("/", PostTeacher);
             group.MapPut("/{id}", PutTeacher);
             group.MapDelete("/{id}", DeleteTeacher);
             return group.WithTags("teacher").RequireAuthorization(); ;
+        }
+
+
+        private static async Task<IResult> SearchTeacher(HttpContext context, ApplicationDbContext dbContext, string searchtext)
+        {
+            try
+            {
+                var txtSearch = searchtext.ToLower();
+                var result = dbContext.Teachers.Where(x => x.Name.ToLower().Contains(txtSearch) 
+                || x.Email.ToLower().Contains(txtSearch)
+                || x.Number.ToLower().Contains(txtSearch)).ToList();
+             
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
         }
 
         private static IResult DeleteTeacher(HttpContext context, ApplicationDbContext dbContext, int id)
