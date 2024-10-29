@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
 using PiketWebApi.Models;
+using SharedModel.Models;
 
 namespace PiketWebApi.Api
 {
@@ -13,6 +14,7 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapStudentApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAllStudent);
+            group.MapGet("/{id}", GetStudentById);
             group.MapGet("/search/{searchtext}", SearchStudent);
             group.MapPost("/", PostStudent);
             group.MapPut("/{id}", PutStudent);
@@ -109,6 +111,19 @@ namespace PiketWebApi.Api
             try
             {
                 var result = dbContext.Students.ToList();
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        }
+
+        private static object GetStudentById(HttpContext context, ApplicationDbContext dbContext, int id)
+        {
+            try
+            {
+                var result = dbContext.Students.SingleOrDefault(x=>x.Id==id);
                 return Results.Ok(result);
             }
             catch (Exception ex)

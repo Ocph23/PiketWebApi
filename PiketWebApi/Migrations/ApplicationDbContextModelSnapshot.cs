@@ -229,13 +229,13 @@ namespace PiketWebApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClassLeaderId")
+                    b.Property<int?>("ClassLeaderId")
                         .HasColumnType("integer");
 
                     b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("HomeroomTeacherId")
+                    b.Property<int?>("HomeroomTeacherId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -256,6 +256,29 @@ namespace PiketWebApi.Migrations
                     b.HasIndex("SchoolYearId");
 
                     b.ToTable("ClassRooms");
+                });
+
+            modelBuilder.Entity("PiketWebApi.Models.ClassRoomMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ClassRoomId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassRoomId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("ClassRoomMember");
                 });
 
             modelBuilder.Entity("PiketWebApi.Models.Department", b =>
@@ -336,9 +359,6 @@ namespace PiketWebApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ClassRoomId")
-                        .HasColumnType("integer");
-
                     b.Property<DateOnly?>("DateOfBorn")
                         .HasColumnType("date");
 
@@ -364,8 +384,6 @@ namespace PiketWebApi.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClassRoomId");
 
                     b.ToTable("Students");
                 });
@@ -462,9 +480,7 @@ namespace PiketWebApi.Migrations
                 {
                     b.HasOne("PiketWebApi.Models.Student", "ClassLeader")
                         .WithMany()
-                        .HasForeignKey("ClassLeaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ClassLeaderId");
 
                     b.HasOne("PiketWebApi.Models.Department", "Department")
                         .WithMany()
@@ -474,9 +490,7 @@ namespace PiketWebApi.Migrations
 
                     b.HasOne("PiketWebApi.Models.Teacher", "HomeroomTeacher")
                         .WithMany()
-                        .HasForeignKey("HomeroomTeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HomeroomTeacherId");
 
                     b.HasOne("PiketWebApi.Models.SchoolYear", "SchoolYear")
                         .WithMany()
@@ -491,6 +505,21 @@ namespace PiketWebApi.Migrations
                     b.Navigation("HomeroomTeacher");
 
                     b.Navigation("SchoolYear");
+                });
+
+            modelBuilder.Entity("PiketWebApi.Models.ClassRoomMember", b =>
+                {
+                    b.HasOne("PiketWebApi.Models.ClassRoom", null)
+                        .WithMany("Students")
+                        .HasForeignKey("ClassRoomId");
+
+                    b.HasOne("PiketWebApi.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("PiketWebApi.Models.Schedule", b =>
@@ -510,13 +539,6 @@ namespace PiketWebApi.Migrations
                     b.Navigation("SchoolYear");
 
                     b.Navigation("Teacher");
-                });
-
-            modelBuilder.Entity("PiketWebApi.Models.Student", b =>
-                {
-                    b.HasOne("PiketWebApi.Models.ClassRoom", null)
-                        .WithMany("Students")
-                        .HasForeignKey("ClassRoomId");
                 });
 
             modelBuilder.Entity("PiketWebApi.Models.ClassRoom", b =>

@@ -13,6 +13,7 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapTeacherApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAllTeacher);
+            group.MapGet("/{id}", GetTeacherById);
             group.MapGet("/search/{searchtext}", SearchTeacher);
             group.MapPost("/", PostTeacher);
             group.MapPut("/{id}", PutTeacher);
@@ -105,11 +106,24 @@ namespace PiketWebApi.Api
             }
         }
 
-        private static object GetAllTeacher(HttpContext context, ApplicationDbContext dbContext)
+        private static IResult GetAllTeacher(HttpContext context, ApplicationDbContext dbContext)
         {
             try
             {
                 var result = dbContext.Teachers.ToList();
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        }
+
+        private static IResult GetTeacherById(HttpContext context, ApplicationDbContext dbContext, int id)
+        {
+            try
+            {
+                var result = dbContext.Teachers.SingleOrDefault(x=>x.Id==id);
                 return Results.Ok(result);
             }
             catch (Exception ex)

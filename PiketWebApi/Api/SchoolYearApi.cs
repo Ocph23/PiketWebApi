@@ -12,6 +12,7 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapSchoolYearApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAllSchoolYear);
+            group.MapGet("/{id}", GetSchoolYearById);
             group.MapGet("/active", GetActiveSchoolYear);
             group.MapPost("/", PostSchoolYear);
             group.MapPut("/{id}", PutSchoolYear);
@@ -19,6 +20,18 @@ namespace PiketWebApi.Api
             return group.WithTags("schoolyear").RequireAuthorization(); ;
         }
 
+        private static IResult GetSchoolYearById(HttpContext context, ApplicationDbContext dbContext, int id)
+        {
+            try
+            {
+                var result = dbContext.SchoolYears.SingleOrDefault(x => x.Id==id);
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        }
         private static IResult GetActiveSchoolYear(HttpContext context, ApplicationDbContext dbContext)
         {
             try
@@ -76,13 +89,16 @@ namespace PiketWebApi.Api
             {
                 var activeData = dbContext.SchoolYears.Where(x => x.Actived);
                 await activeData.ForEachAsync((x) => x.Actived = false);
-                var result = dbContext.SchoolYears.Add(teacher);
+                teacher.Actived=true;
+                dbContext.SchoolYears.Add(teacher);
                 dbContext.SaveChanges();
                 await trans.CommitAsync();
                 return Results.Ok(teacher);
             }
             catch (Exception ex)
             {
+                if(ex.InnerException!=null && ex.InnerException.Message.Contains("duplicate"))
+                        return Results.BadRequest($"Tahun Ajaran {teacher.Year} sudah ada");
                 return Results.BadRequest(ex.Message);
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PiketWebApi.Models
+namespace SharedModel.Models
 {
     public class Student
     {

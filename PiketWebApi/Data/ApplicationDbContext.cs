@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Models;
+using SharedModel.Models;
 
 namespace PiketWebApi.Data
 {

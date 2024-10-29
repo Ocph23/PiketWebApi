@@ -41,14 +41,14 @@ namespace PiketWebApi.Api
         }
 
         private static async ValueTask<AuthenticateResponse> LoginAction(
-            Requests.LoginRequest request,
+           SharedModel.Requests.LoginRequest request,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager, IConfiguration _config
             )
         {
             try
             {
-                AppSettings _appSettings= new AppSettings();
+                AppSettings _appSettings = new AppSettings();
                 _config.GetSection("AppSettings").Bind(_appSettings);
                 var result = await signInManager.PasswordSignInAsync(request.Username.ToUpper(), request.Password, false, lockoutOnFailure: false);
                 if (result.Succeeded)

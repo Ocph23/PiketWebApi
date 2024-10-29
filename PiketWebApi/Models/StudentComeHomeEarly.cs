@@ -1,4 +1,6 @@
-﻿namespace PiketWebApi.Models
+﻿using SharedModel.Models;
+
+namespace PiketWebApi.Models
 {
     public class StudentComeHomeEarly
     {

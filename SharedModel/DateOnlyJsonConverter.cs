@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 
-namespace PiketWebApi
+namespace SharedModel
 {
     public class DateOnlyJsonConverter : JsonConverter<DateOnly>
     {

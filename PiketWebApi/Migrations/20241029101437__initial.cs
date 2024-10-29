@@ -58,8 +58,9 @@ namespace PiketWebApi.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Initial = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -78,6 +79,26 @@ namespace PiketWebApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SchoolYears", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Students",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Number = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Gender = table.Column<int>(type: "integer", nullable: false),
+                    PlaceOfBorn = table.Column<string>(type: "text", nullable: true),
+                    DateOfBorn = table.Column<DateOnly>(type: "date", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Students", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -207,6 +228,45 @@ namespace PiketWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClassRooms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    SchoolYearId = table.Column<int>(type: "integer", nullable: false),
+                    DepartmentId = table.Column<int>(type: "integer", nullable: false),
+                    ClassLeaderId = table.Column<int>(type: "integer", nullable: true),
+                    HomeroomTeacherId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassRooms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClassRooms_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClassRooms_SchoolYears_SchoolYearId",
+                        column: x => x.SchoolYearId,
+                        principalTable: "SchoolYears",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClassRooms_Students_ClassLeaderId",
+                        column: x => x.ClassLeaderId,
+                        principalTable: "Students",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ClassRooms_Teachers_HomeroomTeacherId",
+                        column: x => x.HomeroomTeacherId,
+                        principalTable: "Teachers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Schedules",
                 columns: table => new
                 {
@@ -234,64 +294,28 @@ namespace PiketWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClassRooms",
+                name: "ClassRoomMember",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    SchoolYearId = table.Column<int>(type: "integer", nullable: false),
-                    DepartmentId = table.Column<int>(type: "integer", nullable: false),
-                    ClassLeaderId = table.Column<int>(type: "integer", nullable: false),
-                    HomeroomTeacherId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClassRooms", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ClassRooms_Departments_DepartmentId",
-                        column: x => x.DepartmentId,
-                        principalTable: "Departments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ClassRooms_SchoolYears_SchoolYearId",
-                        column: x => x.SchoolYearId,
-                        principalTable: "SchoolYears",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ClassRooms_Teachers_HomeroomTeacherId",
-                        column: x => x.HomeroomTeacherId,
-                        principalTable: "Teachers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Students",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Number = table.Column<string>(type: "text", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Gender = table.Column<int>(type: "integer", nullable: false),
-                    PlaceOfBorn = table.Column<string>(type: "text", nullable: true),
-                    DateOfBorn = table.Column<DateOnly>(type: "date", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: true),
+                    StudentId = table.Column<int>(type: "integer", nullable: false),
                     ClassRoomId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Students", x => x.Id);
+                    table.PrimaryKey("PK_ClassRoomMember", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Students_ClassRooms_ClassRoomId",
+                        name: "FK_ClassRoomMember_ClassRooms_ClassRoomId",
                         column: x => x.ClassRoomId,
                         principalTable: "ClassRooms",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ClassRoomMember_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -332,6 +356,16 @@ namespace PiketWebApi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClassRoomMember_ClassRoomId",
+                table: "ClassRoomMember",
+                column: "ClassRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClassRoomMember_StudentId",
+                table: "ClassRoomMember",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ClassRooms_ClassLeaderId",
                 table: "ClassRooms",
                 column: "ClassLeaderId");
@@ -366,36 +400,11 @@ namespace PiketWebApi.Migrations
                 table: "SchoolYears",
                 column: "Year",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Students_ClassRoomId",
-                table: "Students",
-                column: "ClassRoomId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ClassRooms_Students_ClassLeaderId",
-                table: "ClassRooms",
-                column: "ClassLeaderId",
-                principalTable: "Students",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_ClassRooms_Departments_DepartmentId",
-                table: "ClassRooms");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ClassRooms_SchoolYears_SchoolYearId",
-                table: "ClassRooms");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_ClassRooms_Students_ClassLeaderId",
-                table: "ClassRooms");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -412,6 +421,9 @@ namespace PiketWebApi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ClassRoomMember");
+
+            migrationBuilder.DropTable(
                 name: "Schedules");
 
             migrationBuilder.DropTable(
@@ -421,6 +433,9 @@ namespace PiketWebApi.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "ClassRooms");
+
+            migrationBuilder.DropTable(
                 name: "Departments");
 
             migrationBuilder.DropTable(
@@ -428,9 +443,6 @@ namespace PiketWebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Students");
-
-            migrationBuilder.DropTable(
-                name: "ClassRooms");
 
             migrationBuilder.DropTable(
                 name: "Teachers");

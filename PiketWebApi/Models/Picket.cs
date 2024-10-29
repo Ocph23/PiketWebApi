@@ -1,4 +1,6 @@
-﻿namespace PiketWebApi.Models
+﻿using SharedModel;
+
+namespace PiketWebApi.Models
 {
     public class Picket
     {

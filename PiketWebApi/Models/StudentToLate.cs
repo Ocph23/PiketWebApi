@@ -1,4 +1,5 @@
 ﻿using SharedModel;
+using SharedModel.Models;
 
 namespace PiketWebApi.Models
 {

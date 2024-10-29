@@ -12,6 +12,7 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapDepartmentApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAllDepartment);
+            group.MapGet("/{id}", GetDepartmentById);
             group.MapPost("/", PostDepartment);
             group.MapPut("/{id}", PutDepartment);
             group.MapDelete("/{id}", DeleteDepartment);
@@ -76,6 +77,19 @@ namespace PiketWebApi.Api
             try
             {
                 var result = dbContext.Departments.ToList();
+                return Results.Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        }
+
+        private static IResult GetDepartmentById(HttpContext context, ApplicationDbContext dbContext, int id)
+        {
+            try
+            {
+                var result = dbContext.Departments.SingleOrDefault(x=>x.Id ==id);
                 return Results.Ok(result);
             }
             catch (Exception ex)
