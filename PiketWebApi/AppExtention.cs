@@ -14,7 +14,7 @@ namespace PiketWebApi
             {
                 var userClaim = http.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
                 var id = userClaim?.Value.ToString();
-                var user = await userManager.FindByIdAsync(id);
+                var user = await userManager.FindByEmailAsync(id);
                 if (user == null)
                 {
                     throw new UnauthorizedAccessException();

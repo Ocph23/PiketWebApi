@@ -26,8 +26,9 @@ namespace PiketWebApi.Api
         {
             try
             {
-                var result = dbContext.Schedules.Where(x => x.SchoolYear.Id == id)
-                    .Include(x => x.SchoolYear).ToList();
+                var result = from a in dbContext.Schedules.Where(x=>x.SchoolYear.Id==id).Include(x => x.SchoolYear).Include(x => x.Teacher)
+                select new ScheduleResponse(a.Id, a.SchoolYear.Id, a.SchoolYear.Year, a.DayOfWeek.ToString(), a.Teacher.Id,
+                a.Teacher.Number, a.Teacher.Name);
                 return Results.Ok(result);
             }
             catch (Exception ex)

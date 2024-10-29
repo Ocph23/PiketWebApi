@@ -1,8 +1,13 @@
 @url = https://localhost:7203/api/schedule
 @token = bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0OWYxZTRjLWFhM2QtNDY1MC1iZTYzLWY4NzdhODkzZWQzNCIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6ImZkMWE0MmVkLTcwOTgtNGFhNi05NjAxLTlkMGI5OGI3ZWYxMCIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczMDE4NDI1OSwiZXhwIjoxNzMwNzg5MDU5LCJpYXQiOjE3MzAxODQyNTksImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.oLNNjIwkIXduQHqnLf1IX_B-T8azm3i4Qz3DNx4LKR4a4OiFsBSXshGDdlG-a05OHUBVushUxhVbae6UY7FmbQ
-
+####
 
 Get {{url}} HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+###
+Get {{url}}/byschoolyearId/4 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
@@ -10,7 +15,6 @@ Authorization : {{token}}
 Get {{url}}/active HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
-
 
 
 ####

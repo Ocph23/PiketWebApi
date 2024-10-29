@@ -34,7 +34,7 @@ namespace PiketWebApi.Services
             {
                 var userClaim = await http.IsTeacherPicket(userManager, dbContext);
                 if (!userClaim.Item1)
-                    throw new UnauthorizedAccessException("Maaf, Anda tidak memiliki akses !");
+                    throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
 
                 if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
                 {
