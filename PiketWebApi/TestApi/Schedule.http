@@ -1,5 +1,5 @@
 @url = https://localhost:7203/api/schedule
-@token = bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0OWYxZTRjLWFhM2QtNDY1MC1iZTYzLWY4NzdhODkzZWQzNCIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6ImZkMWE0MmVkLTcwOTgtNGFhNi05NjAxLTlkMGI5OGI3ZWYxMCIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczMDE4NDI1OSwiZXhwIjoxNzMwNzg5MDU5LCJpYXQiOjE3MzAxODQyNTksImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.oLNNjIwkIXduQHqnLf1IX_B-T8azm3i4Qz3DNx4LKR4a4OiFsBSXshGDdlG-a05OHUBVushUxhVbae6UY7FmbQ
+@token = bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg1ZjJmNzI3LTkwZDctNGNkMS05ODAyLWU3ZWYxYTQxMzE2NiIsIm5hbWUiOiJvY3BoMjNAb2NwaDIzLnRlY2giLCJzdWIiOiJvY3BoMjNAb2NwaDIzLnRlY2giLCJlbWFpbCI6Im9jcGgyM0BvY3BoMjMudGVjaCIsImp0aSI6ImUzZTMyMjkxLThlOGEtNGQ5ZC1hOTkwLWU4MGI3OTBiMGIyOSIsInJvbGUiOiJUZWFjaGVyIiwibmJmIjoxNzMwMjY4MjI0LCJleHAiOjE3MzA4NzMwMjQsImlhdCI6MTczMDI2ODIyNCwiaXNzIjoiaHR0cHM6Ly9waWNrZXQub2NwaDIzLnRlY2gvIiwiYXVkIjoiaHR0cHM6Ly9waWNrZXQub2NwaDIzLnRlY2gvIn0.q77UMRqU_XvRbNJ3wQDB3512ZdYIhjPdauohHgs2Z2xYwNEJNT8ZZOBOlYFyTGPw9NEk7cZUkT8F_z-P9JMNkw
 ####
 
 Get {{url}} HTTP/1.1
@@ -24,8 +24,8 @@ Authorization : {{token}}
 
 {
   "id": 0,
-  "dayOfWeek": 4,
-  "teacherId": 2
+  "dayOfWeek": 3,
+  "teacherId": 1
 }
 ####
 
@@ -35,7 +35,7 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "id": 7,
+  "id": 1,
   "dayOfWeek": "3",
   "teacherId": 1
 }

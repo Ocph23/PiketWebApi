@@ -14,12 +14,11 @@ namespace PiketWebApi.Models
         public List<Teacher> TeacherAttendance { get; set; } = new();
         public List<StudentComeHomeEarly> StudentsComeHomeEarly { get; set; } = new();
         public List<StudentToLate> StudentsToLate { get; set; } = new();
-
         internal static Picket? Create(Teacher teacher)
         {
             return new Picket()
             {
-                CreateAt = DateTime.Now,
+                CreateAt = DateTime.Now.ToUniversalTime(),
                 CreatedBy = teacher,
                 Date = DateOnly.FromDateTime(DateTime.Now),
                 StartAt = TimeOnly.FromTimeSpan(new TimeSpan(7, 15, 0))

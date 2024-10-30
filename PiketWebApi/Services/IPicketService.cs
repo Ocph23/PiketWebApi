@@ -36,9 +36,19 @@ namespace PiketWebApi.Services
                 if (!userClaim.Item1)
                     throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
 
-                if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+
+
+                if (picketToday == null|| DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
                 {
+                    DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                    picketToday = dbContext.Picket.FirstOrDefault(x => x.Date == date);
+                    if(picketToday != null)
+                        return picketToday;
+
                     picketToday = Picket.Create(userClaim.Item2);
+                    dbContext.Entry(picketToday.CreatedBy).State = EntityState.Unchanged;
+                    dbContext.Picket.Add(picketToday);
+                    dbContext.SaveChanges();
                     return picketToday;
                 }
                 else
@@ -46,7 +56,7 @@ namespace PiketWebApi.Services
                     return picketToday;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
@@ -56,7 +66,16 @@ namespace PiketWebApi.Services
         {
             try
             {
-                if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+                if (picketToday == null)
+                {
+                    DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                    picketToday = dbContext.Picket.SingleOrDefault(x => x.Date == date);
+                    if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+                    {
+                        throw new SystemException("Piket Belum Di buka");
+                    }
+                }
+                if (picketToday != null && DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
                 {
                     throw new SystemException("Piket Belum Di buka");
                 }

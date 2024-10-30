@@ -5,7 +5,7 @@ POST {{url}}/auth/login HTTP/1.1
 Content-Type:application/json
 
 {
-    "username":"admin@picket.ocph23.tech",
+    "username":"ocph23@ocph23.tech",
     "password":"Password@123"
 }
 ####
@@ -47,7 +47,7 @@ Authorization : {{token}}
 
 {
   "id": 0,
-  "year": 2025
+  "year": 2024
 }
 ####
 
@@ -71,34 +71,34 @@ Authorization : {{token}}
 
 {
   "id": 0,
-  "number": "2225",
-  "name": "Duta ",
-  "gender": 0,
-  "placeOfBorn": "Jayapura",
-  "dateOfBorn": "2008-3-10",
-  "email": "duta@ocph23.tech",
-  "description": " Siswa ",
-  "userId": ""
-}
-####
-
-
-####
-put {{url}}/student/2 HTTP/1.1
-Content-Type:application/json
-Authorization : {{token}}
-
-{
-  "id": 2,
-  "number": "2225",
-  "name": "Duta ",
+  "number": "111112",
+  "name": "Micha Somole ",
   "gender": 0,
   "placeOfBorn": "Jayapura",
   "dateOfBorn": "2008-03-10",
-  "email": "duta@ocph23.tech",
+  "email": "micha@ocph23.tech",
   "description": " Siswa ",
   "userId": ""
 }
+####
+
+
+####
+put {{url}}/student/1 HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+  {
+    "id": 1,
+    "number": "000000001",
+    "name": "Micha Somole",
+    "gender": 0,
+    "placeOfBorn": "Jayapura",
+    "dateOfBorn": "2008-03-10",
+    "email": "micha@ocph23.tech",
+    "description": " Siswa ",
+    "userId": "c5e78b36-b8a7-42e7-9e04-0e00350c3c6f"
+  }
 ####
 
 
@@ -109,6 +109,14 @@ Get {{url}}/teacher HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
+
+####Teacher
+
+Get {{url}}/teacher/1 HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+####
 ####
 POST {{url}}/teacher HTTP/1.1
 Content-Type:application/json
@@ -116,12 +124,12 @@ Authorization : {{token}}
 
 {
   "id": 0,
-  "number": "222222",
-  "name": "Juan",
+  "number": "11111",
+  "name": "Yoseph ",
   "gender": 0,
   "placeOfBorn": "Jayapura",
   "dateOfBorn": "1979-10-17",
-  "email": "juan@ocph23.tech",
+  "email": "ocph23@ocph23.tech",
   "description": " Guru ",
   "userId": ""
 }
@@ -129,20 +137,20 @@ Authorization : {{token}}
 
 
 ####
-put {{url}}/teacher/2 HTTP/1.1
+put {{url}}/teacher/1 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "id": 2,
-  "number": "222222",
-  "name": "Juan",
-  "gender": 0,
-  "placeOfBorn": "Jayapura",
-  "dateOfBorn": "1979-10-17",
-  "email": "juan@ocph23.tech",
-  "description": " Guru ",
-  "userId": ""
-}
+    "id": 1,
+    "number": "11111111",
+    "name": "Yoseph",
+    "gender": 0,
+    "placeOfBorn": "Jayapura",
+    "dateOfBorn": "1979-10-17",
+    "email": "ocph23@ocph23.tech",
+    "description": " Guru ",
+    "userId": "85f2f727-90d7-4cd1-9802-e7ef1a413166"
+  }
 ####
 

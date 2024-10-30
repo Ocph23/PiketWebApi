@@ -1,0 +1,28 @@
+@url = https://localhost:7203/api
+@token = bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijg1ZjJmNzI3LTkwZDctNGNkMS05ODAyLWU3ZWYxYTQxMzE2NiIsIm5hbWUiOiJvY3BoMjNAb2NwaDIzLnRlY2giLCJzdWIiOiJvY3BoMjNAb2NwaDIzLnRlY2giLCJlbWFpbCI6Im9jcGgyM0BvY3BoMjMudGVjaCIsImp0aSI6ImM5MDA5NDI4LTc4MmQtNGY3ZS04ZmEyLWViOWJjNmE5MGJjNiIsInJvbGUiOiJUZWFjaGVyIiwibmJmIjoxNzMwMjY5MTAxLCJleHAiOjE3MzA4NzM5MDEsImlhdCI6MTczMDI2OTEwMSwiaXNzIjoiaHR0cHM6Ly9waWNrZXQub2NwaDIzLnRlY2gvIiwiYXVkIjoiaHR0cHM6Ly9waWNrZXQub2NwaDIzLnRlY2gvIn0.xsYfHmSW5aKlyYW18TYujmQ0RFUKKZ-xtANuiUuUaXvb8PXmeeDLH7iynrIq7bKOnu3KXOPwzqD3wxNJKAHg8Q
+####
+POST {{url}}/auth/login HTTP/1.1
+Content-Type:application/json
+
+{
+    "username":"ocph23@ocph23.tech",
+    "password":"Password@123"
+}
+####
+
+
+####Piket
+
+Get {{url}}/picket HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+#####
+
+####Piket
+
+Get {{url}}/picket/create HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+#####

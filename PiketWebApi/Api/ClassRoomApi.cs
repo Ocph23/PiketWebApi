@@ -208,6 +208,9 @@ namespace PiketWebApi.Api
                 model.Students.Add(new ClassRoomMember { Student = student });
                 var result = dbContext.ClassRooms.Add(model);
                 dbContext.SaveChanges();
+                var xx = new ClassRoomResponse(model.Id, model.Name, model.SchoolYear.Id, model.SchoolYear.Year,
+                    model.Department.Id, model.Department.Name, model.Department.Initial, model.ClassLeader.Id, model.ClassLeader.Name,
+                    model.HomeroomTeacher.Id, model.HomeroomTeacher.Name, null);
                 return Results.Ok(model);
             }
             catch (Exception ex)

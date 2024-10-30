@@ -102,26 +102,6 @@ namespace PiketWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Teachers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Number = table.Column<string>(type: "text", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Gender = table.Column<int>(type: "integer", nullable: false),
-                    PlaceOfBorn = table.Column<string>(type: "text", nullable: true),
-                    DateOfBorn = table.Column<DateOnly>(type: "date", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teachers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -228,6 +208,26 @@ namespace PiketWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClassRoomMember",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StudentId = table.Column<int>(type: "integer", nullable: false),
+                    ClassRoomId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassRoomMember", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClassRoomMember_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClassRooms",
                 columns: table => new
                 {
@@ -259,10 +259,49 @@ namespace PiketWebApi.Migrations
                         column: x => x.ClassLeaderId,
                         principalTable: "Students",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Picket",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    Weather = table.Column<int>(type: "integer", nullable: false),
+                    StartAt = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
+                    EndAt = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
+                    CreatedById = table.Column<int>(type: "integer", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Picket", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teachers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Number = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Gender = table.Column<int>(type: "integer", nullable: false),
+                    PlaceOfBorn = table.Column<string>(type: "text", nullable: true),
+                    DateOfBorn = table.Column<DateOnly>(type: "date", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    PicketId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teachers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClassRooms_Teachers_HomeroomTeacherId",
-                        column: x => x.HomeroomTeacherId,
-                        principalTable: "Teachers",
+                        name: "FK_Teachers_Picket_PicketId",
+                        column: x => x.PicketId,
+                        principalTable: "Picket",
                         principalColumn: "Id");
                 });
 
@@ -294,28 +333,70 @@ namespace PiketWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ClassRoomMember",
+                name: "StudentComeHomeEarly",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     StudentId = table.Column<int>(type: "integer", nullable: false),
-                    ClassRoomId = table.Column<int>(type: "integer", nullable: true)
+                    Time = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedById = table.Column<int>(type: "integer", nullable: false),
+                    PicketId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ClassRoomMember", x => x.Id);
+                    table.PrimaryKey("PK_StudentComeHomeEarly", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClassRoomMember_ClassRooms_ClassRoomId",
-                        column: x => x.ClassRoomId,
-                        principalTable: "ClassRooms",
+                        name: "FK_StudentComeHomeEarly_Picket_PicketId",
+                        column: x => x.PicketId,
+                        principalTable: "Picket",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ClassRoomMember_Students_StudentId",
+                        name: "FK_StudentComeHomeEarly_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StudentComeHomeEarly_Teachers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Teachers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StudentToLate",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StudentId = table.Column<int>(type: "integer", nullable: true),
+                    AttendanceStatus = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    CreatedById = table.Column<int>(type: "integer", nullable: true),
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PicketId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentToLate", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StudentToLate_Picket_PicketId",
+                        column: x => x.PicketId,
+                        principalTable: "Picket",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_StudentToLate_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_StudentToLate_Teachers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Teachers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -386,6 +467,11 @@ namespace PiketWebApi.Migrations
                 column: "SchoolYearId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Picket_CreatedById",
+                table: "Picket",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Schedules_SchoolYearId",
                 table: "Schedules",
                 column: "SchoolYearId");
@@ -400,11 +486,72 @@ namespace PiketWebApi.Migrations
                 table: "SchoolYears",
                 column: "Year",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentComeHomeEarly_CreatedById",
+                table: "StudentComeHomeEarly",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentComeHomeEarly_PicketId",
+                table: "StudentComeHomeEarly",
+                column: "PicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentComeHomeEarly_StudentId",
+                table: "StudentComeHomeEarly",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentToLate_CreatedById",
+                table: "StudentToLate",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentToLate_PicketId",
+                table: "StudentToLate",
+                column: "PicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StudentToLate_StudentId",
+                table: "StudentToLate",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teachers_PicketId",
+                table: "Teachers",
+                column: "PicketId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ClassRoomMember_ClassRooms_ClassRoomId",
+                table: "ClassRoomMember",
+                column: "ClassRoomId",
+                principalTable: "ClassRooms",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ClassRooms_Teachers_HomeroomTeacherId",
+                table: "ClassRooms",
+                column: "HomeroomTeacherId",
+                principalTable: "Teachers",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Picket_Teachers_CreatedById",
+                table: "Picket",
+                column: "CreatedById",
+                principalTable: "Teachers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Picket_Teachers_CreatedById",
+                table: "Picket");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -427,6 +574,12 @@ namespace PiketWebApi.Migrations
                 name: "Schedules");
 
             migrationBuilder.DropTable(
+                name: "StudentComeHomeEarly");
+
+            migrationBuilder.DropTable(
+                name: "StudentToLate");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -446,6 +599,9 @@ namespace PiketWebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Teachers");
+
+            migrationBuilder.DropTable(
+                name: "Picket");
         }
     }
 }
