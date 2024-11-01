@@ -1,6 +1,6 @@
 ﻿using SharedModel;
 
-namespace PiketWebApi.Models
+namespace SharedModel.Models
 {
     public class Teacher
     {

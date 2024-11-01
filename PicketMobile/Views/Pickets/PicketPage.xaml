@@ -2,44 +2,44 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PicketMobile.Views.Pickets.PicketPage"
-             Title="Picket Hari Ini x">
+             Title="Picket Hari Ini">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Sync" IconImageSource="home.svg"></ToolbarItem>
+        <ToolbarItem IconImageSource="sync.svg" ></ToolbarItem>
     </ContentPage.ToolbarItems>
     <ScrollView Padding="0,5" BackgroundColor="GhostWhite">
         <VerticalStackLayout Padding="10,0">
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
                     <Label Text="Cuaca" VerticalOptions="Center"/>
                     <Picker HorizontalOptions="End">
                     </Picker>
                 </Grid>
             </Frame>
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
                     <Label Text="Jam Mulai" VerticalOptions="Center"/>
                     <TimePicker HorizontalOptions="End"/>
                 </Grid>
             </Frame>
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
                     <Label Text="Jumlah Pendidik" VerticalOptions="Center"/>
                     <Entry HorizontalOptions="End"/>
                 </Grid>
             </Frame>
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
                     <Label Text="Jumlah Pendidik Hadir" VerticalOptions="Center"/>
                     <Entry HorizontalOptions="End"/>
                 </Grid>
             </Frame>
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
                     <Label Text="Jumlah Pendidik Terlambat" VerticalOptions="Center"/>
                     <Entry HorizontalOptions="End"/>
                 </Grid>
             </Frame>
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
                     <Label Text="Jumlah Pendidik Tidak Hadir" VerticalOptions="Center"/>
                     <Entry HorizontalOptions="End"/>
@@ -48,27 +48,27 @@
 
 
 
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
                     <Label Text="Jumlah Tenaga Kependidikan" VerticalOptions="Center"/>
                     <Entry HorizontalOptions="End"/>
                 </Grid>
             </Frame>
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
-                    <Label Text="Jumlah Tenaga Kependidik anHadir" VerticalOptions="Center"/>
+                    <Label Text="Jumlah Tenaga Kependidikan Hadir" VerticalOptions="Center"/>
                     <Entry HorizontalOptions="End"/>
                 </Grid>
             </Frame>
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
-                    <Label Text="Jumlah Tenaga Kependidik anTerlambat" VerticalOptions="Center"/>
+                    <Label Text="Jumlah Tenaga Kependidikan Terlambat" VerticalOptions="Center"/>
                     <Entry HorizontalOptions="End"/>
                 </Grid>
             </Frame>
-            <Frame Margin="0,2" Padding="0,0,0,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
+            <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                 <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
-                    <Label Text="Jumlah Tenaga Kependidik anTidak Hadir" VerticalOptions="Center"/>
+                    <Label Text="Jumlah Tenaga Kependidikan Tidak Hadir" VerticalOptions="Center"/>
                     <Entry HorizontalOptions="End"/>
                 </Grid>
             </Frame>

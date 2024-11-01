@@ -1,7 +1,7 @@
 ﻿using SharedModel;
 using SharedModel.Models;
 
-namespace PiketWebApi.Models
+namespace SharedModel.Models
 {
     public class StudentToLate
     {

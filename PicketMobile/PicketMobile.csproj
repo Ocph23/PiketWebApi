@@ -24,7 +24,7 @@
 		<ApplicationTitle>PicketMobile</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.picketmobile</ApplicationId>
+		<ApplicationId>com.ocph23.picketmobilesmkn8</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -43,7 +43,7 @@
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\logosplash.png" Color="#512BD4" BaseSize="75,75" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -63,9 +63,16 @@
 	  <None Remove="Resources\Images\history.svg" />
 	  <None Remove="Resources\Images\home.svg" />
 	  <None Remove="Resources\Images\logo.png" />
+	  <None Remove="Resources\Images\plus.svg" />
 	  <None Remove="Resources\Images\profile.svg" />
 	  <None Remove="Resources\Images\sun.svg" />
+	  <None Remove="Resources\Images\sync.svg" />
 	  <None Remove="Resources\Images\temperaturehigh.svg" />
+	  <None Remove="Resources\Splash\logosplash.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiImage Include="Resources\Splash\logosplash.png" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace PiketWebApi.Models
+﻿namespace SharedModel.Models
 {
     public class Department
     {

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Handlers;
 using PicketMobile.Services;
 
 namespace PicketMobile
@@ -21,6 +22,7 @@ namespace PicketMobile
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
 
             return builder.Build();
         }

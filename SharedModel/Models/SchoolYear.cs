@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace PiketWebApi.Models
+namespace SharedModel.Models
 {
 
     [Index(nameof(Year), IsUnique = true)]
