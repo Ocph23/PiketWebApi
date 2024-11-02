@@ -57,6 +57,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\addcircle.svg" />
 	  <None Remove="Resources\Images\calendar.svg" />
 	  <None Remove="Resources\Images\cloudshowersheavy.svg" />
 	  <None Remove="Resources\Images\cloudsun.svg" />
@@ -65,6 +66,8 @@
 	  <None Remove="Resources\Images\logo.png" />
 	  <None Remove="Resources\Images\plus.svg" />
 	  <None Remove="Resources\Images\profile.svg" />
+	  <None Remove="Resources\Images\scan.svg" />
+	  <None Remove="Resources\Images\search.svg" />
 	  <None Remove="Resources\Images\sun.svg" />
 	  <None Remove="Resources\Images\sync.svg" />
 	  <None Remove="Resources\Images\temperaturehigh.svg" />
@@ -88,10 +91,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\Pickets\GoHomeEarlyPage.xaml.cs">
+	    <DependentUpon>GoHomeEarlyPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="Views\AboutPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\HistoryPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Pickets\AddTerlambatPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Pickets\HomePage.xaml">
@@ -100,10 +112,10 @@
 	  <MauiXaml Update="Views\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Pickets\GoHomeEarlyPage.xaml">
+	  <MauiXaml Update="Views\Pickets\PicketPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Pickets\PicketPage.xaml">
+	  <MauiXaml Update="Views\Pickets\GoHomeEarlyPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Pickets\ToLatePage.xaml">

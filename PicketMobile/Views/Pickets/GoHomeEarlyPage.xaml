@@ -11,20 +11,28 @@
     <CollectionView ItemsSource="{Binding DataStudentTolate}" Margin="0,10">
         <CollectionView.ItemTemplate>
             <DataTemplate>
-                <Frame Padding="0" Margin="3,2" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
-                    <Grid Margin="0,0,0,1"  ColumnDefinitions="auto,*" BackgroundColor="White" >
-                        <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60"  TextColor="White"
+                <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
+                    <Grid.Background>
+                        <LinearGradientBrush EndPoint="1,0">
+                            <GradientStop Color="#e9edb4" Offset="0.1" />
+                            <GradientStop Color="#add9bf" Offset="0.9" />
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60"  TextColor="White"
                                             Margin="5,0" HeightRequest="60" CornerRadius="100" Text="ZS" 
-                                            BackgroundColor="MediumVioletRed" ImageSource="{Binding Photo}" />
-                        <StackLayout Grid.Column="1" VerticalOptions="Center" >
-                            <Label FontSize="16" Text="{Binding Student.Name}"></Label>
-                            <Grid ColumnDefinitions="*,auto">
-                                <Label Text="X RPL" FontSize="13"></Label>
-                                <Label Text="8:30 am" FontSize="13" Margin="10,0" HorizontalOptions="End" ></Label>
-                            </Grid>
-                        </StackLayout>
-                    </Grid>
-                </Frame>
+                                            BackgroundColor="#fe5f75" ImageSource="{Binding Photo}" />
+                    <StackLayout Grid.Column="1" VerticalOptions="Center" >
+                        <Label FontSize="16" Text="{Binding Student.Name}" ></Label>
+                        <Grid ColumnDefinitions="*,auto">
+                            <Label Text="X RPL" FontSize="13" ></Label>
+                            <HorizontalStackLayout HorizontalOptions="End" >
+                                <Label Text="Izin" FontSize="13"  Margin="10,0" ></Label>
+                                <Label Text="|" FontSize="13"   ></Label>
+                                <Label Text="8:30 am" FontSize="13"  Margin="10,0" ></Label>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </StackLayout>
+                </Grid>
             </DataTemplate>
         </CollectionView.ItemTemplate>
     </CollectionView>

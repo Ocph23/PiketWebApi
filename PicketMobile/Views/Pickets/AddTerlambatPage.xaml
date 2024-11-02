@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PicketMobile.Views.Pickets.AddTerlambatPage"
+             Title="AddTerlambatPage">
+    <VerticalStackLayout >
+        <StackLayout >
+            <Label Text="Tambah Siswa Terlamat" FontSize="18" Margin="20" FontAttributes="Bold"></Label>
+            <Grid ColumnDefinitions="*,auto,auto">
+                <SearchBar x:Name="searchBar" Placeholder="Cari Siswa (NIS / Nama)"
+                   SearchCommand="{Binding PerformSearch}"
+                   SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
+                <Button Margin="1" Grid.Column="1" ImageSource="search.svg" 
+                        BackgroundColor="Transparent"
+                        WidthRequest="30" HeightRequest="30" Padding="1" ></Button>
+                <Button BackgroundColor="Transparent" Grid.Column="2" ImageSource="scan.svg" Padding="1"></Button>
+            </Grid>
+            <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
+            <StackLayout Margin="20,30,0,0">
+                <Label Text="Data Siswa" FontSize="16" FontAttributes="Bold"></Label>
+                <Label HorizontalOptions="Center" Text="Data Siswa Tidak Ada" FontSize="11" ></Label>
+            </StackLayout>   
+            <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
+            <StackLayout Margin="20,30,0,0">
+                <Label Text="Data Keterlambatan" FontSize="16" FontAttributes="Bold"></Label>
+            </StackLayout>
+            <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
+            <Grid ColumnDefinitions="*,auto" Margin="20,0" >
+                <Label Text="Jam Datang" VerticalOptions="Center"></Label>
+                <TimePicker Grid.Column="1" VerticalOptions="Center" ></TimePicker>
+            </Grid>
+         
+            <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
+            <StackLayout Margin="20,0" >
+                <Label  Text="Alasan" VerticalOptions="Center"></Label>
+                <Entry MinimumHeightRequest="100" VerticalTextAlignment="Start" ></Entry>
+            </StackLayout>
+            <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
+            <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
+                <Button Text="Tambah" WidthRequest="100"></Button>
+                <Button Text="Batal" WidthRequest="100" BackgroundColor="OrangeRed"></Button>
+            </HorizontalStackLayout>
+        </StackLayout>
+    </VerticalStackLayout>
+</ContentPage>
