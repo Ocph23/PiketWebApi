@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
-using PiketWebApi.Models;
+using SharedModel.Models;
 using System.Security.Claims;
 
 namespace PiketWebApi

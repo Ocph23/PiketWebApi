@@ -40,6 +40,12 @@ internal class ToLatePageViewModel : BaseNotify
 
     private void AddStudentLateCommandAction()
     {
-        Shell.Current.Navigation.PushModalAsync(new AddTerlambatPage());
+        var form = new AddTerlambatPage();
+        Shell.Current.Navigation.PushModalAsync(form);
+        var vm = form.BindingContext as AddTerlambatPageViewModel;
+        if (vm.Model.Id >= 0)
+        {
+            DataStudentTolate.Add(vm.Model);
+        }
     }
 }

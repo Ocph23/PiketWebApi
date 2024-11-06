@@ -1,9 +1,5 @@
-﻿
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PiketWebApi.Data;
-using PiketWebApi.Models;
+﻿using PiketWebApi.Data;
+using SharedModel.Models;
 
 namespace PiketWebApi.Api
 {
