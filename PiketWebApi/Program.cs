@@ -90,6 +90,7 @@ builder.Services.AddSwaggerGen(setup =>
 builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPicketService,PicketService>();
+builder.Services.AddProblemDetails();
 
 
 var app = builder.Build();
@@ -126,6 +127,9 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
 
 if (app.Environment.IsDevelopment())
 {
