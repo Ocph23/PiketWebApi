@@ -8,12 +8,14 @@
             <Label Text="Tambah Siswa Terlamat" FontSize="18" Margin="20" FontAttributes="Bold"></Label>
             <Grid ColumnDefinitions="*,auto,auto">
                 <SearchBar x:Name="searchBar" Placeholder="Cari Siswa (NIS / Nama)"
-                   SearchCommand="{Binding PerformSearch}"
-                   SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"/>
-                <Button Margin="1" Grid.Column="1" ImageSource="search.svg" 
-                        BackgroundColor="Transparent"
-                        WidthRequest="30" HeightRequest="30" Padding="1" ></Button>
-                <Button BackgroundColor="Transparent" Grid.Column="2" ImageSource="scan.svg" Padding="1"></Button>
+                  Text="{Binding SearchText}"/>
+                <Button HeightRequest="35" WidthRequest="35"
+                        Margin="1" Grid.Column="1" ImageSource="search.svg" 
+                        BackgroundColor="red"
+                        Command="{Binding SearchCommand}"
+                        Padding="2" ></Button>
+                <Button HeightRequest="35" WidthRequest="35" Command="{Binding ScanCommand}"  BackgroundColor="Yellow" 
+                        Grid.Column="2" ImageSource="scan.svg" Padding="1"></Button>
             </Grid>
             <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
             <StackLayout Margin="20,30,0,0">
@@ -37,7 +39,7 @@
             </StackLayout>
             <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
             <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
-                <Button Text="Tambah" WidthRequest="100"></Button>
+                <Button Text="Tambah" Command="{Binding AddCommand}" WidthRequest="100"></Button>
                 <Button Text="Batal" WidthRequest="100" BackgroundColor="OrangeRed"></Button>
             </HorizontalStackLayout>
         </StackLayout>
