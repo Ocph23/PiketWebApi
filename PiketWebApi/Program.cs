@@ -90,6 +90,7 @@ builder.Services.AddSwaggerGen(setup =>
 builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPicketService,PicketService>();
+builder.Services.AddProblemDetails();
 
 
 var app = builder.Build();
@@ -112,8 +113,7 @@ using (var scope = app.Services.CreateScope())
 
     if (!dbcontext.Users.Any())
     {
-        var user = new ApplicationUser("admin@picket.ocph23.tech") { Name = "Admin", Email = "admin@picket.ocph23.tech", 
-            EmailConfirmed = true };
+        var user = new ApplicationUser("admin@picket.ocph23.tech") { Name = "Admin", Email = "admin@picket.ocph23.tech", EmailConfirmed = true };
         var result = await userManager.CreateAsync(user, "Password@123");
         if (result.Succeeded)
         {
@@ -125,6 +125,17 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
+
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+    app.UseDeveloperExceptionPage();
+
+//if (app.Environment.IsDevelopment())
+//{
+//}
+
+
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();

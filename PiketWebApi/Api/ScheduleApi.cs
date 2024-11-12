@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
-using PiketWebApi.Models;
+using SharedModel.Models;
 using SharedModel.Requests;
 using SharedModel.Responses;
 

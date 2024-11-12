@@ -27,7 +27,7 @@ namespace PicketMobile.Services
             try
             {
                 using var client = new RestClient();
-                var response = await client.PostAsJsonAsync("/api/auth/login", new LoginRequest(username, password));
+                HttpResponseMessage response = await client.PostAsJsonAsync("/api/auth/login", new LoginRequest(username, password));
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
@@ -41,9 +41,9 @@ namespace PicketMobile.Services
                         return true;
                     }
                 }
-                throw new SystemException(); ;
+                throw new SystemException(await client.Error(response)); ;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new SystemException("Maaf, Anda Tidak Memiliki Akses !");
             }

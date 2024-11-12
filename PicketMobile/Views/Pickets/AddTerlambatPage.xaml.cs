@@ -1,146 +1,62 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Input;
 
-using PicketMobile.Models;
-
 namespace PicketMobile.Views.Pickets;
 
 public partial class AddTerlambatPage : ContentPage
 {
-    public AddTerlambatPage()
-    {
-        InitializeComponent();
-        BindingContext = new AddTerlabatPageViewModel();
-    }
+	public AddTerlambatPage()
+	{
+		InitializeComponent();
+		BindingContext = new AddTerlambatPageViewModel();
+	}
 }
 
-internal class AddTerlabatPageViewModel : BaseNotify
+internal class AddTerlambatPageViewModel:BaseNotify
 {
-    private StudentToLateModel model;
+	private Models.StudentToLateModel studentToLateModel  = new Models.StudentToLateModel();
 
-    public StudentToLateModel Model
+	public Models.StudentToLateModel Model
+	{
+		get { return studentToLateModel; }
+		set { studentToLateModel = value; }
+	}
+
+
+	private ICommand addCommand;
+
+	public ICommand AddCommand
+	{
+		get { return addCommand; }
+		set { SetProperty(ref addCommand , value); }
+	}
+
+
+	public AddTerlambatPageViewModel()
     {
-        get { return model; }
-        set { SetProperty(ref model, value); }
+
+		AddCommand = new RelayCommand<object>(AddAcommandAcation, AddCommandValidate);
     }
 
-
-
-
-    private ICommand _searchCommand;
-
-    public ICommand SearchCommand
+    private void AddAcommandAcation(object? obj)
     {
-        get { return _searchCommand; }
-        set
-        {
-            SetProperty(ref _searchCommand, value);
-        }
+		try
+		{
+
+		}
+		catch (Exception ex)
+		{
+			Shell.Current.DisplayAlert("Error",ex.Message,"OK");
+		}
     }
 
-
-    private ICommand scanCommand;
-
-    public ICommand ScanCommand
+    private bool AddCommandValidate(object? obj)
     {
-        get { return scanCommand; }
-        set { SetProperty(ref scanCommand, value); }
+        if(Model.Student==null || (Model.AtTime < new TimeSpan(8,0,0) ))
+		{
+			return false;
+		}
+
+		return true;
     }
-
-
-    private ICommand addCommand;
-
-    public ICommand AddCommand
-    {
-        get { return addCommand; }
-        set { SetProperty(ref addCommand, value); }
-    }
-
-
-
-    private ICommand cancelCommand;
-
-    public ICommand CancelCommand
-    {
-        get { return cancelCommand; }
-        set { SetProperty(ref cancelCommand, value); }
-    }
-
-
-
-    private string searchText;
-
-    public string SearchText
-    {
-        get { return searchText; }
-        set { SetProperty(ref searchText, value); }
-    }
-
-
-
-    public AddTerlabatPageViewModel()
-    {
-        SearchCommand = new RelayCommand<object>(searchCommandAction, searchCommandValidation);
-        ScanCommand = new RelayCommand(scanCommandAction);
-        AddCommand = new RelayCommand(addCommandAction, addCommandValidation);
-        CancelCommand = new RelayCommand(cancelCommandAction);
-        this.PropertyChanged += (s, p) =>
-        {
-            if (p.PropertyName == "SearchText")
-            {
-                SearchCommand = new RelayCommand<object>(searchCommandAction, searchCommandValidation);
-            }
-
-            if (p.PropertyName == "Model")
-            {
-                AddCommand = new RelayCommand(addCommandAction, addCommandValidation);
-            }
-        };
-
-    }
-
-    private bool searchCommandValidation(object? obj)
-    {
-        if (string.IsNullOrEmpty(SearchText)||SearchText.Length <3)
-            return false;
-        return true;
-    }
-
-    private void searchCommandAction(object? obj)
-    {
-        try
-        {
-
-        }
-        catch (Exception)
-        {
-
-            throw;
-        }
-    }
-
-    private void scanCommandAction()
-    {
-        throw new NotImplementedException();
-    }
-
-    private void cancelCommandAction()
-    {
-        Shell.Current.Navigation.PopModalAsync();
-    }
-
-    private void addCommandAction()
-    {
-        throw new NotImplementedException();
-    }
-
-    private bool addCommandValidation()
-    {
-        if (Model == null || Model.CreateAt.Hour <= 8 || string.IsNullOrEmpty(Model.Description))
-            return false;
-        return true;
-    }
-
- 
-
 }

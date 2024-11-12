@@ -1,10 +1,6 @@
-﻿
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
-using PiketWebApi.Models;
 using PiketWebApi.Services;
 using SharedModel.Models;
 
@@ -18,7 +14,57 @@ namespace PiketWebApi.Api
             group.MapGet("/create", PostPicket);
             group.MapPost("/createlate", Createlate);
             group.MapPost("/createsoearly", Createsoearly);
+
+            group.MapDelete("/createlate/{id}", RemoveLate);
+            group.MapDelete("/createsoearly/{id}", RemoveSoearly);
+
             return group.WithTags("picket").RequireAuthorization(); ;
+        }
+
+        private static async Task<IResult> RemoveSoearly(HttpContext context, ApplicationDbContext dbContext, int id)
+        {
+            try
+            {
+                var result = dbContext.Picket.Include(x => x.StudentsComeHomeEarly)
+                    .Where(x => x.StudentsComeHomeEarly
+                    .Where(x => x.Id == id).Any())
+                    .SelectMany(x => x.StudentsComeHomeEarly).SingleOrDefault();
+                if (result != null)
+                {
+                    dbContext.Remove(result);
+                    dbContext.SaveChanges();
+                    return TypedResults.Ok(true);
+                }
+                throw new SystemException("Terjadi Kesalahan !, Coba Ulangi Lagi");
+            }
+            catch (Exception ex)
+            {
+
+                return TypedResults.BadRequest(ex.Message);
+            }
+        }
+
+        private static async Task<IResult> RemoveLate(HttpContext context, ApplicationDbContext dbContext, int id)
+        {
+            try
+            {
+                var result = dbContext.Picket.Include(x => x.StudentsToLate)
+                    .Where(x => x.StudentsToLate
+                    .Where(x => x.Id == id).Any())
+                    .SelectMany(x => x.StudentsToLate).SingleOrDefault();
+                if (result != null)
+                {
+                    dbContext.Remove(result);
+                    dbContext.SaveChanges();
+                    return TypedResults.Ok(true);
+                }
+                throw new SystemException("Terjadi Kesalahan !, Coba Ulangi Lagi");
+            }
+            catch (Exception ex)
+            {
+
+                return TypedResults.BadRequest(ex.Message);
+            }
         }
 
         private static async Task<IResult> Createsoearly(HttpContext context, ApplicationDbContext dbContext,

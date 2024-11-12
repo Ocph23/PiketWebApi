@@ -1,27 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using PicketMobile.Views;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace PicketMobile.Services
 {
-    public class RestService : HttpClient
+    public class RestClient : HttpClient
     {
         public static string DeviceToken { get; set; }
 
-        public RestService()//:base(DependencyService.Get<Helpers.IHTTPClientHandlerCreationService>().GetInsecureHandler())
+        public RestClient()//:base(DependencyService.Get<Helpers.IHTTPClientHandlerCreationService>().GetInsecureHandler())
         {
-            string _server = Helper.Url;
+            string _server = "https://picket.ocph23.tech";
             this.BaseAddress = new Uri(_server);
             this.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
-            string token = Preferences.Get(key: "token", "");
-            SetToken(token);
+            var token = Preferences.Get("token", null);
+            if (token != null)
+            {
+                SetToken(token);
+            }
         }
 
-        public RestService(string apiUrl)
+        public RestClient(string apiUrl)
         {
             this.BaseAddress = new Uri(apiUrl);
 
@@ -37,12 +37,7 @@ namespace PicketMobile.Services
             }
         }
 
-        internal Task DeleteAsync(string id, StringContent content)
-        {
-
-            throw new NotImplementedException();
-        }
-
+     
         public StringContent GenerateHttpContent(object data)
         {
             var json = JsonSerializer.Serialize(data);
@@ -60,7 +55,7 @@ namespace PicketMobile.Services
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    Application.Current.MainPage = new AccountShell();
+                    Application.Current.MainPage = new LoginPage();
                     return $"'{response.RequestMessage.RequestUri.LocalPath}'  Anda Tidak Memiliki Akses !";
                 }
 
@@ -70,12 +65,12 @@ namespace PicketMobile.Services
 
                 if (content.Contains("message"))
                 {
-                    var error = JsonSerializer.Deserialize<Models.ErrorMessage>(content, Helper.JsonOptions);
-                    return error.Messages.Error;
+                    var error = JsonSerializer.Deserialize<ErrorMessage>(content, Helper.JsonOption);
+                    return error.Message;
                 }
                 else if (content.Contains("tools.ietf"))
                 {
-                    var errors = JsonSerializer.Deserialize<ErrorMessages>(content, Helper.JsonOptions);
+                    var errors = JsonSerializer.Deserialize<ErrorMessages>(content, Helper.JsonOption);
                     return errors.Title;
                 }
                 return content;
@@ -100,7 +95,7 @@ namespace PicketMobile.Services
                 string stringContent = await response.Content.ReadAsStringAsync();
                 if (string.IsNullOrEmpty(stringContent))
                     return default;
-                var result = JsonSerializer.Deserialize<T>(stringContent, Helper.JsonOptions);
+                var result = JsonSerializer.Deserialize<T>(stringContent, Helper.JsonOption);
                 return result;
             }
             catch (Exception ex)

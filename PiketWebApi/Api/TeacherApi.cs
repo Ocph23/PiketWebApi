@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
-using PiketWebApi.Models;
+using SharedModel.Models;
 
 namespace PiketWebApi.Api
 {
@@ -102,7 +102,7 @@ namespace PiketWebApi.Api
             catch (Exception ex)
             {
                 trans.Rollback();
-                return Results.BadRequest(ex.Message);
+                throw;
             }
         }
 

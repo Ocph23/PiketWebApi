@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace PicketMobile
 {
-    public static class Helper
+    internal class Helper
     {
-        public static string Url
-        {
-            get
-            {
-                return "https://picket.ocph23.tech";
-            }
-        }
+        public static JsonSerializerOptions JsonOption { get; set; } = new() { PropertyNameCaseInsensitive = true, ReferenceHandler = ReferenceHandler.Preserve };
+
     }
 }

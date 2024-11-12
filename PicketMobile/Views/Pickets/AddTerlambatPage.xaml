@@ -4,8 +4,8 @@
              x:Class="PicketMobile.Views.Pickets.AddTerlambatPage"
              Title="AddTerlambatPage">
     <VerticalStackLayout >
-        <StackLayout >
-            <Label Text="Tambah Siswa Terlamat" FontSize="18" Margin="20" FontAttributes="Bold"></Label>
+        <StackLayout>
+            <Label Text="Tambah Siswa Terlambat" FontSize="18" Margin="20" FontAttributes="Bold"></Label>
             <Grid ColumnDefinitions="*,auto,auto">
                 <SearchBar x:Name="searchBar" Placeholder="Cari Siswa (NIS / Nama)"
                   Text="{Binding SearchText}"/>

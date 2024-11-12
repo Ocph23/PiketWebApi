@@ -11,7 +11,6 @@ namespace PicketMobile.Models
 {
     class StudentToLateModel : ObservableObject
     {
-
         public int Id { get; set; }
 
         private Student? student;
@@ -22,10 +21,6 @@ namespace PicketMobile.Models
             set { SetProperty(ref student , value); }
         }
 
-
-
-
-
         private string description;
 
         public string Description
@@ -33,6 +28,15 @@ namespace PicketMobile.Models
             get { return description; }
             set { SetProperty(ref description , value); }
         }
+
+        private TimeSpan atTime;
+
+        public TimeSpan AtTime
+        {
+            get { return atTime; }
+            set {SetProperty(ref atTime , value); }
+        }
+
 
         private Teacher createdBy;
 
@@ -43,6 +47,7 @@ namespace PicketMobile.Models
         }
 
         public DateTime CreateAt { get; set; } = DateTime.Now;
+
 
     }
 }

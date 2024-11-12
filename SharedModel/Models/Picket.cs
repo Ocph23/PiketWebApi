@@ -14,7 +14,7 @@ namespace SharedModel.Models
         public List<Teacher> TeacherAttendance { get; set; } = new();
         public List<StudentComeHomeEarly> StudentsComeHomeEarly { get; set; } = new();
         public List<StudentToLate> StudentsToLate { get; set; } = new();
-        internal static Picket? Create(Teacher teacher)
+        public static Picket? Create(Teacher teacher)
         {
             return new Picket()
             {
