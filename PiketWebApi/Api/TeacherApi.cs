@@ -102,7 +102,7 @@ namespace PiketWebApi.Api
             catch (Exception ex)
             {
                 trans.Rollback();
-                return Results.BadRequest(ex.Message);
+                throw;
             }
         }
 
