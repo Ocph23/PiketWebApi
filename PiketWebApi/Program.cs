@@ -113,8 +113,7 @@ using (var scope = app.Services.CreateScope())
 
     if (!dbcontext.Users.Any())
     {
-        var user = new ApplicationUser("admin@picket.ocph23.tech") { Name = "Admin", Email = "admin@picket.ocph23.tech", 
-            EmailConfirmed = true };
+        var user = new ApplicationUser("admin@picket.ocph23.tech") { Name = "Admin", Email = "admin@picket.ocph23.tech", EmailConfirmed = true };
         var result = await userManager.CreateAsync(user, "Password@123");
         if (result.Succeeded)
         {
