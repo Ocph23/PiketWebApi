@@ -87,7 +87,6 @@ namespace PicketMobile.Services
 
     public static class RestServiceExtention
     {
-
         public static async Task<T> GetResult<T>(this HttpResponseMessage response)
         {
             try

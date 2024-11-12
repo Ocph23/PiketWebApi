@@ -31,7 +31,7 @@ namespace PicketMobile.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
-                    AuthenticateResponse? data = JsonSerializer.Deserialize<AuthenticateResponse>(stringContent);
+                    AuthenticateResponse? data = await response.GetResult<AuthenticateResponse>();
                     if (data != null) {
                         Preferences.Set("token", data.Token);
                         Preferences.Set("user", data.UserName);

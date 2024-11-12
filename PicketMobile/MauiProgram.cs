@@ -11,6 +11,7 @@ namespace PicketMobile
         {
             var builder = MauiApp.CreateBuilder();
             builder.Services.AddSingleton<IAccountService, AccountService>();
+            builder.Services.AddSingleton<IPicketService, PicketService>();
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>

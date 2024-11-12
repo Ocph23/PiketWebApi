@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace SharedModel.Responses
 {
-    public record ScheduleResponse(int Id, int SchoolYearId, int Year, string DayOfWeek, int TeacherId, string TeacherNumber, string TeacherName);
+    public record ScheduleResponse(int Id, int SchoolYearId, int Year, string DayOfWeek, int TeacherId, string TeacherNumber, string TeacherName, string? Photo=null);
 }

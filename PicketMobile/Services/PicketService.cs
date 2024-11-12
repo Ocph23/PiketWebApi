@@ -1,4 +1,6 @@
-﻿using SharedModel.Models;
+﻿using PicketMobile.Models;
+using SharedModel.Models;
+using SharedModel.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,7 @@ namespace PicketMobile.Services
         Task<StudentComeHomeEarly> PostToComeHomeEarly(StudentComeHomeEarly model);
         Task<bool> DeleteToComeHomeEarly(int studentGoHomeErly);
 
+        Task<IEnumerable<ScheduleModel>> GetScheduleActive();
 
 
     }
@@ -56,6 +59,39 @@ namespace PicketMobile.Services
             }
         }
 
+        public async Task<IEnumerable<ScheduleModel>> GetScheduleActive()
+        {
+            try
+            {
+                using var db = new RestClient();
+                HttpResponseMessage response = await db.GetAsync($"api/schedule/active");
+                if (response.IsSuccessStatusCode)
+                {
+                    List<ScheduleModel> schedules = new List<ScheduleModel>();
+                    var result = await response.GetResult<IEnumerable<ScheduleResponse>>();
+                    if (result != null)
+                    {
+                        var group = result.GroupBy(x => x.DayOfWeek);
+                        foreach (var item in group)
+                        {
+                            schedules.Add(new ScheduleModel
+                            {
+                                Day = item.Key.ToString(),
+                                Members = item.ToList()
+                            });
+                        }
+                    }
+                    return schedules;
+
+                }
+                throw new SystemException(await db.Error(response));
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
         public async Task<StudentComeHomeEarly> PostToComeHomeEarly(StudentComeHomeEarly model)
         {
             try
@@ -83,12 +119,12 @@ namespace PicketMobile.Services
             try
             {
                 using var db = new RestClient();
-                HttpResponseMessage response = await db.PostAsJsonAsync($"/picket/createlate",model);
+                HttpResponseMessage response = await db.PostAsJsonAsync($"/picket/createlate", model);
                 if (response.IsSuccessStatusCode)
                 {
-                    var stringContent = await response.Content.ReadAsStringAsync(); 
-                    var result = JsonSerializer.Deserialize<StudentToLate>(stringContent);  
-                    if(result!=null)
+                    var stringContent = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<StudentToLate>(stringContent);
+                    if (result != null)
                         return result;
 
                 }
