@@ -32,8 +32,8 @@ namespace PicketMobile.Services
         {
             try
             {
-                using var db = new RestClient();
-                HttpResponseMessage response = await db.PostAsJsonAsync($"/picket/create", model);
+                using var client = new RestClient();
+                HttpResponseMessage response = await client.PostAsJsonAsync($"api/picket/create", model);
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
@@ -41,7 +41,7 @@ namespace PicketMobile.Services
                     if (result != null)
                         return result;
                 }
-                throw new SystemException("Maaf Terjadi Kesalahan, Coba Ulangi Lagi");
+                throw new SystemException(await client.Error(response));
             }
             catch (Exception ex)
             {
@@ -52,8 +52,8 @@ namespace PicketMobile.Services
         {
             try
             {
-                using var db = new RestClient();
-                HttpResponseMessage response = await db.GetAsync($"api/picket");
+                using var client = new RestClient();
+                HttpResponseMessage response = await client.GetAsync($"api/picket");
                 if (response.IsSuccessStatusCode)
                 {
                     List<ScheduleModel> schedules = new List<ScheduleModel>();
@@ -61,7 +61,7 @@ namespace PicketMobile.Services
                     return result;
 
                 }
-                throw new SystemException(await db.Error(response));
+                throw new SystemException(await client.Error(response));
             }
             catch (Exception ex)
             {
@@ -74,8 +74,8 @@ namespace PicketMobile.Services
         {
             try
             {
-                using var db = new RestClient();
-                var response = await db.DeleteAsync($"/picket/removehomeearly");
+                using var client = new RestClient();
+                var response = await client.DeleteAsync($"/picket/removehomeearly");
                 if (response.IsSuccessStatusCode)
                     return true;
                 return false;
@@ -90,8 +90,8 @@ namespace PicketMobile.Services
         {
             try
             {
-                using var db = new RestClient();
-                var response = await db.DeleteAsync($"/picket/removelate");
+                using var client = new RestClient();
+                var response = await client.DeleteAsync($"/picket/removelate");
                 if (response.IsSuccessStatusCode)
                     return true;
                 return false;
@@ -107,8 +107,8 @@ namespace PicketMobile.Services
         {
             try
             {
-                using var db = new RestClient();
-                HttpResponseMessage response = await db.PostAsJsonAsync($"/picket/createsoearly", model);
+                using var client = new RestClient();
+                HttpResponseMessage response = await client.PostAsJsonAsync($"/picket/createsoearly", model);
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
@@ -129,8 +129,8 @@ namespace PicketMobile.Services
         {
             try
             {
-                using var db = new RestClient();
-                HttpResponseMessage response = await db.PostAsJsonAsync($"/picket/createlate", model);
+                using var client = new RestClient();
+                HttpResponseMessage response = await client.PostAsJsonAsync($"/picket/createlate", model);
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();

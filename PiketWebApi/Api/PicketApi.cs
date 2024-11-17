@@ -11,7 +11,8 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapPickerApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetPickerToday);
-            group.MapGet("/create", PostPicket);
+            group.MapPost("/", PostPicket);
+            group.MapPut("/{id}", PutPicket);
             group.MapPost("/createlate", Createlate);
             group.MapPost("/createsoearly", Createsoearly);
 
@@ -19,6 +20,29 @@ namespace PiketWebApi.Api
             group.MapDelete("/createsoearly/{id}", RemoveSoearly);
 
             return group.WithTags("picket").RequireAuthorization(); ;
+        }
+
+        private static async Task<IResult> PutPicket(HttpContext context, ApplicationDbContext dbContext, int id, Picket model)
+        {
+            try
+            {
+                var result = dbContext.Picket
+                    .SingleOrDefault(x => x.Id == id);
+                if (result != null)
+                {
+                    
+                    result.Weather = model.Weather;
+                    result.StartAt = model.StartAt;
+                    result.EndAt= model.EndAt;
+                    dbContext.SaveChanges();
+                    return TypedResults.Ok(true);
+                }
+                throw new SystemException("Terjadi Kesalahan !, Coba Ulangi Lagi");
+            }
+            catch (Exception ex)
+            {
+                return TypedResults.BadRequest(ex.Message);
+            }
         }
 
         private static async Task<IResult> RemoveSoearly(HttpContext context, ApplicationDbContext dbContext, int id)

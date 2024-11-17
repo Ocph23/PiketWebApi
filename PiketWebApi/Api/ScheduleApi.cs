@@ -28,7 +28,7 @@ namespace PiketWebApi.Api
             {
                 var result = from a in dbContext.Schedules.Where(x=>x.SchoolYear.Id==id).Include(x => x.SchoolYear).Include(x => x.Teacher)
                 select new ScheduleResponse(a.Id, a.SchoolYear.Id, a.SchoolYear.Year, a.DayOfWeek.ToString(), a.Teacher.Id,
-                a.Teacher.Number, a.Teacher.Name);
+                a.Teacher.Number, a.Teacher.Name, "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png");
                 return Results.Ok(result);
             }
             catch (Exception ex)
@@ -49,7 +49,7 @@ namespace PiketWebApi.Api
                 var result = from a in dbContext.Schedules.Include(x => x.SchoolYear).Include(x => x.Teacher)
                              .Where(x => x.SchoolYear.Id == shoolYearActive.Id)
                              select new ScheduleResponse(a.Id, a.SchoolYear.Id, a.SchoolYear.Year, a.DayOfWeek.ToString(), a.Teacher.Id,
-                             a.Teacher.Number, a.Teacher.Name);
+                             a.Teacher.Number, a.Teacher.Name, "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png");
                 return Results.Ok(result);
 
 
@@ -139,7 +139,7 @@ namespace PiketWebApi.Api
             {
                 var result = from a in dbContext.Schedules.Include(x => x.SchoolYear).Include(x => x.Teacher)
                              select new ScheduleResponse(a.Id, a.SchoolYear.Id, a.SchoolYear.Year, a.DayOfWeek.ToString(), a.Teacher.Id,
-                             a.Teacher.Number, a.Teacher.Name);
+                             a.Teacher.Number, a.Teacher.Name, "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png");
                 return Results.Ok(result);
             }
             catch (Exception ex)

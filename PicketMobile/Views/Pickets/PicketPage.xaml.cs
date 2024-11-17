@@ -53,19 +53,32 @@ internal partial class PicketPageViewModel : ObservableObject
     public PicketPageViewModel()
     {
 
-        AddCommand = new RelayCommand(AddCommandAction);
+        AddCommand = new AsyncRelayCommand(AddCommandAction);
         AsyncCommand = new Command(async () => await LoadAction());
         AsyncCommand.Execute(null);
     }
 
-    private void AddCommandAction()
+    private async Task AddCommandAction()
     {
-        var profile = ServiceHelper.GetProfile<Teacher>();
-
-        Picket = new Picket() { CreatedBy = profile, CreateAt = DateTime.Now, Date = DateOnly.FromDateTime(DateTime.Now) , };
-
-
+        try
+        {
+            var profile = ServiceHelper.GetProfile<Teacher>();
+            var picketService = ServiceHelper.GetService<IPicketService>();
+            Picket = new Picket() { CreatedBy = profile, CreateAt = DateTime.Now, Date = DateOnly.FromDateTime(DateTime.Now), };
+            var result = await picketService.Create(Picket);
+            if (result != null)
+            {
+                CanSync = true;
+                HasPicket = true;
+                IamPicket = false;
+            }
+        }
+        catch (Exception ex)
+        {
+           await Shell.Current.DisplayAlert("Error", ex.Message, "Close");
+        }
     }
+
 
     [Obsolete]
     private async Task LoadAction()

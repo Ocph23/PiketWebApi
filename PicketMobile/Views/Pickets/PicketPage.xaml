@@ -20,7 +20,7 @@
            IsVisible="{Binding HasPicket,  Converter={StaticResource InvertedBoolConverter}}" >
                 <Label FontSize="Medium" Text="{Binding Message}"></Label>
             </StackLayout>
-            <control:AddButton IsVisible="{Binding IamPicket}"></control:AddButton>
+            <control:AddButton IsVisible="{Binding IamPicket}" Command="{Binding AddCommand}"></control:AddButton>
             <VerticalStackLayout IsVisible="{Binding HasPicket}">
                 <Frame Margin="0,2" Padding="0,0,0,1" CornerRadius="0" BorderColor="WhiteSmoke" BackgroundColor="orange" >
                     <Grid ColumnDefinitions="*,auto" BackgroundColor="White" Padding="5">
