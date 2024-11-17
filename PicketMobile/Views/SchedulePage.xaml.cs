@@ -36,7 +36,7 @@ internal class SchedulePageViewModel : BaseNotify
     {
         try
         {
-            var service = ServiceHelper.GetService<IPicketService>();
+            var service = ServiceHelper.GetService<IScheduleService>();
             var data = await service.GetScheduleActive();
             Datas.Clear();
             foreach (var item in data)

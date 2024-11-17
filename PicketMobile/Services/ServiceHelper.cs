@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace PicketMobile.Services
@@ -10,6 +11,14 @@ namespace PicketMobile.Services
     {
         [Obsolete]
         public static TService GetService<TService>() => Current.GetService<TService>()!;
+
+        internal static T GetProfile<T>()
+        {
+            var profile = Preferences.Get("profile", null);
+            if (profile == null)
+                return default(T);
+            return JsonSerializer.Deserialize<T>(profile, Helper.JsonOption);
+        }
 
         [Obsolete]
         public static IServiceProvider Current =>

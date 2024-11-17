@@ -14,19 +14,62 @@ namespace PicketMobile.Services
 
     public interface IPicketService
     {
+        Task<Picket> GetPicketToday();
+        Task<Picket> Create(Picket model);
         Task<StudentToLate> PostToLate(StudentToLate model);
         Task<bool> DeleteToLate(int studentTolateId);
 
         Task<StudentComeHomeEarly> PostToComeHomeEarly(StudentComeHomeEarly model);
         Task<bool> DeleteToComeHomeEarly(int studentGoHomeErly);
 
-        Task<IEnumerable<ScheduleModel>> GetScheduleActive();
 
 
     }
 
     public class PicketService : IPicketService
     {
+        public async Task<Picket> Create(Picket model)
+        {
+            try
+            {
+                using var db = new RestClient();
+                HttpResponseMessage response = await db.PostAsJsonAsync($"/picket/create", model);
+                if (response.IsSuccessStatusCode)
+                {
+                    var stringContent = await response.Content.ReadAsStringAsync();
+                    var result = await response.GetResultAsync<Picket>();
+                    if (result != null)
+                        return result;
+                }
+                throw new SystemException("Maaf Terjadi Kesalahan, Coba Ulangi Lagi");
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+        public async Task<Picket> GetPicketToday()
+        {
+            try
+            {
+                using var db = new RestClient();
+                HttpResponseMessage response = await db.GetAsync($"api/picket");
+                if (response.IsSuccessStatusCode)
+                {
+                    List<ScheduleModel> schedules = new List<ScheduleModel>();
+                    var result = await response.GetResultAsync<Picket>();
+                    return result;
+
+                }
+                throw new SystemException(await db.Error(response));
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+
         public async Task<bool> DeleteToComeHomeEarly(int studentGoHomeErly)
         {
             try
@@ -59,38 +102,6 @@ namespace PicketMobile.Services
             }
         }
 
-        public async Task<IEnumerable<ScheduleModel>> GetScheduleActive()
-        {
-            try
-            {
-                using var db = new RestClient();
-                HttpResponseMessage response = await db.GetAsync($"api/schedule/active");
-                if (response.IsSuccessStatusCode)
-                {
-                    List<ScheduleModel> schedules = new List<ScheduleModel>();
-                    var result = await response.GetResult<IEnumerable<ScheduleResponse>>();
-                    if (result != null)
-                    {
-                        var group = result.GroupBy(x => x.DayOfWeek);
-                        foreach (var item in group)
-                        {
-                            schedules.Add(new ScheduleModel
-                            {
-                                Day = item.Key.ToString(),
-                                Members = item.ToList()
-                            });
-                        }
-                    }
-                    return schedules;
-
-                }
-                throw new SystemException(await db.Error(response));
-            }
-            catch (Exception ex)
-            {
-                throw new SystemException(ex.Message);
-            }
-        }
 
         public async Task<StudentComeHomeEarly> PostToComeHomeEarly(StudentComeHomeEarly model)
         {
