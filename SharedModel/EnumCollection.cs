@@ -8,10 +8,10 @@
 
     public enum Weather
     {
+        Cerah,
         Mendung,
         Gerimis,
         Hujan,
-        Cerah
     }
 
 

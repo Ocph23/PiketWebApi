@@ -37,6 +37,7 @@ namespace PicketMobile.Services
                         Preferences.Set("user", data.UserName);
                         Preferences.Set("email", data.Email);
                         Preferences.Set("roles", JsonSerializer.Serialize(data.roles));
+                        Preferences.Set("profile", JsonSerializer.Serialize(data.Profile));
                         Application.Current.MainPage = new AppShell();
                         return true;
                     }

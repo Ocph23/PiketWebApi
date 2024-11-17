@@ -32,6 +32,7 @@ namespace PiketWebApi.Api
                     result.StartAt = model.StartAt;
                     result.EndAt= model.EndAt;
                     result.CreatedBy= model.CreatedBy;
+                    dbContext.Entry(result.CreateAt).State = EntityState.Unchanged;
                     dbContext.SaveChanges();
                     return TypedResults.Ok(true);
                 }
