@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PiketWebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class _initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -91,7 +91,7 @@ namespace PiketWebApi.Migrations
                     Name = table.Column<string>(type: "text", nullable: true),
                     Gender = table.Column<int>(type: "integer", nullable: false),
                     PlaceOfBorn = table.Column<string>(type: "text", nullable: true),
-                    DateOfBorn = table.Column<DateOnly>(type: "date", nullable: true),
+                    DateOfBorn = table.Column<DateOnly>(type: "date", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: true)
@@ -271,7 +271,7 @@ namespace PiketWebApi.Migrations
                     Weather = table.Column<int>(type: "integer", nullable: false),
                     StartAt = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
                     EndAt = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
-                    CreatedById = table.Column<int>(type: "integer", nullable: false),
+                    CreatedById = table.Column<int>(type: "integer", nullable: true),
                     CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -285,15 +285,15 @@ namespace PiketWebApi.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PicketId = table.Column<int>(type: "integer", nullable: true),
                     Number = table.Column<string>(type: "text", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: true),
                     Gender = table.Column<int>(type: "integer", nullable: false),
                     PlaceOfBorn = table.Column<string>(type: "text", nullable: true),
-                    DateOfBorn = table.Column<DateOnly>(type: "date", nullable: true),
+                    DateOfBorn = table.Column<DateOnly>(type: "date", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    PicketId = table.Column<int>(type: "integer", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -541,8 +541,7 @@ namespace PiketWebApi.Migrations
                 table: "Picket",
                 column: "CreatedById",
                 principalTable: "Teachers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />

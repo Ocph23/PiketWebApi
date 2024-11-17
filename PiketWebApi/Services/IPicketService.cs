@@ -38,11 +38,11 @@ namespace PiketWebApi.Services
 
 
 
-                if (picketToday == null|| DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+                if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
                 {
                     DateOnly date = DateOnly.FromDateTime(DateTime.Now);
                     picketToday = dbContext.Picket.FirstOrDefault(x => x.Date == date);
-                    if(picketToday != null)
+                    if (picketToday != null)
                         return picketToday;
 
                     picketToday = Picket.Create(userClaim.Item2);
@@ -69,7 +69,12 @@ namespace PiketWebApi.Services
                 if (picketToday == null)
                 {
                     DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                    picketToday = dbContext.Picket.SingleOrDefault(x => x.Date == date);
+                    picketToday = dbContext.Picket
+                        .Include(x => x.CreatedBy)
+                        .Include(x => x.TeacherAttendance)
+                        .Include(x => x.StudentsToLate)
+                        .Include(x => x.StudentsComeHomeEarly)
+                        .SingleOrDefault(x => x.Date == date);
                     if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
                     {
                         throw new SystemException("Piket Belum Di buka");

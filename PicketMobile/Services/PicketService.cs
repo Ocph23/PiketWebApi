@@ -150,6 +150,7 @@ namespace PicketMobile.Services
             try
             {
                 using var client = new RestClient();
+                var x = client.GenerateHttpContent(model);
                 HttpResponseMessage response = await client.PutAsJsonAsync($"api/picket/{id}", model);
                 if (response.IsSuccessStatusCode)
                 {

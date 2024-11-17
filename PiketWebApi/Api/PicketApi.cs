@@ -24,15 +24,18 @@ namespace PiketWebApi.Api
         {
             try
             {
-                var result = dbContext.Picket .Include(x=>x.CreatedBy)
+                var result = dbContext.Picket.Include(x => x.CreatedBy)
                     .SingleOrDefault(x => x.Id == id);
                 if (result != null)
                 {
                     result.Weather = model.Weather;
                     result.StartAt = model.StartAt;
-                    result.EndAt= model.EndAt;
-                    result.CreatedBy= model.CreatedBy;
-                    dbContext.Entry(result.CreateAt).State = EntityState.Unchanged;
+                    result.EndAt = model.EndAt;
+                    if (result.CreatedBy.Id != model.CreatedBy.Id)
+                    {
+                        dbContext.Entry(result.CreatedBy).State = EntityState.Unchanged;
+                        result.CreatedBy = model.CreatedBy;
+                    }
                     dbContext.SaveChanges();
                     return TypedResults.Ok(true);
                 }
