@@ -10,7 +10,7 @@ namespace SharedModel.Models
         public TimeOnly? StartAt { get; set; }
         public TimeOnly? EndAt { get; set; }
         public Teacher? CreatedBy { get; set; }
-        public DateTime CreateAt { get; set; }
+        public DateTime CreateAt { get; set; } = DateTime.Now.ToUniversalTime();
         public List<Teacher> TeacherAttendance { get; set; } = new();
         public List<StudentComeHomeEarly> StudentsComeHomeEarly { get; set; } = new();
         public List<StudentToLate> StudentsToLate { get; set; } = new();

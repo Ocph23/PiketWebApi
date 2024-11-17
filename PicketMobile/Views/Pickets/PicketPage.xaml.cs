@@ -65,7 +65,7 @@ internal partial class PicketPageViewModel : ObservableObject
     {
         Weathers = new ObservableCollection<Weather>(Enum.GetValues(typeof(Weather)).Cast<Weather>());
         AddCommand = new AsyncRelayCommand(AddCommandAction);
-        UpdateCommand= new AsyncRelayCommand(UpdateCommandAction);
+        UpdateCommand = new AsyncRelayCommand(UpdateCommandAction);
         AsyncCommand = new Command(async () => await LoadAction());
         CanSync = true;
     }
@@ -77,6 +77,7 @@ internal partial class PicketPageViewModel : ObservableObject
             var profile = ServiceHelper.GetProfile<Teacher>();
             var picketService = ServiceHelper.GetService<IPicketService>();
             this.Model.CreatedBy = profile;
+            this.Model.CreateAt = DateTime.Now.ToUniversalTime();
             var result = await picketService.Put(Model.Id, Model);
             if (result != null)
             {
@@ -95,6 +96,7 @@ internal partial class PicketPageViewModel : ObservableObject
         {
             var profile = ServiceHelper.GetProfile<Teacher>();
             var picketService = ServiceHelper.GetService<IPicketService>();
+            Model = new PicketModel() { CreateAt = DateTime.Now.ToUniversalTime(), Date = DateOnly.FromDateTime(DateTime.Now), };
             this.Model.CreatedBy = profile;
             var result = await picketService.Create(Model);
             if (result != null)
