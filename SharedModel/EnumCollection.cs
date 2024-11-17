@@ -8,9 +8,10 @@
 
     public enum Weather
     {
-        Cloudy,
-        Rain,
-        Suny
+        Mendung,
+        Gerimis,
+        Hujan,
+        Cerah
     }
 
 

@@ -15,10 +15,8 @@ namespace PiketWebApi.Api
             group.MapPut("/{id}", PutPicket);
             group.MapPost("/createlate", Createlate);
             group.MapPost("/createsoearly", Createsoearly);
-
             group.MapDelete("/createlate/{id}", RemoveLate);
             group.MapDelete("/createsoearly/{id}", RemoveSoearly);
-
             return group.WithTags("picket").RequireAuthorization(); ;
         }
 
@@ -26,14 +24,14 @@ namespace PiketWebApi.Api
         {
             try
             {
-                var result = dbContext.Picket
+                var result = dbContext.Picket .Include(x=>x.CreatedBy)
                     .SingleOrDefault(x => x.Id == id);
                 if (result != null)
                 {
-                    
                     result.Weather = model.Weather;
                     result.StartAt = model.StartAt;
                     result.EndAt= model.EndAt;
+                    result.CreatedBy= model.CreatedBy;
                     dbContext.SaveChanges();
                     return TypedResults.Ok(true);
                 }

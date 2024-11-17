@@ -1,8 +1,12 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PicketMobile.Models;
 using PicketMobile.Services;
+using SharedModel;
 using SharedModel.Models;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PicketMobile.Views.Pickets;
 
@@ -21,7 +25,7 @@ public partial class PicketPage : ContentPage
 internal partial class PicketPageViewModel : ObservableObject
 {
     [ObservableProperty]
-    Picket picket;
+    PicketModel model;//= new PicketModel() { CreateAt = DateTime.Now, Date = DateOnly.FromDateTime(DateTime.Now), };
 
     [ObservableProperty]
     private bool canSync;
@@ -34,28 +38,55 @@ internal partial class PicketPageViewModel : ObservableObject
 
 
     [ObservableProperty]
+    ImageSource asyncCommandIcon = ImageSource.FromFile("sync.svg");
+
+
+
+    [ObservableProperty]
+    private bool isChange;
+
+
+    [ObservableProperty]
     private string message = "";
 
     [ObservableProperty]
     ICommand addCommand;
 
-
-    public Picket Model
-    {
-
-        get { return picket; }
-        set { SetProperty(ref picket, value); }
-    }
+    [ObservableProperty]
+    ObservableCollection<Weather> weathers;
 
     public ICommand AsyncCommand { get; set; }
+    public ICommand UpdateCommand { get; set; }
+
+
 
 
     public PicketPageViewModel()
     {
-
+        Weathers = new ObservableCollection<Weather>(Enum.GetValues(typeof(Weather)).Cast<Weather>());
         AddCommand = new AsyncRelayCommand(AddCommandAction);
+        UpdateCommand= new AsyncRelayCommand(UpdateCommandAction);
         AsyncCommand = new Command(async () => await LoadAction());
-        AsyncCommand.Execute(null);
+        CanSync = true;
+    }
+
+    private async Task UpdateCommandAction()
+    {
+        try
+        {
+            var profile = ServiceHelper.GetProfile<Teacher>();
+            var picketService = ServiceHelper.GetService<IPicketService>();
+            this.Model.CreatedBy = profile;
+            var result = await picketService.Put(Model.Id, Model);
+            if (result != null)
+            {
+                IsChange = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "Close");
+        }
     }
 
     private async Task AddCommandAction()
@@ -64,18 +95,20 @@ internal partial class PicketPageViewModel : ObservableObject
         {
             var profile = ServiceHelper.GetProfile<Teacher>();
             var picketService = ServiceHelper.GetService<IPicketService>();
-            Picket = new Picket() { CreatedBy = profile, CreateAt = DateTime.Now, Date = DateOnly.FromDateTime(DateTime.Now), };
-            var result = await picketService.Create(Picket);
+            this.Model.CreatedBy = profile;
+            var result = await picketService.Create(Model);
             if (result != null)
             {
+                Model.Id = result.Id;
                 CanSync = true;
                 HasPicket = true;
                 IamPicket = false;
+                IsChange = false;
             }
         }
         catch (Exception ex)
         {
-           await Shell.Current.DisplayAlert("Error", ex.Message, "Close");
+            await Shell.Current.DisplayAlert("Error", ex.Message, "Close");
         }
     }
 
@@ -87,7 +120,14 @@ internal partial class PicketPageViewModel : ObservableObject
         {
             var service = ServiceHelper.GetService<IPicketService>();
             Model = await service.GetPicketToday();
-            CanSync = true;
+            if (Model != null)
+            {
+                Model.PropertyChanged += (s, p) =>
+                {
+                    IsChange = true;
+                };
+            }
+
             HasPicket = true;
             Message = string.Empty;
         }
@@ -97,6 +137,10 @@ internal partial class PicketPageViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Warning", ex.Message, "Ok");
             var scheduleService = ServiceHelper.GetService<IScheduleService>();
             IamPicket = await scheduleService.IamPicket();
+        }
+        finally
+        {
+            CanSync = false;
         }
     }
 

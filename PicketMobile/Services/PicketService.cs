@@ -14,30 +14,28 @@ namespace PicketMobile.Services
 
     public interface IPicketService
     {
-        Task<Picket> GetPicketToday();
-        Task<Picket> Create(Picket model);
+        Task<PicketModel> GetPicketToday();
+        Task<PicketModel> Create(PicketModel model);
         Task<StudentToLate> PostToLate(StudentToLate model);
         Task<bool> DeleteToLate(int studentTolateId);
 
         Task<StudentComeHomeEarly> PostToComeHomeEarly(StudentComeHomeEarly model);
         Task<bool> DeleteToComeHomeEarly(int studentGoHomeErly);
-
-
-
+        Task<bool> Put(int id, PicketModel model);
     }
 
     public class PicketService : IPicketService
     {
-        public async Task<Picket> Create(Picket model)
+        public async Task<PicketModel> Create(PicketModel model)
         {
             try
             {
                 using var client = new RestClient();
-                HttpResponseMessage response = await client.PostAsJsonAsync($"api/picket/create", model);
+                HttpResponseMessage response = await client.PostAsJsonAsync($"api/picket", model);
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
-                    var result = await response.GetResultAsync<Picket>();
+                    var result = await response.GetResultAsync<PicketModel>();
                     if (result != null)
                         return result;
                 }
@@ -48,7 +46,7 @@ namespace PicketMobile.Services
                 throw new SystemException(ex.Message);
             }
         }
-        public async Task<Picket> GetPicketToday()
+        public async Task<PicketModel> GetPicketToday()
         {
             try
             {
@@ -57,7 +55,7 @@ namespace PicketMobile.Services
                 if (response.IsSuccessStatusCode)
                 {
                     List<ScheduleModel> schedules = new List<ScheduleModel>();
-                    var result = await response.GetResultAsync<Picket>();
+                    var result = await response.GetResultAsync<PicketModel>();
                     return result;
 
                 }
@@ -140,6 +138,27 @@ namespace PicketMobile.Services
 
                 }
                 throw new SystemException("Maaf Terjadi Kesalahan, Coba Ulangi Lagi");
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+        public async Task<bool> Put(int id, PicketModel model)
+        {
+            try
+            {
+                using var client = new RestClient();
+                HttpResponseMessage response = await client.PutAsJsonAsync($"api/picket/{id}", model);
+                if (response.IsSuccessStatusCode)
+                {
+                    var stringContent = await response.Content.ReadAsStringAsync();
+                    var result = await response.GetResultAsync<bool>();
+                    if (result != null)
+                        return result;
+                }
+                throw new SystemException(await client.Error(response));
             }
             catch (Exception ex)
             {

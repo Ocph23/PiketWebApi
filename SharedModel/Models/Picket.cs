@@ -9,7 +9,7 @@ namespace SharedModel.Models
         public Weather Weather { get; set; }
         public TimeOnly? StartAt { get; set; }
         public TimeOnly? EndAt { get; set; }
-        public Teacher CreatedBy { get; set; }
+        public Teacher? CreatedBy { get; set; }
         public DateTime CreateAt { get; set; }
         public List<Teacher> TeacherAttendance { get; set; } = new();
         public List<StudentComeHomeEarly> StudentsComeHomeEarly { get; set; } = new();

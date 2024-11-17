@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PiketWebApi.Data;
 using PiketWebApi.Responses;
+using SharedModel.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -43,7 +44,8 @@ namespace PiketWebApi.Api
         private static async ValueTask<AuthenticateResponse> LoginAction(
            SharedModel.Requests.LoginRequest request,
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager, IConfiguration _config
+            SignInManager<ApplicationUser> signInManager, IConfiguration _config,
+            ApplicationDbContext dbContext
             )
         {
             try
@@ -60,7 +62,17 @@ namespace PiketWebApi.Api
                         throw new SystemException("Akun Anda Di Blokir , Silahkan Hubungi Administrator");
                     var roles = await userManager.GetRolesAsync(user);
                     var token = await user.GenerateToken(_appSettings, roles);
-                    return new AuthenticateResponse(user.Name, user.Email, roles, token);
+                    Profile? profile = null;
+                    if (roles.Contains("Teacher"))
+                    {
+                        profile = dbContext.Teachers.FirstOrDefault(x => x.UserId == identity.Id);
+                    }
+
+                    if (roles.Contains("Student"))
+                    {
+                        profile = dbContext.Students.FirstOrDefault(x => x.UserId == identity.Id);
+                    }
+                    return new AuthenticateResponse(user.Name, user.Email, roles, token, profile);
                 }
 
                 if (result.IsNotAllowed)
