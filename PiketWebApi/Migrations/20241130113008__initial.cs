@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace PiketWebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class _initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -74,6 +74,7 @@ namespace PiketWebApi.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Year = table.Column<int>(type: "integer", nullable: false),
+                    Semester = table.Column<int>(type: "integer", nullable: false),
                     Actived = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -94,6 +95,7 @@ namespace PiketWebApi.Migrations
                     DateOfBorn = table.Column<DateOnly>(type: "date", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
+                    Photo = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -293,6 +295,7 @@ namespace PiketWebApi.Migrations
                     DateOfBorn = table.Column<DateOnly>(type: "date", nullable: false),
                     Email = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
+                    Photo = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -339,8 +342,10 @@ namespace PiketWebApi.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     StudentId = table.Column<int>(type: "integer", nullable: false),
-                    Time = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
+                    Time = table.Column<TimeSpan>(type: "interval", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AttendanceStatus = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     CreatedById = table.Column<int>(type: "integer", nullable: false),
                     PicketId = table.Column<int>(type: "integer", nullable: true)
                 },
@@ -377,6 +382,7 @@ namespace PiketWebApi.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     CreatedById = table.Column<int>(type: "integer", nullable: true),
                     CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AtTime = table.Column<TimeSpan>(type: "interval", nullable: true),
                     PicketId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>

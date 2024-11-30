@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
 using PiketWebApi.Services;
 using SharedModel.Models;
+using SharedModel.Requests;
 
 namespace PiketWebApi.Api
 {
@@ -13,10 +14,10 @@ namespace PiketWebApi.Api
             group.MapGet("/", GetPickerToday);
             group.MapPost("/", PostPicket);
             group.MapPut("/{id}", PutPicket);
-            group.MapPost("/createlate", Createlate);
-            group.MapPost("/createsoearly", Createsoearly);
-            group.MapDelete("/createlate/{id}", RemoveLate);
-            group.MapDelete("/createsoearly/{id}", RemoveSoearly);
+            group.MapPost("/late", Createlate);
+            group.MapPost("/early", Createsoearly);
+            group.MapDelete("/late/{id}", RemoveLate);
+            group.MapDelete("/early/{id}", RemoveSoearly);
             return group.WithTags("picket").RequireAuthorization(); ;
         }
 
@@ -93,15 +94,11 @@ namespace PiketWebApi.Api
             }
         }
 
-        private static async Task<IResult> Createsoearly(HttpContext context, ApplicationDbContext dbContext,
-            IPicketService picketService, StudentComeHomeEarly early)
+        private static async Task<IResult> Createsoearly(HttpContext context, IPicketService picketService, StudentToLateAndEarlyRequest early)
         {
             try
             {
-                var picket = await picketService.GetPicketToday();
-                dbContext.Entry(picket);
-                picket.StudentsComeHomeEarly.Add(early);
-                dbContext.SaveChanges();
+                var picket = await picketService.AddStudentComeHomeSoEarly(early);
                 return Results.Ok(early);
             }
             catch (Exception ex)
@@ -111,15 +108,11 @@ namespace PiketWebApi.Api
 
         }
 
-        private static async Task<IResult> Createlate(HttpContext context, ApplicationDbContext dbContext,
-            IPicketService picketService, StudentToLate late)
+        private static async Task<IResult> Createlate(HttpContext context, IPicketService picketService, StudentToLateAndEarlyRequest late)
         {
             try
             {
-                var picket = await picketService.GetPicketToday();
-                dbContext.Entry(picket);
-                picket.StudentsToLate.Add(late);
-                dbContext.SaveChanges();
+                var result = await picketService.AddStudentToLate(late);
                 return Results.Ok(late);
             }
             catch (Exception ex)

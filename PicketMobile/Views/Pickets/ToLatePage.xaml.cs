@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
+using JetBrains.Annotations;
 using PicketMobile.Models;
+using PicketMobile.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -18,34 +20,57 @@ internal class ToLatePageViewModel : BaseNotify
 {
 
     public ObservableCollection<StudentToLateModel> DataStudentTolate { get; set; }
-
+    public ICommand AsyncCommand { get; private set; }
     public ICommand AddStudentLateCommand { get; set; }
+    public ICommand SelectBrowseStudent { get; set; }   
 
     public ToLatePageViewModel()
     {
-        AddStudentLateCommand = new RelayCommand(AddStudentLateCommandAction);
+        AsyncCommand = new Command(async () => await LoadAction());
+        AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
         DataStudentTolate = new ObservableCollection<StudentToLateModel>();
-        DataStudentTolate.Add(new StudentToLateModel()
-        {
-            Student = new SharedModel.Models.Student { Name = "Avip Siapa Saja" },
-
-        });
-        DataStudentTolate.Add(new StudentToLateModel()
-        {
-            Student = new SharedModel.Models.Student { Name = "Ismail Mana Saja Juga" },
-
-        });
 
     }
 
-    private void AddStudentLateCommandAction()
+    private async Task AddStudentLateCommandAction()
     {
         var form = new AddTerlambatPage();
-        Shell.Current.Navigation.PushModalAsync(form);
-        var vm = form.BindingContext as AddTerlambatPageViewModel;
-        if (vm.Model.Id >= 0)
+        await Shell.Current.Navigation.PushModalAsync(form);
+        //var vm = form.BindingContext as AddTerlambatPageViewModel;
+        //if (vm.Model.Id >= 0)
+        //{
+        //    DataStudentTolate.Add(vm.Model);
+        //}
+    }
+    private async Task LoadAction()
+    {
+        try
         {
-            DataStudentTolate.Add(vm.Model);
+            var service = ServiceHelper.GetService<IPicketService>();
+            var picket = await service.GetPicketToday();
+            if (picket != null)
+            {
+                DataStudentTolate.Clear();
+                foreach (var item in picket.StudentsToLate)
+                {
+                    DataStudentTolate.Add(new StudentToLateModel() { Student=item.Student,
+                     CreateAt=item.CreateAt, CreatedBy=item.CreatedBy, Description=item.Description, Id=item.Id,
+                     });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("Warning", ex.Message, "Ok");
+            }
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
+
+    
 }

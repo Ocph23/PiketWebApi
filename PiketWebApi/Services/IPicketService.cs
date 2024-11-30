@@ -3,12 +3,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
 using SharedModel.Models;
+using SharedModel.Requests;
+using System.Net.Sockets;
 using System.Security.Claims;
 
 namespace PiketWebApi.Services
 {
     public interface IPicketService
     {
+        Task<StudentComeHomeEarly> AddStudentComeHomeSoEarly(StudentToLateAndEarlyRequest early);
+        Task<StudentToLate> AddStudentToLate(StudentToLateAndEarlyRequest late);
         Task<Picket> CreateNewPicket();
         Task<Picket> GetPicketToday();
     }
@@ -35,8 +39,6 @@ namespace PiketWebApi.Services
                 var userClaim = await http.IsTeacherPicket(userManager, dbContext);
                 if (!userClaim.Item1)
                     throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
-
-
 
                 if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
                 {
@@ -90,6 +92,57 @@ namespace PiketWebApi.Services
             {
                 throw new SystemException(ex.Message);
             }
+        }
+
+        public async Task<StudentToLate> AddStudentToLate(StudentToLateAndEarlyRequest late)
+        {
+            var userClaim = await http.IsTeacherPicket(userManager, dbContext);
+            if (!userClaim.Item1)
+                throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
+
+            var picketToday = await GetPicketToday();
+            if (picketToday == null)
+                throw new SystemException("Picket Belum Dibuka.");
+
+            var toLate = new StudentToLate
+            {
+                Student = new Student { Id = late.StudentId },
+                CreatedBy = userClaim.Item2,
+                AttendanceStatus = SharedModel.StudentAttendanceStatus.Present,
+                CreateAt = DateTime.Now.ToUniversalTime(),
+                Description = late.Description,
+                AtTime = late.AtTime
+            };
+
+            dbContext.Entry(picketToday);
+            picketToday.StudentsToLate.Add(toLate);
+            dbContext.SaveChanges();
+            return toLate;
+        }
+        public async Task<StudentComeHomeEarly> AddStudentComeHomeSoEarly(StudentToLateAndEarlyRequest late)
+        {
+            var userClaim = await http.IsTeacherPicket(userManager, dbContext);
+            if (!userClaim.Item1)
+                throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
+
+            var picketToday = await GetPicketToday();
+            if (picketToday == null)
+                throw new SystemException("Picket Belum Dibuka.");
+
+            var soEarly = new StudentComeHomeEarly
+            {
+                Student = new Student { Id = late.StudentId },
+                CreatedBy = userClaim.Item2,
+                AttendanceStatus = SharedModel.StudentAttendanceStatus.Present,
+                CreateAt = DateTime.Now.ToUniversalTime(),
+                Description = late.Description,
+                Time = late.AtTime
+            };
+
+            dbContext.Entry(picketToday);
+            picketToday.StudentsComeHomeEarly.Add(soEarly);
+            dbContext.SaveChanges();
+            return soEarly;
         }
     }
 }

@@ -136,9 +136,16 @@ internal partial class PicketPageViewModel : ObservableObject
         catch (Exception ex)
         {
             Message = ex.Message;
-            await Shell.Current.DisplayAlert("Warning", ex.Message, "Ok");
-            var scheduleService = ServiceHelper.GetService<IScheduleService>();
-            IamPicket = await scheduleService.IamPicket();
+            if (Message.ToLower().Contains("Piket Belum Di buka".ToLower()))
+            {
+                var scheduleService = ServiceHelper.GetService<IScheduleService>();
+                IamPicket = await scheduleService.IamPicket();
+            }
+
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("Warning", ex.Message, "Ok");
+            }
         }
         finally
         {

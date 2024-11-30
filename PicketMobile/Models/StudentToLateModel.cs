@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PicketMobile.Models
 {
-    class StudentToLateModel : ObservableObject
+   public class StudentToLateModel : ObservableObject
     {
         public int Id { get; set; }
 

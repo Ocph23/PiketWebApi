@@ -8,5 +8,5 @@
     HeightRequest="60" 
     WidthRequest="60" 
     VerticalOptions="End" 
-    HorizontalOptions="End"
+    HorizontalOptions="End" 
     Margin="30" />

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PicketMobile
 {
-    internal class BaseNotify :ObservableObject
+    public class BaseNotify :ObservableObject
     {
 
 

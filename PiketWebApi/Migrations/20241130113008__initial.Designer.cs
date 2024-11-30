@@ -12,8 +12,8 @@ using PiketWebApi.Data;
 namespace PiketWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241117150337_Initial")]
-    partial class Initial
+    [Migration("20241130113008__initial")]
+    partial class _initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -376,6 +376,9 @@ namespace PiketWebApi.Migrations
                     b.Property<bool>("Actived")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("Semester")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Year")
                         .HasColumnType("integer");
 
@@ -413,6 +416,9 @@ namespace PiketWebApi.Migrations
                     b.Property<string>("Number")
                         .HasColumnType("text");
 
+                    b.Property<string>("Photo")
+                        .HasColumnType("text");
+
                     b.Property<string>("PlaceOfBorn")
                         .HasColumnType("text");
 
@@ -432,11 +438,17 @@ namespace PiketWebApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AttendanceStatus")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("CreatedById")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<int?>("PicketId")
                         .HasColumnType("integer");
@@ -444,8 +456,8 @@ namespace PiketWebApi.Migrations
                     b.Property<int>("StudentId")
                         .HasColumnType("integer");
 
-                    b.Property<TimeOnly>("Time")
-                        .HasColumnType("time without time zone");
+                    b.Property<TimeSpan>("Time")
+                        .HasColumnType("interval");
 
                     b.HasKey("Id");
 
@@ -465,6 +477,9 @@ namespace PiketWebApi.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeSpan?>("AtTime")
+                        .HasColumnType("interval");
 
                     b.Property<int>("AttendanceStatus")
                         .HasColumnType("integer");
@@ -519,6 +534,9 @@ namespace PiketWebApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Number")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Photo")
                         .HasColumnType("text");
 
                     b.Property<int?>("PicketId")

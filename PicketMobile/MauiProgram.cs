@@ -13,6 +13,7 @@ namespace PicketMobile
             builder.Services.AddSingleton<IAccountService, AccountService>();
             builder.Services.AddSingleton<IPicketService, PicketService>();
             builder.Services.AddSingleton<IScheduleService, ScheduleService>();
+            builder.Services.AddSingleton<IStudentService, StudentService>();
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>

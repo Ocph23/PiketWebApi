@@ -16,7 +16,7 @@ namespace PicketMobile.Services
     {
         Task<PicketModel> GetPicketToday();
         Task<PicketModel> Create(PicketModel model);
-        Task<StudentToLate> PostToLate(StudentToLate model);
+        Task<StudentToLateModel> PostToLate(StudentToLateModel model);
         Task<bool> DeleteToLate(int studentTolateId);
 
         Task<StudentComeHomeEarly> PostToComeHomeEarly(StudentComeHomeEarly model);
@@ -26,6 +26,7 @@ namespace PicketMobile.Services
 
     public class PicketService : IPicketService
     {
+        private static PicketModel picket;
         public async Task<PicketModel> Create(PicketModel model)
         {
             try
@@ -50,13 +51,17 @@ namespace PicketMobile.Services
         {
             try
             {
+
+                if (picket != null && DateOnly.FromDateTime(picket.CreateAt) == DateOnly.FromDateTime(DateTime.Now))
+                    return picket;
+
                 using var client = new RestClient();
                 HttpResponseMessage response = await client.GetAsync($"api/picket");
                 if (response.IsSuccessStatusCode)
                 {
                     List<ScheduleModel> schedules = new List<ScheduleModel>();
-                    var result = await response.GetResultAsync<PicketModel>();
-                    return result;
+                    picket = await response.GetResultAsync<PicketModel>();
+                    return picket;
 
                 }
                 throw new SystemException(await client.Error(response));
@@ -123,16 +128,20 @@ namespace PicketMobile.Services
             }
         }
 
-        public async Task<StudentToLate> PostToLate(StudentToLate model)
+        public async Task<StudentToLateModel> PostToLate(StudentToLateModel model)
         {
             try
             {
                 using var client = new RestClient();
+
+                var data = client.GenerateHttpContent(model);
+
+
                 HttpResponseMessage response = await client.PostAsJsonAsync($"/picket/createlate", model);
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<StudentToLate>(stringContent);
+                    var result = JsonSerializer.Deserialize<StudentToLateModel>(stringContent);
                     if (result != null)
                         return result;
 
@@ -156,7 +165,7 @@ namespace PicketMobile.Services
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
                     var result = await response.GetResultAsync<bool>();
-                    if (result != null)
+                    if (result)
                         return result;
                 }
                 throw new SystemException(await client.Error(response));
