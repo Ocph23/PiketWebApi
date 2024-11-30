@@ -134,7 +134,7 @@ internal class AddTerlambatPageViewModel : BaseNotify
         {
             IsBusy = true;
             var picketService = ServiceHelper.GetService<IPicketService>();
-            var result = await picketService.PostToLate(Model);
+            var result = await picketService.PostToLate(new SharedModel.Requests.StudentToLateAndEarlyRequest(Model.Student.Id, Model.AtTime, Model.Description));
             if (result != null)
             {
                 Model.Id = result.Id;

@@ -1,5 +1,6 @@
 ﻿using PicketMobile.Models;
 using SharedModel.Models;
+using SharedModel.Requests;
 using SharedModel.Responses;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace PicketMobile.Services
     {
         Task<PicketModel> GetPicketToday();
         Task<PicketModel> Create(PicketModel model);
-        Task<StudentToLateModel> PostToLate(StudentToLateModel model);
+        Task<StudentToLateModel> PostToLate(StudentToLateAndEarlyRequest model);
         Task<bool> DeleteToLate(int studentTolateId);
 
         Task<StudentComeHomeEarly> PostToComeHomeEarly(StudentComeHomeEarly model);
@@ -111,7 +112,7 @@ namespace PicketMobile.Services
             try
             {
                 using var client = new RestClient();
-                HttpResponseMessage response = await client.PostAsJsonAsync($"/picket/createsoearly", model);
+                HttpResponseMessage response = await client.PostAsJsonAsync($"/api/picket/createsoearly", model);
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
@@ -128,7 +129,7 @@ namespace PicketMobile.Services
             }
         }
 
-        public async Task<StudentToLateModel> PostToLate(StudentToLateModel model)
+        public async Task<StudentToLateModel> PostToLate(StudentToLateAndEarlyRequest model)
         {
             try
             {
@@ -137,7 +138,7 @@ namespace PicketMobile.Services
                 var data = client.GenerateHttpContent(model);
 
 
-                HttpResponseMessage response = await client.PostAsJsonAsync($"/picket/createlate", model);
+                HttpResponseMessage response = await client.PostAsJsonAsync($"/api/picket/late", model);
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
@@ -146,7 +147,7 @@ namespace PicketMobile.Services
                         return result;
 
                 }
-                throw new SystemException("Maaf Terjadi Kesalahan, Coba Ulangi Lagi");
+                throw new SystemException(await client.Error(response));
             }
             catch (Exception ex)
             {

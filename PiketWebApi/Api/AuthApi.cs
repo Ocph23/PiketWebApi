@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using PiketWebApi.Data;
 using SharedModel.Models;
@@ -20,6 +21,8 @@ namespace PiketWebApi.Api
             return group;
         }
 
+
+        [Authorize]
         private static IResult ActiveAccout(HttpContext context)
         {
             try
