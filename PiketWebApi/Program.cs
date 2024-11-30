@@ -90,6 +90,7 @@ builder.Services.AddSwaggerGen(setup =>
 builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPicketService,PicketService>();
+builder.Services.AddScoped<IClassRoomService, ClassRoomService>();
 builder.Services.AddProblemDetails();
 
 
