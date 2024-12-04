@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SharedModel.Models
 {
 
-    [Index(nameof(Year), IsUnique = true)]
+    [Index(nameof(Year),nameof(Semester), IsUnique = true)]
     public class SchoolYear
     {
         public int Id { get; set; }

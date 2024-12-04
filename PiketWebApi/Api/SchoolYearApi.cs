@@ -78,7 +78,7 @@ namespace PiketWebApi.Api
             }
         }
 
-        private static async Task<IResult> PostSchoolYear(HttpContext context, ApplicationDbContext dbContext, SchoolYear teacher)
+        private static async Task<IResult> PostSchoolYear(HttpContext context, ApplicationDbContext dbContext, SchoolYear model)
         {
             var trans = await dbContext.Database.BeginTransactionAsync();
 
@@ -86,16 +86,16 @@ namespace PiketWebApi.Api
             {
                 var activeData = dbContext.SchoolYears.Where(x => x.Actived);
                 await activeData.ForEachAsync((x) => x.Actived = false);
-                teacher.Actived=true;
-                dbContext.SchoolYears.Add(teacher);
+                model.Actived=true;
+                dbContext.SchoolYears.Add(model);
                 dbContext.SaveChanges();
                 await trans.CommitAsync();
-                return Results.Ok(teacher);
+                return Results.Ok(model);
             }
             catch (Exception ex)
             {
                 if(ex.InnerException!=null && ex.InnerException.Message.Contains("duplicate"))
-                        return Results.BadRequest($"Tahun Ajaran {teacher.Year} sudah ada");
+                        return Results.BadRequest($"Tahun Ajaran {model.Year} sudah ada");
                 return Results.BadRequest(ex.Message);
             }
         }
