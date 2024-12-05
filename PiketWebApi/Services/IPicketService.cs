@@ -169,6 +169,8 @@ namespace PiketWebApi.Services
                 throw new SystemException("Piket Belum Di buka");
             }
 
+
+
             var toLate = new StudentToLate
             {
                 Student = new Student { Id = late.StudentId },
@@ -179,7 +181,7 @@ namespace PiketWebApi.Services
                 AtTime = late.AtTime
             };
 
-            dbContext.Entry(picketToday);
+            dbContext.Entry(toLate.Student).State = EntityState.Unchanged;
             picketToday.StudentsToLate.Add(toLate);
             dbContext.SaveChanges();
             return toLate;
