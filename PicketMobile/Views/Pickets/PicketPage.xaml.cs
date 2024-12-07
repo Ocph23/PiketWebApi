@@ -4,6 +4,7 @@ using PicketMobile.Models;
 using PicketMobile.Services;
 using SharedModel;
 using SharedModel.Models;
+using SharedModel.Responses;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -25,7 +26,7 @@ public partial class PicketPage : ContentPage
 internal partial class PicketPageViewModel : ObservableObject
 {
     [ObservableProperty]
-    PicketModel model;//= new PicketModel() { CreateAt = DateTime.Now, Date = DateOnly.FromDateTime(DateTime.Now), };
+    PicketResponse model;//= new PicketModel() { CreateAt = DateTime.Now, Date = DateOnly.FromDateTime(DateTime.Now), };
 
     [ObservableProperty]
     private bool canSync;
@@ -76,13 +77,13 @@ internal partial class PicketPageViewModel : ObservableObject
         {
             var profile = ServiceHelper.GetProfile<Teacher>();
             var picketService = ServiceHelper.GetService<IPicketService>();
-            this.Model.CreatedBy = profile;
+            this.Model.CreatedName= profile.Name;
             this.Model.CreateAt = DateTime.Now.ToUniversalTime();
-            var result = await picketService.Put(Model.Id, Model);
-            if (result != null)
-            {
-                IsChange = false;
-            }
+            //var result = await picketService.Put(Model.Id, Model);
+            //if (result != null)
+            //{
+            //    IsChange = false;
+            //}
         }
         catch (Exception ex)
         {
@@ -96,17 +97,17 @@ internal partial class PicketPageViewModel : ObservableObject
         {
             var profile = ServiceHelper.GetProfile<Teacher>();
             var picketService = ServiceHelper.GetService<IPicketService>();
-            Model = new PicketModel() { CreateAt = DateTime.Now.ToUniversalTime(), Date = DateOnly.FromDateTime(DateTime.Now), };
-            this.Model.CreatedBy = profile;
-            var result = await picketService.Create(Model);
-            if (result != null)
-            {
-                Model.Id = result.Id;
-                CanSync = true;
-                HasPicket = true;
-                IamPicket = false;
-                IsChange = false;
-            }
+            //Model = new PicketModel() { CreateAt = DateTime.Now.ToUniversalTime(), Date = DateOnly.FromDateTime(DateTime.Now), };
+            //this.Model.CreatedBy = profile;
+            //var result = await picketService.Create(Model);
+            //if (result != null)
+            //{
+            //    Model.Id = result.Id;
+            //    CanSync = true;
+            //    HasPicket = true;
+            //    IamPicket = false;
+            //    IsChange = false;
+            //}
         }
         catch (Exception ex)
         {
@@ -124,10 +125,10 @@ internal partial class PicketPageViewModel : ObservableObject
             Model = await service.GetPicketToday();
             if (Model != null)
             {
-                Model.PropertyChanged += (s, p) =>
-                {
-                    IsChange = true;
-                };
+                //Model.PropertyChanged += (s, p) =>
+                //{
+                //    IsChange = true;
+                //};
             }
 
             HasPicket = true;

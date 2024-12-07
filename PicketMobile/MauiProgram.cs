@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using CommunityToolkit.Maui;
+﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 using PicketMobile.Services;
 
 namespace PicketMobile
@@ -13,11 +13,14 @@ namespace PicketMobile
             builder.Services.AddSingleton<IPicketService, PicketService>();
             builder.Services.AddSingleton<IScheduleService, ScheduleService>();
             builder.Services.AddSingleton<IStudentService, StudentService>();
-            builder.UseMauiApp<App>().ConfigureFonts(fonts =>
+            builder.UseMauiApp<App>()
+                .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-            }).UseMauiCommunityToolkit();
+            })
+                .UseMauiCommunityToolkit()
+                ;
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

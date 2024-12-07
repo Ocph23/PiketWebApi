@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
+using PiketWebApi.Services;
+using SharedModel;
 using SharedModel.Models;
 
 namespace PiketWebApi.Api
@@ -14,121 +16,69 @@ namespace PiketWebApi.Api
         {
             group.MapGet("/", GetAllTeacher);
             group.MapGet("/{id}", GetTeacherById);
-            group.MapGet("/search/{searchtext}", SearchTeacher);
             group.MapPost("/", PostTeacher);
             group.MapPut("/{id}", PutTeacher);
             group.MapDelete("/{id}", DeleteTeacher);
             return group.WithTags("teacher").RequireAuthorization(); ;
         }
 
-
-        private static async Task<IResult> SearchTeacher(HttpContext context, ApplicationDbContext dbContext, string searchtext)
+        private static async Task<IResult> DeleteTeacher(HttpContext context, ITeacherService teacherService, int id)
         {
             try
             {
-                var txtSearch = searchtext.ToLower();
-                var result = dbContext.Teachers.Where(x => x.Name.ToLower().Contains(txtSearch) 
-                || x.Email.ToLower().Contains(txtSearch)
-                || x.Number.ToLower().Contains(txtSearch)).ToList();
-             
-                return Results.Ok(result);
+                return Results.Ok(await teacherService.Delete(id));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
 
-        private static IResult DeleteTeacher(HttpContext context, ApplicationDbContext dbContext, int id)
+        private static async Task<IResult> PutTeacher(HttpContext context, ITeacherService teacherService, int id, Teacher teacher)
         {
             try
             {
-                var result = dbContext.Teachers.SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    dbContext.Remove(result);
-                    dbContext.SaveChanges();
-                }
-                return Results.Ok(true);
+                return Results.Ok(await teacherService.Put(id,teacher));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
 
-        private static IResult PutTeacher(HttpContext context, ApplicationDbContext dbContext, int id, Teacher teacher)
+        private static async Task<IResult> PostTeacher(HttpContext context, ITeacherService teacherService, Teacher teacher)
         {
             try
             {
-                var result = dbContext.Teachers.SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    dbContext.Entry(result).CurrentValues.SetValues(teacher);
-                    dbContext.SaveChanges();
-                }
-                return Results.Ok(true);
+                return Results.Ok(await teacherService.Post(teacher));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
 
-        private static async Task<IResult> PostTeacher(HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> _userManager, Teacher teacher)
+        private static async Task<IResult> GetAllTeacher(HttpContext context, ITeacherService teacherService)
         {
-            var trans = dbContext.Database.BeginTransaction();
             try
             {
-                var user = new ApplicationUser { Email = teacher.Email, EmailConfirmed = true, Name = teacher.Name, UserName = teacher.Email };
-                var createResult = await _userManager.CreateAsync(user, "Password@123");
-                if (createResult.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, "Teacher");
-                    teacher.UserId = user.Id;
-                }
-                else
-                {
-                    throw new SystemException("User Gagal Dibuat !");
-                }
-
-                var result = dbContext.Teachers.Add(teacher);
-                dbContext.SaveChanges();
-
-                trans.Commit();
-
-                return Results.Ok(teacher);
+                return Results.Ok(await teacherService.Get());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                trans.Rollback();
-                throw;
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
 
-        private static IResult GetAllTeacher(HttpContext context, ApplicationDbContext dbContext)
+        private static async Task<IResult> GetTeacherById(HttpContext context, ITeacherService teacherService, int id)
         {
             try
             {
-                var result = dbContext.Teachers.ToList();
-                return Results.Ok(result);
+                return Results.Ok(await teacherService.GetById(id));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
-            }
-        }
-
-        private static IResult GetTeacherById(HttpContext context, ApplicationDbContext dbContext, int id)
-        {
-            try
-            {
-                var result = dbContext.Teachers.SingleOrDefault(x=>x.Id==id);
-                return Results.Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
     }

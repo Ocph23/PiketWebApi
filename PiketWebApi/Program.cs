@@ -91,6 +91,9 @@ builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPicketService,PicketService>();
 builder.Services.AddScoped<IClassRoomService, ClassRoomService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<ISchoolYearService, SchoolYearService>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddProblemDetails();
 
 

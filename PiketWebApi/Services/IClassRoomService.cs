@@ -15,6 +15,7 @@ namespace PiketWebApi.Services
         Task<bool> DeleteClassRoom(int id);
         Task<IEnumerable<ClassRoomResponse>> GetAllClassRoom();
         Task<ClassRoomResponse> GetClassRoomById(int id);
+        Task<IEnumerable<ClassRoomResponse>> GetClassRoomBySchoolYear(int id);
         Task<ClassRoomResponse> PostClassRoom(ClassRoomRequest req);
         Task<bool> PutClassRoom(int id, ClassRoomRequest req);
         Task<bool> RemoveStudentFromClassRoom(int classroomId, int studentId);
@@ -127,6 +128,28 @@ namespace PiketWebApi.Services
                 throw;
             }
 
+        }
+
+        public Task<IEnumerable<ClassRoomResponse>> GetClassRoomBySchoolYear(int id)
+        {
+            try
+            {
+                var result = dbContext.ClassRooms
+                    .Include(x => x.SchoolYear)
+                    .Include(x => x.Department)
+                    .Include(x => x.HomeroomTeacher)
+                    .Include(x => x.ClassLeader)
+                    .Include(x => x.Students).ThenInclude(x => x.Student)
+                    .Where(x => x.SchoolYear.Id==id)
+                    .Select(x => new ClassRoomResponse(x.Id, x.Name, x.SchoolYear.Id, x.SchoolYear.Year,
+                    x.Department.Id, x.Department.Name, x.Department.Initial, x.ClassLeader.Id, x.ClassLeader.Name,
+                    x.HomeroomTeacher.Id, x.HomeroomTeacher.Name, null));
+                return Task.FromResult(result.AsEnumerable());
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<ClassRoomResponse> PostClassRoom(ClassRoomRequest req)

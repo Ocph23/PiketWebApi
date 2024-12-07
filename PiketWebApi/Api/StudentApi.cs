@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
+using PiketWebApi.Services;
 using SharedModel.Models;
 
 namespace PiketWebApi.Api
@@ -13,6 +14,7 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapStudentApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAllStudent);
+            group.MapGet("/withclass", GetAllStudentWithClass);
             group.MapGet("/{id}", GetStudentById);
             group.MapGet("/search/{searchtext}", SearchStudent);
             group.MapPost("/", PostStudent);
@@ -21,113 +23,87 @@ namespace PiketWebApi.Api
             return group.WithTags("student").RequireAuthorization(); ;
         }
 
-        private static async Task<IResult> SearchStudent(HttpContext context, ApplicationDbContext dbContext, string searchtext)
+        private static async Task<IResult> GetAllStudentWithClass(HttpContext context,IStudentService studentService)
         {
             try
             {
-                var txtSearch = searchtext.ToLower();
-                var result = dbContext.Students.Where(x => x.Name.ToLower().Contains(txtSearch)
-                || x.Email.ToLower().Contains(txtSearch)
-                || x.Number.ToLower().Contains(txtSearch)).ToList();
-                return Results.Ok(result);
+               return Results.Ok(await studentService.GetAlStudentWithClass());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
 
-        private static IResult DeleteStudent(HttpContext context, ApplicationDbContext dbContext, int id)
+        private static async Task<IResult> SearchStudent(HttpContext context, IStudentService studentService, string searchtext)
         {
             try
             {
-                var result = dbContext.Students.SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    dbContext.Remove(result);
-                    dbContext.SaveChanges();
-                }
-                return Results.Ok(true);
+                return Results.Ok(await studentService.SearchStudent(searchtext));
             }
             catch (Exception ex)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
 
-        private static IResult PutStudent(HttpContext context, ApplicationDbContext dbContext, int id, Student model)
+        private static async Task<IResult> DeleteStudent(HttpContext context, IStudentService studentService, int id)
         {
             try
             {
-                var result = dbContext.Students.SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    dbContext.Entry(result).CurrentValues.SetValues(model);
-                    dbContext.SaveChanges();
-                }
-                return Results.Ok(true);
+                return Results.Ok(await studentService.DeleteStudent(id));
             }
             catch (Exception ex)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCreateError);
             }
         }
 
-        private static async Task<IResult> PostStudent(HttpContext context, ApplicationDbContext dbContext, UserManager<ApplicationUser> _userManager, Student model)
+        private static async Task<IResult> PutStudent(HttpContext context, IStudentService studentService, int id, Student model)
         {
-            var trans = dbContext.Database.BeginTransaction();
             try
             {
-                if (!string.IsNullOrEmpty(model.Email))
-                {
-                    var user = new ApplicationUser { Email = model.Email, EmailConfirmed = true, Name = model.Name, UserName = model.Email };
-                    var createResult = await _userManager.CreateAsync(user, "Password@123");
-                    if (createResult.Succeeded)
-                    {
-                        await _userManager.AddToRoleAsync(user, "Student");
-                        model.UserId = user.Id;
-                    }
-                    else
-                    {
-                        throw new SystemException("User Gagal Dibuat !");
-                    }
-                }
-
-                var result = dbContext.Students.Add(model);
-                dbContext.SaveChanges();
-                trans.Commit();
-                return Results.Ok(model);
+                return Results.Ok(await studentService.PutStudent(id,model));
             }
             catch (Exception ex)
             {
-                trans.Rollback();
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCreateError);
             }
         }
 
-        private static object GetAllStudent(HttpContext context, ApplicationDbContext dbContext)
+        private static async Task<IResult> PostStudent(HttpContext context, IStudentService studentService, Student model)
         {
             try
             {
-                var result = dbContext.Students.ToList();
-                return Results.Ok(result);
+                return Results.Ok(await studentService.PostStudent(model));
             }
             catch (Exception ex)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCreateError);
             }
         }
 
-        private static object GetStudentById(HttpContext context, ApplicationDbContext dbContext, int id)
+        private static async Task<IResult> GetAllStudent(HttpContext context, IStudentService studentService)
         {
             try
             {
-                var result = dbContext.Students.SingleOrDefault(x=>x.Id==id);
-                return Results.Ok(result);
+                return Results.Ok(await studentService.GetAllStudent());
             }
             catch (Exception ex)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
+            }
+        }
+
+        private static async Task<IResult> GetStudentById(HttpContext context, IStudentService studentService, int id)
+        {
+            try
+            {
+                return Results.Ok(await studentService.GetStudentById(id));
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(Helper.ApiCreateError);
             }
         }
     }

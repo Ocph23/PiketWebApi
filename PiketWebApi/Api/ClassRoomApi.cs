@@ -13,14 +13,28 @@ namespace PiketWebApi.Api
         {
             group.MapGet("/", GetAllClassRoom);
             group.MapGet("/{id}", GetClassRoomById);
+            group.MapGet("/schoolyear/{id}", GetClassRoomBySchoolYear);
             group.MapPost("/", PostClassRoom);
             group.MapPut("/{id}", PutClassRoom);
             group.MapDelete("/{id}", DeleteClassRoom);
-
             group.MapPost("/addstudent/{classroomId}", AddStudentToClassRoom);
             group.MapDelete("/removestudent/{classroomId}/{studentId}", RemoveStudentFromClassRoom);
             return group.WithTags("classroom").RequireAuthorization(); ;
         }
+
+        private static async Task<IResult> GetClassRoomBySchoolYear(HttpContext context, IClassRoomService classRoomService, int id)
+        {
+            try
+            {
+                var data = await classRoomService.GetClassRoomBySchoolYear(id);
+                return Results.Ok(data);
+            }
+            catch (Exception)
+            {
+                return Results.BadRequest(Helper.ApiCommonError);
+            }
+        }
+
         private static async Task<IResult> PostClassRoom(HttpContext context, IClassRoomService classRoomService,  ClassRoomRequest req)
         {
             try

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
+using PiketWebApi.Services;
 using SharedModel.Models;
 
 namespace PiketWebApi.Api
@@ -17,99 +18,74 @@ namespace PiketWebApi.Api
             return group.WithTags("schoolyear").RequireAuthorization(); ;
         }
 
-        private static IResult GetSchoolYearById(HttpContext context, ApplicationDbContext dbContext, int id)
+        private static async Task<IResult> GetSchoolYearById(HttpContext context, ISchoolYearService schoolService, int id)
         {
             try
             {
-                var result = dbContext.SchoolYears.SingleOrDefault(x => x.Id==id);
-                return Results.Ok(result);
+                return Results.Ok(await schoolService.GetSchoolYearById(id));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
-        private static IResult GetActiveSchoolYear(HttpContext context, ApplicationDbContext dbContext)
+        private static async Task<IResult> GetActiveSchoolYear(HttpContext context, ISchoolYearService schoolService)
         {
             try
             {
-                var result = dbContext.SchoolYears.SingleOrDefault(x => x.Actived);
-                return Results.Ok(result);
+                return Results.Ok(await schoolService.GetActiveSchoolYear());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCommonError);
             }
         }
 
-        private static IResult DeleteSchoolYear(HttpContext context, ApplicationDbContext dbContext, int id)
+        private static async Task<IResult> DeleteSchoolYear(HttpContext context, ISchoolYearService schoolService, int id)
         {
             try
             {
-                var result = dbContext.SchoolYears.SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    dbContext.Remove(result);
-                    dbContext.SaveChanges();
-                }
-                return Results.Ok(true);
+                return Results.Ok(await schoolService.DeleteSchoolYear(id));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCreateError);
             }
         }
 
-        private static IResult PutSchoolYear(HttpContext context, ApplicationDbContext dbContext, int id, SchoolYear teacher)
+        private static async Task<IResult> PutSchoolYear(HttpContext context, ISchoolYearService schoolService, int id, SchoolYear model)
         {
             try
             {
-                var result = dbContext.SchoolYears.SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    dbContext.Entry(result).CurrentValues.SetValues(teacher);
-                    dbContext.SaveChanges();
-                }
-                return Results.Ok(true);
+                return Results.Ok(await schoolService.PutSchoolYear(id,model));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCreateError);
             }
         }
 
-        private static async Task<IResult> PostSchoolYear(HttpContext context, ApplicationDbContext dbContext, SchoolYear model)
+        private static async Task<IResult> PostSchoolYear(HttpContext context, ISchoolYearService schoolService, SchoolYear model)
         {
-            var trans = await dbContext.Database.BeginTransactionAsync();
-
             try
             {
-                var activeData = dbContext.SchoolYears.Where(x => x.Actived);
-                await activeData.ForEachAsync((x) => x.Actived = false);
-                model.Actived=true;
-                dbContext.SchoolYears.Add(model);
-                dbContext.SaveChanges();
-                await trans.CommitAsync();
-                return Results.Ok(model);
+                return Results.Ok(await schoolService.PostSchoolYear(model));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                if(ex.InnerException!=null && ex.InnerException.Message.Contains("duplicate"))
-                        return Results.BadRequest($"Tahun Ajaran {model.Year} sudah ada");
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCreateError);
             }
         }
 
-        private static object GetAllSchoolYear(HttpContext context, ApplicationDbContext dbContext)
+        private static async Task<IResult> GetAllSchoolYear(HttpContext context, ISchoolYearService schoolService)
         {
             try
             {
-                var result = dbContext.SchoolYears.ToList();
-                return Results.Ok(result);
+                return Results.Ok(await schoolService.GetAllSchoolYear());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Results.BadRequest(ex.Message);
+                return Results.BadRequest(Helper.ApiCreateError);
             }
         }
     }

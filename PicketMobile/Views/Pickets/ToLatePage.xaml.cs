@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using PicketMobile.Models;
 using PicketMobile.Services;
+using SharedModel.Responses;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -18,7 +19,7 @@ public partial class ToLatePage : ContentPage
 internal class ToLatePageViewModel : BaseNotify
 {
 
-    public ObservableCollection<StudentToLateModel> DataStudentTolate { get; set; }
+    public ObservableCollection<SharedModel.Responses.StudentToLateAndComeHomeSoEarlyResponse> DataStudentTolate { get; set; }
     public ICommand AsyncCommand { get; private set; }
     public ICommand AddStudentLateCommand { get; set; }
     public ICommand SelectBrowseStudent { get; set; }   
@@ -27,7 +28,7 @@ internal class ToLatePageViewModel : BaseNotify
     {
         AsyncCommand = new Command(async () => await LoadAction());
         AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
-        DataStudentTolate = new ObservableCollection<StudentToLateModel>();
+        DataStudentTolate = new ObservableCollection<StudentToLateAndComeHomeSoEarlyResponse>();
 
     }
 
@@ -52,9 +53,7 @@ internal class ToLatePageViewModel : BaseNotify
                 DataStudentTolate.Clear();
                 foreach (var item in picket.StudentsToLate)
                 {
-                    DataStudentTolate.Add(new StudentToLateModel() { Student=item.Student,
-                     CreateAt=item.CreateAt, CreatedBy=item.CreatedBy, Description=item.Description, Id=item.Id,
-                     });
+                    DataStudentTolate.Add(item);
                 }
             }
         }

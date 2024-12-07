@@ -15,7 +15,7 @@ namespace PicketMobile.Services
 
     public interface IPicketService
     {
-        Task<PicketModel> GetPicketToday();
+        Task<PicketResponse> GetPicketToday();
         Task<PicketModel> Create(PicketModel model);
         Task<StudentToLateModel> PostToLate(StudentToLateAndEarlyRequest model);
         Task<bool> DeleteToLate(int studentTolateId);
@@ -27,7 +27,7 @@ namespace PicketMobile.Services
 
     public class PicketService : IPicketService
     {
-        private static PicketModel picket;
+        private static PicketResponse picket;
         public async Task<PicketModel> Create(PicketModel model)
         {
             try
@@ -48,7 +48,7 @@ namespace PicketMobile.Services
                 throw new SystemException(ex.Message);
             }
         }
-        public async Task<PicketModel> GetPicketToday()
+        public async Task<PicketResponse> GetPicketToday()
         {
             try
             {
@@ -61,7 +61,7 @@ namespace PicketMobile.Services
                 if (response.IsSuccessStatusCode)
                 {
                     List<ScheduleModel> schedules = new List<ScheduleModel>();
-                    picket = await response.GetResultAsync<PicketModel>();
+                    picket = await response.GetResultAsync<PicketResponse>();
                     return picket;
 
                 }

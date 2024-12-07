@@ -24,7 +24,7 @@
                                             Margin="5,0" HeightRequest="60" CornerRadius="100" Text="ZS" 
                                             BackgroundColor="#56d388" ImageSource="{Binding Photo}" />
                     <StackLayout Grid.Column="1" VerticalOptions="Center" >
-                        <Label FontSize="16" Text="{Binding Student.Name}" TextColor="White"></Label>
+                            <Label FontSize="16" Text="{Binding StudentName}" TextColor="White"></Label>
                         <Grid ColumnDefinitions="*,auto">
                             <Label Text="X RPL" FontSize="13" TextColor="White"></Label>
                             <Label Text="{Binding CreateAt, StringFormat='{0:HH:mm}'}" FontSize="13" TextColor="White" Margin="10,0" HorizontalOptions="End" ></Label>
