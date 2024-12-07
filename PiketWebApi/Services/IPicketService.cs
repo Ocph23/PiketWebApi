@@ -114,7 +114,7 @@ namespace PiketWebApi.Services
                                                AtTime = x.AtTime,
                                                CreateAt = x.CreateAt,
                                                TeacherId = x.CreatedBy.Id,
-                                               TeacherName= x.CreatedBy.Name,
+                                               TeacherName = x.CreatedBy.Name,
                                                TeacherPhoto = x.CreatedBy.Photo,
                                                Description = x.Description,
                                                Id = x.Id,
@@ -125,21 +125,21 @@ namespace PiketWebApi.Services
 
 
                 response.StudentsComeHomeEarly = (from x in picketToday.StudentsComeHomeEarly
-                                           select
-                                           new StudentToLateAndComeHomeSoEarlyResponse
-                                           {
-                                               AtTime = x.Time,
-                                               AttendanceStatus = x.AttendanceStatus,
-                                               CreateAt = x.CreateAt,
-                                               TeacherId = x.CreatedBy.Id,
-                                               TeacherName= x.CreatedBy.Name,
-                                               TeacherPhoto = x.CreatedBy.Photo,
-                                               Description = x.Description,
-                                               Id = x.Id,
-                                               StudentPhoto = x.Student.Photo,
-                                               StudentId = x.Student.Id,
-                                               StudentName = x.Student.Name
-                                           }).ToList();
+                                                  select
+                                                  new StudentToLateAndComeHomeSoEarlyResponse
+                                                  {
+                                                      AtTime = x.Time,
+                                                      AttendanceStatus = x.AttendanceStatus,
+                                                      CreateAt = x.CreateAt,
+                                                      TeacherId = x.CreatedBy.Id,
+                                                      TeacherName = x.CreatedBy.Name,
+                                                      TeacherPhoto = x.CreatedBy.Photo,
+                                                      Description = x.Description,
+                                                      Id = x.Id,
+                                                      StudentPhoto = x.Student.Photo,
+                                                      StudentId = x.Student.Id,
+                                                      StudentName = x.Student.Name
+                                                  }).ToList();
 
 
 
@@ -155,34 +155,45 @@ namespace PiketWebApi.Services
 
         public async Task<StudentToLate> AddStudentToLate(StudentToLateAndEarlyRequest late)
         {
-            var userClaim = await http.IsTeacherPicket(userManager, dbContext);
-            if (!userClaim.Item1)
-                throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
-
-            DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-            var picketToday = dbContext.Picket
-                    .Include(x => x.StudentsToLate).ThenInclude(x => x.Student)
-                    .Include(x => x.StudentsToLate).ThenInclude(x => x.CreatedBy)
-                    .SingleOrDefault(x => x.Date == date);
-            if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+            try
             {
-                throw new SystemException("Piket Belum Di buka");
+                var userClaim = await http.IsTeacherPicket(userManager, dbContext);
+                if (!userClaim.Item1)
+                    throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
+
+                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                var picketToday = dbContext.Picket
+                        .Include(x => x.StudentsToLate).ThenInclude(x => x.Student)
+                        .SingleOrDefault(x => x.Date == date);
+                if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+                {
+                    throw new SystemException("Piket Belum Di buka");
+                }
+
+                if (picketToday.StudentsToLate.Any(x => x.Student.Id == late.StudentId))
+                {
+                    throw new SystemException("Siswa sudah di daftarkan !");
+                }
+
+                var toLate = new StudentToLate
+                {
+                    Student = new Student { Id = late.StudentId },
+                    CreatedBy = userClaim.Item2,
+                    AttendanceStatus = SharedModel.StudentAttendanceStatus.Present,
+                    CreateAt = DateTime.Now.ToUniversalTime(),
+                    Description = late.Description,
+                    AtTime = late.AtTime
+                };
+
+                picketToday.StudentsToLate.Add(toLate);
+                dbContext.Entry(toLate.Student).State = EntityState.Detached;
+                dbContext.SaveChanges();
+                return toLate;
             }
-
-            var toLate = new StudentToLate
+            catch (Exception ex)
             {
-                Student = new Student { Id = late.StudentId },
-                CreatedBy = userClaim.Item2,
-                AttendanceStatus = SharedModel.StudentAttendanceStatus.Present,
-                CreateAt = DateTime.Now.ToUniversalTime(),
-                Description = late.Description,
-                AtTime = late.AtTime
-            };
-
-            dbContext.Entry(picketToday);
-            picketToday.StudentsToLate.Add(toLate);
-            dbContext.SaveChanges();
-            return toLate;
+                throw;
+            }
         }
         public async Task<StudentComeHomeEarly> AddStudentComeHomeSoEarly(StudentToLateAndEarlyRequest late)
         {
@@ -200,7 +211,7 @@ namespace PiketWebApi.Services
             {
                 throw new SystemException("Piket Belum Di buka");
             }
-          
+
             var soEarly = new StudentComeHomeEarly
             {
                 Student = new Student { Id = late.StudentId },

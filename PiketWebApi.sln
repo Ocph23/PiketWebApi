@@ -5,8 +5,6 @@ VisualStudioVersion = 17.10.35201.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiketWebApi", "PiketWebApi\PiketWebApi.csproj", "{59444ACA-D03C-4B8B-9168-7DFDC83C74BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PicketMobile", "PicketMobile\PicketMobile.csproj", "{582E764E-1F34-4EB6-80DB-A4D0E398A5AE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModel", "SharedModel\SharedModel.csproj", "{4EB3A01C-6417-4963-AEDF-B08ACB6C057A}"
 EndProject
 Global
@@ -19,12 +17,6 @@ Global
 		{59444ACA-D03C-4B8B-9168-7DFDC83C74BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59444ACA-D03C-4B8B-9168-7DFDC83C74BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59444ACA-D03C-4B8B-9168-7DFDC83C74BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{582E764E-1F34-4EB6-80DB-A4D0E398A5AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{582E764E-1F34-4EB6-80DB-A4D0E398A5AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{582E764E-1F34-4EB6-80DB-A4D0E398A5AE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{582E764E-1F34-4EB6-80DB-A4D0E398A5AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{582E764E-1F34-4EB6-80DB-A4D0E398A5AE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{582E764E-1F34-4EB6-80DB-A4D0E398A5AE}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{4EB3A01C-6417-4963-AEDF-B08ACB6C057A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4EB3A01C-6417-4963-AEDF-B08ACB6C057A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EB3A01C-6417-4963-AEDF-B08ACB6C057A}.Release|Any CPU.ActiveCfg = Release|Any CPU

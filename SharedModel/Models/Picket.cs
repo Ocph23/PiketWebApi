@@ -11,9 +11,9 @@ namespace SharedModel.Models
         public TimeOnly? EndAt { get; set; }
         public Teacher? CreatedBy { get; set; }
         public DateTime CreateAt { get; set; } = DateTime.Now.ToUniversalTime();
-        public List<Teacher> TeacherAttendance { get; set; } = new();
-        public List<StudentComeHomeEarly> StudentsComeHomeEarly { get; set; } = new();
-        public List<StudentToLate> StudentsToLate { get; set; } = new();
+        public ICollection<Teacher> TeacherAttendance { get; set; } = default;
+        public ICollection<StudentComeHomeEarly> StudentsComeHomeEarly { get; set; } = default;
+        public ICollection<StudentToLate> StudentsToLate { get; set; } = default;
         public static Picket? Create(Teacher teacher)
         {
             return new Picket()
