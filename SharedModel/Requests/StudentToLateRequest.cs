@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace SharedModel.Requests
 {
-    public record StudentToLateAndEarlyRequest(int StudentId, TimeSpan AtTime, string Description);
+    public record StudentToLateAndEarlyRequest(int StudentId, TimeSpan AtTime, string Description, StudentAttendanceStatus StudentAttendance);
 }

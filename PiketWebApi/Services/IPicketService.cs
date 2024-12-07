@@ -185,8 +185,8 @@ namespace PiketWebApi.Services
                     AtTime = late.AtTime
                 };
 
+                dbContext.Entry(toLate.Student).State = EntityState.Unchanged;
                 picketToday.StudentsToLate.Add(toLate);
-                dbContext.Entry(toLate.Student).State = EntityState.Detached;
                 dbContext.SaveChanges();
                 return toLate;
             }
@@ -195,37 +195,47 @@ namespace PiketWebApi.Services
                 throw;
             }
         }
-        public async Task<StudentComeHomeEarly> AddStudentComeHomeSoEarly(StudentToLateAndEarlyRequest late)
+        public async Task<StudentComeHomeEarly> AddStudentComeHomeSoEarly(StudentToLateAndEarlyRequest model)
         {
-            var userClaim = await http.IsTeacherPicket(userManager, dbContext);
-            if (!userClaim.Item1)
-                throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
-
-
-            DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-            var picketToday = dbContext.Picket
-                    .Include(x => x.StudentsComeHomeEarly).ThenInclude(x => x.Student)
-                    .Include(x => x.StudentsComeHomeEarly).ThenInclude(x => x.CreatedBy)
-                    .SingleOrDefault(x => x.Date == date);
-            if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+            try
             {
-                throw new SystemException("Piket Belum Di buka");
+                var userClaim = await http.IsTeacherPicket(userManager, dbContext);
+                if (!userClaim.Item1)
+                    throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
+
+                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                var picketToday = dbContext.Picket
+                        .Include(x => x.StudentsComeHomeEarly).ThenInclude(x => x.Student)
+                        .SingleOrDefault(x => x.Date == date);
+                if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+                {
+                    throw new SystemException("Piket Belum Di buka");
+                }
+
+                if (picketToday.StudentsComeHomeEarly.Any(x => x.Student.Id == model.StudentId))
+                {
+                    throw new SystemException("Siswa sudah di daftarkan !");
+                }
+
+                var toEarly= new StudentComeHomeEarly
+                {
+                    Student = new Student { Id = model.StudentId },
+                    CreatedBy = userClaim.Item2,
+                    AttendanceStatus = model.StudentAttendance,
+                    CreateAt = DateTime.Now.ToUniversalTime(),
+                    Description = model.Description,   
+                    Time = model.AtTime
+                };
+
+                dbContext.Entry(toEarly.Student).State = EntityState.Unchanged;
+                picketToday.StudentsComeHomeEarly.Add(toEarly);
+                dbContext.SaveChanges();
+                return toEarly;
             }
-
-            var soEarly = new StudentComeHomeEarly
+            catch (Exception ex)
             {
-                Student = new Student { Id = late.StudentId },
-                CreatedBy = userClaim.Item2,
-                AttendanceStatus = SharedModel.StudentAttendanceStatus.Present,
-                CreateAt = DateTime.Now.ToUniversalTime(),
-                Description = late.Description,
-                Time = late.AtTime
-            };
-
-            dbContext.Entry(picketToday);
-            picketToday.StudentsComeHomeEarly.Add(soEarly);
-            dbContext.SaveChanges();
-            return soEarly;
+                throw;
+            }
         }
     }
 }
