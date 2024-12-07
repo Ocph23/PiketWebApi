@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="PicketMobile.Views.LoginPage"
+             Title="LoginPage">
+
+    <Grid>
+        <ActivityIndicator IsVisible="{Binding IsBusy}" IsRunning="{Binding IsBusy}"  WidthRequest="50"></ActivityIndicator>
+        <ScrollView>
+            <VerticalStackLayout
+          Padding="30,0"
+          Spacing="25">
+                <Image
+                Margin="0,30,0,0"
+              Source="logo.png"
+              HeightRequest="100"
+              Aspect="AspectFit"
+              SemanticProperties.Description="Logo Sekolah" />
+
+                <Label Text="APLIKASI PIKET" Style="{StaticResource Headline}"></Label>
+                <Label Text="SMK 8 TIK KOTA JAYAPURA" Style="{StaticResource SubHeadline}"></Label>
+                <Label Margin="0,30,0,0" Text="Login" HorizontalOptions="Start" Style="{StaticResource SubHeadline}"></Label>
+
+                <StackLayout >
+                    <Label Text="User Name"/>
+                    <Entry Text="{Binding UserName}" Placeholder="User Name"></Entry>
+                </StackLayout>
+
+
+                <StackLayout>
+                    <Label Text="Password"
+                        />
+                    <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password"></Entry>
+                </StackLayout>
+
+                <Button
+              Text="Login" 
+             Command="{Binding LoginCommand}"
+              HorizontalOptions="Fill" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

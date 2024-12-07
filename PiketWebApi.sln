@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PiketWebApi", "PiketWebApi\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModel", "SharedModel\SharedModel.csproj", "{4EB3A01C-6417-4963-AEDF-B08ACB6C057A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PicketMobile", "PicketMobile\PicketMobile.csproj", "{ADFF85E2-793C-49DD-91DA-F72AA307550F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4EB3A01C-6417-4963-AEDF-B08ACB6C057A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4EB3A01C-6417-4963-AEDF-B08ACB6C057A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4EB3A01C-6417-4963-AEDF-B08ACB6C057A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADFF85E2-793C-49DD-91DA-F72AA307550F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADFF85E2-793C-49DD-91DA-F72AA307550F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADFF85E2-793C-49DD-91DA-F72AA307550F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADFF85E2-793C-49DD-91DA-F72AA307550F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
