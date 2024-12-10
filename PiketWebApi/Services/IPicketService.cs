@@ -24,14 +24,16 @@ namespace PiketWebApi.Services
         private readonly IHttpContextAccessor http;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationDbContext dbContext;
+        private readonly IStudentService studentService;
         private static Picket picketToday;
 
         public PicketService(IHttpContextAccessor _http, UserManager<ApplicationUser> _userManager,
-            ApplicationDbContext _dbContext)
+            ApplicationDbContext _dbContext, IStudentService _studentService)
         {
             http = _http;
             userManager = _userManager;
             dbContext = _dbContext;
+            studentService = _studentService;
         }
 
         public async Task<Picket> CreateNewPicket()
@@ -66,7 +68,7 @@ namespace PiketWebApi.Services
             }
         }
 
-        public Task<PicketResponse> GetPicketToday()
+        public async Task<PicketResponse> GetPicketToday()
         {
             try
             {
@@ -105,11 +107,14 @@ namespace PiketWebApi.Services
                 };
 
 
-
+                var students = await studentService.GetAlStudentWithClass();
                 response.StudentsToLate = (from x in picketToday.StudentsToLate
+                                           join s in students on x.Student.Id equals s.Id into sGroup
+                                           from sx in sGroup.DefaultIfEmpty()
                                            select
                                            new StudentToLateAndComeHomeSoEarlyResponse
                                            {
+                                               Id = x.Id,
                                                AttendanceStatus = x.AttendanceStatus,
                                                AtTime = x.AtTime,
                                                CreateAt = x.CreateAt,
@@ -117,35 +122,46 @@ namespace PiketWebApi.Services
                                                TeacherName = x.CreatedBy.Name,
                                                TeacherPhoto = x.CreatedBy.Photo,
                                                Description = x.Description,
-                                               Id = x.Id,
                                                StudentPhoto = x.Student.Photo,
                                                StudentId = x.Student.Id,
-                                               StudentName = x.Student.Name
+                                               StudentName = x.Student.Name,
+                                               ClassRoomId = sx==null?null:sx.ClassRoomId,
+                                               ClassRoomName = sx==null?null: sx.ClassRoomName,
+                                               DepartmentId = sx == null ? null : sx.DepartmenId,
+                                               DepartmentName= sx == null ? null : sx.DepartmenName
+
                                            }).AsEnumerable();
 
 
                 response.StudentsComeHomeEarly = (from x in picketToday.StudentsComeHomeEarly
-                                                  select
-                                                  new StudentToLateAndComeHomeSoEarlyResponse
-                                                  {
-                                                      AtTime = x.Time,
-                                                      AttendanceStatus = x.AttendanceStatus,
-                                                      CreateAt = x.CreateAt,
-                                                      TeacherId = x.CreatedBy.Id,
-                                                      TeacherName = x.CreatedBy.Name,
-                                                      TeacherPhoto = x.CreatedBy.Photo,
-                                                      Description = x.Description,
-                                                      Id = x.Id,
-                                                      StudentPhoto = x.Student.Photo,
-                                                      StudentId = x.Student.Id,
-                                                      StudentName = x.Student.Name
-                                                  }).ToList();
+                                           join s in await studentService.GetAlStudentWithClass() on x.Student.Id equals s.Id into sGroup
+                                           from sx in sGroup.DefaultIfEmpty()
+                                           select
+                                           new StudentToLateAndComeHomeSoEarlyResponse
+                                           {
+                                               Id = x.Id,
+                                               AttendanceStatus = x.AttendanceStatus,
+                                               AtTime = x.Time,
+                                               CreateAt = x.CreateAt,
+                                               TeacherId = x.CreatedBy.Id,
+                                               TeacherName = x.CreatedBy.Name,
+                                               TeacherPhoto = x.CreatedBy.Photo,
+                                               Description = x.Description,
+                                               StudentPhoto = x.Student.Photo,
+                                               StudentId = x.Student.Id,
+                                               StudentName = x.Student.Name,
+                                               ClassRoomId = sx == null ? null : sx.ClassRoomId,
+                                               ClassRoomName = sx == null ? null : sx.ClassRoomName,
+                                               DepartmentId = sx == null ? null : sx.DepartmenId,
+                                               DepartmentName = sx == null ? null : sx.DepartmenName
+
+                                           }).AsEnumerable();
 
 
 
 
 
-                return Task.FromResult(response);
+                return response;
             }
             catch (Exception ex)
             {

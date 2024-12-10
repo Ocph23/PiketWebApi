@@ -37,6 +37,10 @@ namespace SharedModel.Responses
         public string? TeacherPhoto { get; set; }
         public DateTime CreateAt { get; set; } = DateTime.Now;
         public TimeSpan? AtTime { get; set; } = DateTime.Now.TimeOfDay;
+        public int? ClassRoomId { get; set; }
+        public string? ClassRoomName { get; set; }
+        public int? DepartmentId { get; set; }
+        public string? DepartmentName { get; set; }
     }
    
 

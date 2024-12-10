@@ -66,6 +66,7 @@ namespace PiketWebApi.Services
                         Photo = x.Student.Photo,
                         ClassRoomId = item.Id,
                         ClassRoomName = item.Name,
+                        DepartmenId = item.Department.Id,
                         DepartmenName = item.Department.Name,
                     });
                     list = data.ToList();
@@ -77,8 +78,6 @@ namespace PiketWebApi.Services
                 throw;
             }
         }
-
-
         public async Task<IEnumerable<StudentClassRoom>> SearchStudent(string searchtext)
         {
             try

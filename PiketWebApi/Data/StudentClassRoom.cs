@@ -12,6 +12,7 @@ namespace PiketWebApi.Data
         public string? Photo { get; set; }
         public int? ClassRoomId{ get; set; }
         public string? ClassRoomName { get; set; }
+        public int? DepartmenId{ get; internal set; }
         public string? DepartmenName { get; internal set; }
     }
 }
