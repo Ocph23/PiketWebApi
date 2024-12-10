@@ -97,17 +97,17 @@ internal partial class PicketPageViewModel : ObservableObject
         {
             var profile = ServiceHelper.GetProfile<Teacher>();
             var picketService = ServiceHelper.GetService<IPicketService>();
-            //Model = new PicketModel() { CreateAt = DateTime.Now.ToUniversalTime(), Date = DateOnly.FromDateTime(DateTime.Now), };
-            //this.Model.CreatedBy = profile;
-            //var result = await picketService.Create(Model);
-            //if (result != null)
-            //{
-            //    Model.Id = result.Id;
-            //    CanSync = true;
-            //    HasPicket = true;
-            //    IamPicket = false;
-            //    IsChange = false;
-            //}
+            var model = new PicketModel() { CreateAt = DateTime.Now.ToUniversalTime(), Date = DateOnly.FromDateTime(DateTime.Now), };
+            model.CreatedBy = profile;
+            var result = await picketService.Create(model);
+            if (result != null)
+            {
+                Model.Id = result.Id;
+                CanSync = true;
+                HasPicket = true;
+                IamPicket = false;
+                IsChange = false;
+            }
         }
         catch (Exception ex)
         {

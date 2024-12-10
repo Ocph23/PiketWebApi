@@ -54,7 +54,7 @@ internal class AddTerlambatPageViewModel : BaseNotify
         set { SetProperty(ref scandCommand, value); }
     }
 
-
+    public RelayCommand<object> CloseCommand { get; private set; }
 
     private string searchText;
 
@@ -72,7 +72,7 @@ internal class AddTerlambatPageViewModel : BaseNotify
         AddCommand = new AsyncRelayCommand<object>(AddAcommandAcation, AddCommandValidate);
         SearchCommand = new RelayCommand<object>(async (x) => await SearchCommandAcation(x), SearchCommandValidate);
         ScandCommand = new RelayCommand<object>(ScanCommandAcation);
-
+        CloseCommand = new RelayCommand<object>(CloseAction);
         this.PropertyChanged += (s, p) =>
         {
             if (p.PropertyName == "SearchText")
@@ -86,10 +86,15 @@ internal class AddTerlambatPageViewModel : BaseNotify
         {
             if (p.PropertyName == "Student" || p.PropertyName == "Description" || p.PropertyName == "AtTime")
             {
-                 AddCommand = new AsyncRelayCommand<object>(AddAcommandAcation, AddCommandValidate);
+                AddCommand = new AsyncRelayCommand<object>(AddAcommandAcation, AddCommandValidate);
             }
 
         };
+    }
+
+    private void CloseAction(object? obj)
+    {
+        Shell.Current.CurrentPage.SendBackButtonPressed();
     }
 
     private void ScanCommandAcation(object? obj)
@@ -139,12 +144,14 @@ internal class AddTerlambatPageViewModel : BaseNotify
             {
                 Model.Id = result.Id;
                 await Shell.Current.DisplayAlert("Success", $"{Model.Student.Name} berhasil ditambahkan dalam daftar terlamabat", "OK");
+                SearchText = string.Empty;
+                Model = new Models.StudentToLateModel();
             }
             IsBusy = false;
         }
         catch (Exception ex)
         {
-           await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
         }
         finally
         {

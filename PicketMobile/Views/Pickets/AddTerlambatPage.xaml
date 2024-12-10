@@ -13,7 +13,6 @@
                   Text="{Binding SearchText}"/>
                     <Button HeightRequest="35" WidthRequest="35"
                         Margin="1" Grid.Column="1" ImageSource="search.svg" 
-                        BackgroundColor="red"
                         Command="{Binding SearchCommand}"
                         Padding="5" ></Button>
                     <Button HeightRequest="35" WidthRequest="35" Command="{Binding ScanCommand}"  BackgroundColor="Yellow" 
@@ -42,7 +41,7 @@
                 <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
                 <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
                     <Button Text="Tambah" Command="{Binding AddCommand}" WidthRequest="100"></Button>
-                    <Button Text="Batal" WidthRequest="100" BackgroundColor="OrangeRed"></Button>
+                    <Button Text="Keluar" Command="{Binding CloseCommand}" WidthRequest="100" BackgroundColor="OrangeRed"></Button>
                 </HorizontalStackLayout>
             </StackLayout>
             <ActivityIndicator IsVisible="{Binding IsBusy}" IsRunning="{Binding IsBusy}" WidthRequest="50" HeightRequest="50"></ActivityIndicator>

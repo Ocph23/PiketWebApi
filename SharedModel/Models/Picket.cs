@@ -20,8 +20,9 @@ namespace SharedModel.Models
             {
                 CreateAt = DateTime.Now.ToUniversalTime(),
                 CreatedBy = teacher,
-                Date = DateOnly.FromDateTime(DateTime.Now),
-                StartAt = TimeOnly.FromTimeSpan(new TimeSpan(7, 15, 0))
+                Date = DateOnly.FromDateTime(DateTime.Now),                         
+                StartAt = TimeOnly.FromTimeSpan(new TimeSpan(7, 15, 0)),
+                EndAt= TimeOnly.FromTimeSpan(new TimeSpan(15, 00, 0)), Weather= Weather.Cerah
             };
         }
     }
