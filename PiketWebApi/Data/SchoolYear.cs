@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace SharedModel.Models
+namespace PiketWebApi.Data
 {
 
     [Index(nameof(Year),nameof(Semester), IsUnique = true)]

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PicketMobile.Models
 {
-   public class StudentToLateModel : ObservableObject
+   public class StudentToLateAndHomeEarlyModel : ObservableObject
     {
         public int Id { get; set; }
 
@@ -47,6 +47,16 @@ namespace PicketMobile.Models
         }
 
         public DateTime CreateAt { get; set; } = DateTime.Now;
+
+
+        private StatusKehadiran statusKehadiran;
+
+        public StatusKehadiran StatusKehadiran
+        {
+            get { return statusKehadiran; }
+            set { SetProperty(ref statusKehadiran , value); }
+        }
+
 
 
     }

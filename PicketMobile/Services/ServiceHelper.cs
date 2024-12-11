@@ -9,8 +9,7 @@ namespace PicketMobile.Services
 {
     public class ServiceHelper
     {
-        [Obsolete]
-        public static TService GetService<TService>() => Current.GetService<TService>()!;
+        public static TService GetService<TService>() => Current.GetService<TService>();
 
         internal static T GetProfile<T>()
         {
@@ -21,7 +20,7 @@ namespace PicketMobile.Services
         }
 
         [Obsolete]
-        public static IServiceProvider Current =>
+        public static IServiceProvider? Current =>
 #if WINDOWS10_0_17763_0_OR_GREATER
         MauiWinUIApplication.Current.Services;
 #elif __ANDROID__

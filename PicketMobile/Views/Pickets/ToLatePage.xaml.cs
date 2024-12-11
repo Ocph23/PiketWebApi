@@ -21,15 +21,30 @@ internal class ToLatePageViewModel : BaseNotify
 
     public ObservableCollection<SharedModel.Responses.StudentToLateAndComeHomeSoEarlyResponse> DataStudentTolate { get; set; }
     public ICommand AsyncCommand { get; private set; }
-    public ICommand AddStudentLateCommand { get; set; }
-    public ICommand SelectBrowseStudent { get; set; }   
+
+    private ICommand addStudentLateCommand;
+
+    public ICommand AddStudentLateCommand
+    {
+        get { return addStudentLateCommand; }
+        set { SetProperty(ref addStudentLateCommand, value); }
+    }
+
+    public ICommand SelectBrowseStudent { get; set; }
 
     public ToLatePageViewModel()
     {
         AsyncCommand = new Command(async () => await LoadAction());
         AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
         DataStudentTolate = new ObservableCollection<StudentToLateAndComeHomeSoEarlyResponse>();
+        IsBusy = true;
+    }
 
+    [Obsolete]
+    private async Task<bool> AddStudentLateCommandValidation()
+    {
+        var scheduleService = ServiceHelper.GetService<IScheduleService>();
+        return await scheduleService.IamPicket();
     }
 
     private async Task AddStudentLateCommandAction()
@@ -70,5 +85,5 @@ internal class ToLatePageViewModel : BaseNotify
         }
     }
 
-    
+
 }

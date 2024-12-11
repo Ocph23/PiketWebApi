@@ -17,7 +17,6 @@ namespace PiketWebApi.Api
             group.MapPost("/late", Createlate);
             group.MapPost("/early", Createsoearly);
             group.MapDelete("/late/{id}", RemoveLate);
-            group.MapDelete("/early/{id}", RemoveSoearly);
             return group.WithTags("picket").RequireAuthorization(); ;
         }
 
@@ -48,37 +47,14 @@ namespace PiketWebApi.Api
             }
         }
 
-        private static async Task<IResult> RemoveSoearly(HttpContext context, ApplicationDbContext dbContext, int id)
-        {
-            try
-            {
-                var result = dbContext.Picket.Include(x => x.StudentsComeHomeEarly)
-                    .Where(x => x.StudentsComeHomeEarly
-                    .Where(x => x.Id == id).Any())
-                    .SelectMany(x => x.StudentsComeHomeEarly).SingleOrDefault();
-                if (result != null)
-                {
-                    dbContext.Remove(result);
-                    dbContext.SaveChanges();
-                    return TypedResults.Ok(true);
-                }
-                throw new SystemException("Terjadi Kesalahan !, Coba Ulangi Lagi");
-            }
-            catch (Exception ex)
-            {
-
-                return TypedResults.BadRequest(ex.Message);
-            }
-        }
 
         private static async Task<IResult> RemoveLate(HttpContext context, ApplicationDbContext dbContext, int id)
         {
             try
             {
-                var result = dbContext.Picket.Include(x => x.StudentsToLate)
-                    .Where(x => x.StudentsToLate
-                    .Where(x => x.Id == id).Any())
-                    .SelectMany(x => x.StudentsToLate).SingleOrDefault();
+                var result = dbContext.Picket.Include(x => x.LateAndComeHomeEarly)
+                    .Where(x => x.Id == id)
+                    .SelectMany(x => x.LateAndComeHomeEarly).SingleOrDefault();
                 if (result != null)
                 {
                     dbContext.Remove(result);

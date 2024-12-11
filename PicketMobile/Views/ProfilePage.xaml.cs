@@ -14,14 +14,16 @@ public partial class ProfilePage : ContentPage
 
 internal class ProfilePageViewModel
 {
-    public ICommand LogoutCommand { get; set; }
+    public AsyncRelayCommand LogoutCommand { get; set; }
     public ProfilePageViewModel()
     {
-		LogoutCommand = new RelayCommand(() => {
-			Preferences.Set("token", null);
+		LogoutCommand = new AsyncRelayCommand(LogoutAction);
+    }
 
-			App.Current.MainPage = new LoginPage();
-		
-		});
+    private Task LogoutAction()
+    {
+        Preferences.Set("token", null);
+        App.Current.MainPage = new LoginPage();
+        return Task.CompletedTask;
     }
 }

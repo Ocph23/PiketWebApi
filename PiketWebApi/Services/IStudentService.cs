@@ -20,7 +20,7 @@ namespace PiketWebApi.Services
         Task<Student> PostStudent(Student model);
         Task<IEnumerable<Student>> GetAllStudent();
         Task<Student> GetStudentById(int id);
-
+        Task<StudentClassRoom?> GetStudentWithClass(int id);
     }
 
     public class StudentService : IStudentService
@@ -194,9 +194,7 @@ namespace PiketWebApi.Services
             try
             {
                 var result = dbContext.Students.SingleOrDefault(x => x.Id == id);
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
                 return Task.FromResult(result);
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
             }
             catch (Exception)
             {
@@ -204,6 +202,42 @@ namespace PiketWebApi.Services
             }
         }
 
+        public async Task<StudentClassRoom?> GetStudentWithClass(int id)
+        {
+            try
+            {
+                var schoolYearActive = await schoolYearService.GetActiveSchoolYear();
+                if (schoolYearService == null)
+                    throw new SystemException("Belum Ada Tahun Ajaran Aktif !");
 
+                var item = dbContext.ClassRooms
+                     .Include(x => x.SchoolYear)
+                     .Include(x => x.Department)
+                     .Include(x => x.Students)
+                     .ThenInclude(x => x.Student)
+                     .FirstOrDefault(x => x.SchoolYear.Id == schoolYearActive.Id && x.Students.Any(x => x.Student.Id == id));
+
+                if (item != null)
+                {
+                    return item.Students.Select(x => new StudentClassRoom
+                    {
+                        Gender = x.Student.Gender,
+                        Id = x.Student.Id,
+                        Name = x.Student.Name,
+                        Number = x.Student.Number,
+                        Photo = x.Student.Photo,
+                        ClassRoomId = item.Id,
+                        ClassRoomName = item.Name,
+                        DepartmenId = item.Department.Id,
+                        DepartmenName = item.Department.Name,
+                    }).FirstOrDefault();
+                }
+                return null;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

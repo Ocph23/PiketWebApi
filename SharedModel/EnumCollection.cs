@@ -15,13 +15,28 @@
     }
 
 
-    public enum StudentAttendanceStatus
+    public enum AttendanceStatus
     {
-        Present,
-        NotPresent,
-        Sick,
-        Permits
+        None,
+        Hadir,
+        Terlambat,
+        Alpa,
+        Sakit,
+        Izin,
+        Lainnya ,
     }
+
+    public enum LateAndGoHomeEarlyAttendanceStatus
+    {
+        None,
+        Terlambat,
+        Sakit,
+        Izin,
+    }
+
+
+
+ 
 
 
 }

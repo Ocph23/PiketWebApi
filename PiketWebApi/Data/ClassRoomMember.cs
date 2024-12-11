@@ -1,6 +1,6 @@
-﻿using SharedModel.Models;
+﻿
 
-namespace SharedModel.Models
+namespace PiketWebApi.Data
 {
     public class ClassRoomMember
     {

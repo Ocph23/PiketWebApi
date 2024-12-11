@@ -13,9 +13,8 @@ namespace PiketWebApi.Services
 {
     public interface IPicketService
     {
-        Task<StudentComeHomeEarly> AddStudentComeHomeSoEarly(StudentToLateAndEarlyRequest early);
-        Task<StudentToLate> AddStudentToLate(StudentToLateAndEarlyRequest late);
-        Task<Picket> CreateNewPicket();
+        Task<StudentToLateAndComeHomeSoEarlyResponse> AddStudentToLateComeHomeSoEarly(StudentToLateAndEarlyRequest late);
+        Task<PicketResponse> CreateNewPicket();
         Task<PicketResponse> GetPicketToday();
     }
 
@@ -25,7 +24,7 @@ namespace PiketWebApi.Services
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationDbContext dbContext;
         private readonly IStudentService studentService;
-        private static Picket picketToday;
+        private static PicketResponse picketToday;
 
         public PicketService(IHttpContextAccessor _http, UserManager<ApplicationUser> _userManager,
             ApplicationDbContext _dbContext, IStudentService _studentService)
@@ -36,33 +35,26 @@ namespace PiketWebApi.Services
             studentService = _studentService;
         }
 
-        public async Task<Picket> CreateNewPicket()
+        public async Task<PicketResponse> CreateNewPicket()
         {
             try
             {
+                DateOnly dateNow = DateOnly.FromDateTime(DateTime.Now);
                 var userClaim = await http.IsTeacherPicket(userManager, dbContext);
                 if (!userClaim.Item1)
                     throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
 
-                if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+                var ppicketToday = dbContext.Picket.SingleOrDefault(x => x.Date == dateNow);
+                if (ppicketToday == null)
                 {
-                    DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                    picketToday = dbContext.Picket.FirstOrDefault(x => x.Date == date);
-                    if (picketToday != null)
-                        return picketToday;
-
-                    picketToday = Picket.Create(userClaim.Item2);
-                    dbContext.Entry(picketToday.CreatedBy).State = EntityState.Unchanged;
-                    dbContext.Picket.Add(picketToday);
+                    ppicketToday = Picket.Create(userClaim.Item2);
+                    dbContext.Entry(ppicketToday.CreatedBy).State = EntityState.Unchanged;
+                    dbContext.Picket.Add(ppicketToday);
                     dbContext.SaveChanges();
-                    return picketToday;
                 }
-                else
-                {
-                    return picketToday;
-                }
+                return await GetPicketToday();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -72,96 +64,28 @@ namespace PiketWebApi.Services
         {
             try
             {
-                if (picketToday == null)
-                {
-                    DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                    picketToday = dbContext.Picket
-                        .Include(x => x.CreatedBy)
-                        .Include(x => x.TeacherAttendance)
-                        .Include(x => x.StudentsToLate).ThenInclude(x => x.Student)
-                        .Include(x => x.StudentsToLate).ThenInclude(x => x.CreatedBy)
-                        .Include(x => x.StudentsComeHomeEarly).ThenInclude(x => x.Student)
-                        .Include(x => x.StudentsComeHomeEarly).ThenInclude(x => x.CreatedBy)
-                        .SingleOrDefault(x => x.Date == date);
-                    if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
-                    {
-                        throw new SystemException("Piket Belum Di buka");
-                    }
-                }
-                if (picketToday != null && DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                if (picketToday != null && date == picketToday.Date)
+                    return picketToday;
+
+                if (picketToday != null && date != picketToday.Date)
                 {
                     throw new SystemException("Piket Belum Di buka");
                 }
 
-                var response = new PicketResponse()
+                var ppicketToday = dbContext.Picket
+                    .Include(x => x.CreatedBy)
+                    .Include(x => x.TeacherAttendance).ThenInclude(x=>x.Teacher)
+                    .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
+                    .SingleOrDefault(x => x.Date == date);
+                if (ppicketToday == null || date != ppicketToday.Date)
                 {
-                    CreateAt = picketToday.CreateAt,
-                    CreatedId = picketToday.CreatedBy.Id,
-                    CreatedName = picketToday.CreatedBy.Name,
-                    CreatedNumber = picketToday.CreatedBy.Number,
-                    Date = picketToday.Date,
-                    EndAt = picketToday.EndAt,
-                    Id = picketToday.Id,
-                    StartAt = picketToday.StartAt,
-                    Weather = picketToday.Weather
-                };
+                    throw new SystemException("Piket Belum Di buka");
+                }
 
+                var response = await GeneratePicketResponse(ppicketToday);
 
-                var students = await studentService.GetAlStudentWithClass();
-                response.StudentsToLate = (from x in picketToday.StudentsToLate
-                                           join s in students on x.Student.Id equals s.Id into sGroup
-                                           from sx in sGroup.DefaultIfEmpty()
-                                           select
-                                           new StudentToLateAndComeHomeSoEarlyResponse
-                                           {
-                                               Id = x.Id,
-                                               AttendanceStatus = x.AttendanceStatus,
-                                               AtTime = x.AtTime,
-                                               CreateAt = x.CreateAt,
-                                               TeacherId = x.CreatedBy.Id,
-                                               TeacherName = x.CreatedBy.Name,
-                                               TeacherPhoto = x.CreatedBy.Photo,
-                                               Description = x.Description,
-                                               StudentPhoto = x.Student.Photo,
-                                               StudentId = x.Student.Id,
-                                               StudentName = x.Student.Name,
-                                               ClassRoomId = sx==null?null:sx.ClassRoomId,
-                                               ClassRoomName = sx==null?null: sx.ClassRoomName,
-                                               DepartmentId = sx == null ? null : sx.DepartmenId,
-                                               DepartmentName= sx == null ? null : sx.DepartmenName
-
-                                           }).AsEnumerable();
-
-
-                response.StudentsComeHomeEarly = (from x in picketToday.StudentsComeHomeEarly
-                                           join s in await studentService.GetAlStudentWithClass() on x.Student.Id equals s.Id into sGroup
-                                           from sx in sGroup.DefaultIfEmpty()
-                                           select
-                                           new StudentToLateAndComeHomeSoEarlyResponse
-                                           {
-                                               Id = x.Id,
-                                               AttendanceStatus = x.AttendanceStatus,
-                                               AtTime = x.Time,
-                                               CreateAt = x.CreateAt,
-                                               TeacherId = x.CreatedBy.Id,
-                                               TeacherName = x.CreatedBy.Name,
-                                               TeacherPhoto = x.CreatedBy.Photo,
-                                               Description = x.Description,
-                                               StudentPhoto = x.Student.Photo,
-                                               StudentId = x.Student.Id,
-                                               StudentName = x.Student.Name,
-                                               ClassRoomId = sx == null ? null : sx.ClassRoomId,
-                                               ClassRoomName = sx == null ? null : sx.ClassRoomName,
-                                               DepartmentId = sx == null ? null : sx.DepartmenId,
-                                               DepartmentName = sx == null ? null : sx.DepartmenName
-
-                                           }).AsEnumerable();
-
-
-
-
-
-                return response;
+                return picketToday = response;
             }
             catch (Exception ex)
             {
@@ -169,7 +93,9 @@ namespace PiketWebApi.Services
             }
         }
 
-        public async Task<StudentToLate> AddStudentToLate(StudentToLateAndEarlyRequest late)
+
+
+        public async Task<StudentToLateAndComeHomeSoEarlyResponse> AddStudentToLateComeHomeSoEarly(StudentToLateAndEarlyRequest late)
         {
             try
             {
@@ -178,80 +104,137 @@ namespace PiketWebApi.Services
                     throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
 
                 DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                var picketToday = dbContext.Picket
-                        .Include(x => x.StudentsToLate).ThenInclude(x => x.Student)
+                var picket = dbContext.Picket
+                        .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
                         .SingleOrDefault(x => x.Date == date);
-                if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
+                if (picket == null || DateOnly.FromDateTime(DateTime.Now) != picket.Date)
                 {
                     throw new SystemException("Piket Belum Di buka");
                 }
 
-                if (picketToday.StudentsToLate.Any(x => x.Student.Id == late.StudentId))
+                if (picket.LateAndComeHomeEarly.Any(x => x.Student.Id == late.StudentId))
                 {
                     throw new SystemException("Siswa sudah di daftarkan !");
                 }
 
-                var toLate = new StudentToLate
+                var toLate = new 
                 {
                     Student = new Student { Id = late.StudentId },
                     CreatedBy = userClaim.Item2,
-                    AttendanceStatus = SharedModel.StudentAttendanceStatus.Present,
+                    AttendanceStatus = SharedModel.AttendanceStatus.Hadir,
                     CreateAt = DateTime.Now.ToUniversalTime(),
                     Description = late.Description,
                     AtTime = late.AtTime
                 };
 
                 dbContext.Entry(toLate.Student).State = EntityState.Unchanged;
-                picketToday.StudentsToLate.Add(toLate);
+                picket.LateAndComeHomeEarly.Add(toLate);
                 dbContext.SaveChanges();
-                return toLate;
+                var result = GenerateStudentToLateAndComeHomeSoEarlyResponse(toLate);
+
+                picketToday.StudentsToLate.Add(result);
+
+                return result;
             }
             catch (Exception ex)
             {
                 throw;
             }
         }
-        public async Task<StudentComeHomeEarly> AddStudentComeHomeSoEarly(StudentToLateAndEarlyRequest model)
+
+
+
+        private async Task<StudentToLateAndComeHomeSoEarlyResponse?> GenerateStudentToLateAndComeHomeSoEarlyResponse(StudentToLate x)
         {
-            try
+            var sx = await studentService.GetStudentWithClass(x.Id);
+            return new StudentToLateAndComeHomeSoEarlyResponse
             {
-                var userClaim = await http.IsTeacherPicket(userManager, dbContext);
-                if (!userClaim.Item1)
-                    throw new UnauthorizedAccessException("Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
+                Id = x.Id,
+                AttendanceStatus = x.AttendanceStatus,
+                CreateAt = x.CreateAt,
+                AtTime = x.AtTime,
+                TeacherId = x.CreatedBy.Id,
+                TeacherName = x.CreatedBy.Name,
+                TeacherPhoto = x.CreatedBy.Photo,
+                Description = x.Description,
+                StudentPhoto = x.Student.Photo,
+                StudentId = x.Student.Id,
+                StudentName = x.Student.Name,
+                ClassRoomId = sx == null ? null : sx.ClassRoomId,
+                ClassRoomName = sx == null ? null : sx.ClassRoomName,
+                DepartmentId = sx == null ? null : sx.DepartmenId,
+                DepartmentName = sx == null ? null : sx.DepartmenName
+            };
+        }
 
-                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-                var picketToday = dbContext.Picket
-                        .Include(x => x.StudentsComeHomeEarly).ThenInclude(x => x.Student)
-                        .SingleOrDefault(x => x.Date == date);
-                if (picketToday == null || DateOnly.FromDateTime(DateTime.Now) != picketToday.Date)
-                {
-                    throw new SystemException("Piket Belum Di buka");
-                }
-
-                if (picketToday.StudentsComeHomeEarly.Any(x => x.Student.Id == model.StudentId))
-                {
-                    throw new SystemException("Siswa sudah di daftarkan !");
-                }
-
-                var toEarly= new StudentComeHomeEarly
-                {
-                    Student = new Student { Id = model.StudentId },
-                    CreatedBy = userClaim.Item2,
-                    AttendanceStatus = model.StudentAttendance,
-                    CreateAt = DateTime.Now.ToUniversalTime(),
-                    Description = model.Description,   
-                    Time = model.AtTime
-                };
-
-                dbContext.Entry(toEarly.Student).State = EntityState.Unchanged;
-                picketToday.StudentsComeHomeEarly.Add(toEarly);
-                dbContext.SaveChanges();
-                return toEarly;
-            }
-            catch (Exception ex)
+        private async Task<PicketResponse> GeneratePicketResponse(Picket response)
+        {
+            var result = new PicketResponse()
             {
-                throw;
-            }
+                CreateAt = response.CreateAt,
+                CreatedId = response.CreatedBy.Id,
+                CreatedName = response.CreatedBy.Name,
+                CreatedNumber = response.CreatedBy.Number,
+                Date = response.Date,
+                EndAt = response.EndAt,
+                Id = response.Id,
+                StartAt = response.StartAt,
+                Weather = response.Weather,
+                StudentsComeHomeEarly = Enumerable.Empty<StudentToLateAndComeHomeSoEarlyResponse>(),
+                StudentsToLate = Enumerable.Empty<StudentToLateAndComeHomeSoEarlyResponse>()
+            };
+
+            var students = await studentService.GetAlStudentWithClass();
+            result.StudentsToLate = (from x in response.StudentsToLate
+                                     join s in students on x.Student.Id equals s.Id into sGroup
+                                     from sx in sGroup.DefaultIfEmpty()
+                                     select
+                                     new StudentToLateAndComeHomeSoEarlyResponse
+                                     {
+                                         Id = x.Id,
+                                         AttendanceStatus = x.AttendanceStatus,
+                                         AtTime = x.AtTime,
+                                         CreateAt = x.CreateAt,
+                                         TeacherId = x.CreatedBy.Id,
+                                         TeacherName = x.CreatedBy.Name,
+                                         TeacherPhoto = x.CreatedBy.Photo,
+                                         Description = x.Description,
+                                         StudentPhoto = x.Student.Photo,
+                                         StudentId = x.Student.Id,
+                                         StudentName = x.Student.Name,
+                                         ClassRoomId = sx == null ? null : sx.ClassRoomId,
+                                         ClassRoomName = sx == null ? null : sx.ClassRoomName,
+                                         DepartmentId = sx == null ? null : sx.DepartmenId,
+                                         DepartmentName = sx == null ? null : sx.DepartmenName
+
+                                     }).AsEnumerable();
+
+
+            result.StudentsComeHomeEarly = (from x in response.StudentsComeHomeEarly
+                                            join s in students on x.Student.Id equals s.Id into sGroup
+                                            from sx in sGroup.DefaultIfEmpty()
+                                            select new StudentToLateAndComeHomeSoEarlyResponse
+                                            {
+                                                Id = x.Id,
+                                                AttendanceStatus = x.AttendanceStatus,
+                                                CreateAt = x.CreateAt,
+                                                AtTime = x.Time,
+                                                TeacherId = x.CreatedBy.Id,
+                                                TeacherName = x.CreatedBy.Name,
+                                                TeacherPhoto = x.CreatedBy.Photo,
+                                                Description = x.Description,
+                                                StudentPhoto = x.Student.Photo,
+                                                StudentId = x.Student.Id,
+                                                StudentName = x.Student.Name,
+                                                ClassRoomId = sx == null ? null : sx.ClassRoomId,
+                                                ClassRoomName = sx == null ? null : sx.ClassRoomName,
+                                                DepartmentId = sx == null ? null : sx.DepartmenId,
+                                                DepartmentName = sx == null ? null : sx.DepartmenName
+                                            }).AsEnumerable();
+
+
+            return result;
+
         }
     }
 }

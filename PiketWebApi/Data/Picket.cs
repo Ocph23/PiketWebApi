@@ -1,7 +1,10 @@
-﻿using SharedModel;
+﻿using Microsoft.EntityFrameworkCore;
+using SharedModel;
 
-namespace SharedModel.Models
+namespace PiketWebApi.Data  
 {
+
+    [Index(nameof(Date))]
     public class Picket
     {
         public int Id { get; set; }
@@ -11,9 +14,8 @@ namespace SharedModel.Models
         public TimeOnly? EndAt { get; set; }
         public Teacher? CreatedBy { get; set; }
         public DateTime CreateAt { get; set; } = DateTime.Now.ToUniversalTime();
-        public ICollection<Teacher> TeacherAttendance { get; set; } = default;
-        public ICollection<StudentComeHomeEarly> StudentsComeHomeEarly { get; set; } = default;
-        public ICollection<StudentToLate> StudentsToLate { get; set; } = default;
+        public ICollection<TeacherAttendance> TeacherAttendance { get; set; } = default;
+        public ICollection<LateAndGoHomeEarly> LateAndComeHomeEarly { get; set; } = default;
         public static Picket? Create(Teacher teacher)
         {
             return new Picket()

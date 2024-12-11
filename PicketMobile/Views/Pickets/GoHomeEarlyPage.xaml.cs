@@ -1,4 +1,13 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using JetBrains.Annotations;
+using SharedModel.Models;
+using SharedModel.Responses;
+using SharedModel;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using PicketMobile.Services;
+using PicketMobile.Models;
 
 namespace PicketMobile.Views.Pickets;
 
@@ -11,25 +20,75 @@ public partial class GoHomeEarlyPage : ContentPage
     }
 }
 
-internal class GoHomeEarlyPageViewModel : BaseNotify
+internal partial class GoHomeEarlyPageViewModel : BaseNotify
 {
 
-    public ObservableCollection<SharedModel.Models.StudentToLate> DataStudentTolate { get; set; }
+    public ObservableCollection<SharedModel.Responses.StudentToLateAndComeHomeSoEarlyResponse> DataStudentGoHomeEarly { get; set; }
 
+  
+
+    public ICommand AsyncCommand { get; private set; }
+
+    private ICommand addStudentLateCommand;
+
+    public ICommand AddStudentLateCommand
+    {
+        get { return addStudentLateCommand; }
+        set { SetProperty(ref addStudentLateCommand, value); }
+    }
+
+    public ICommand SelectBrowseStudent { get; set; }
 
     public GoHomeEarlyPageViewModel()
     {
-        DataStudentTolate = new ObservableCollection<SharedModel.Models.StudentToLate>();
-        DataStudentTolate.Add(new SharedModel.Models.StudentToLate()
-        {
-            Student = new SharedModel.Models.Student { Name = "Avip Siapa Saja" },
+      
+        AsyncCommand = new Command(async () => await LoadAction());
+        AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
+        DataStudentGoHomeEarly = new ObservableCollection<StudentToLateAndComeHomeSoEarlyResponse>();
+        IsBusy = true;
+    }
 
-        });
-        DataStudentTolate.Add(new SharedModel.Models.StudentToLate()
-        {
-            Student = new SharedModel.Models.Student { Name = "Ismail Mana Saja Juga" },
+    [Obsolete]
+    private async Task<bool> AddStudentLateCommandValidation()
+    {
+        var scheduleService = ServiceHelper.GetService<IScheduleService>();
+        return await scheduleService.IamPicket();
+    }
 
-        });
+    private async Task AddStudentLateCommandAction()
+    {
+        var form = new AddGoHomeEarlyPage();
+        await Shell.Current.Navigation.PushModalAsync(form);
 
     }
+    private async Task LoadAction()
+    {
+        try
+        {
+            var service = ServiceHelper.GetService<IPicketService>();
+            var picket = await service.GetPicketToday();
+            if (picket != null)
+            {
+                DataStudentGoHomeEarly.Clear();
+                foreach (var item in picket.StudentsComeHomeEarly)
+                {
+                    DataStudentGoHomeEarly.Add(item);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("Warning", ex.Message, "Ok");
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+
+
 }

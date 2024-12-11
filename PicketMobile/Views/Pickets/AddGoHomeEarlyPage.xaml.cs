@@ -1,24 +1,26 @@
 using CommunityToolkit.Mvvm.Input;
+using PicketMobile.Models;
 using PicketMobile.Services;
+using SharedModel;
 using SharedModel.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace PicketMobile.Views.Pickets;
 
-public partial class AddTerlambatPage : ContentPage
+public partial class AddGoHomeEarlyPage : ContentPage
 {
-    public AddTerlambatPage()
+    public AddGoHomeEarlyPage()
     {
         InitializeComponent();
-        BindingContext = new AddTerlambatPageViewModel(pickerStudent);
+        BindingContext = new AddGoHomeEarlyPageViewModel(pickerStudent);
     }
 }
 
-internal class AddTerlambatPageViewModel : BaseNotify
+internal class AddGoHomeEarlyPageViewModel : BaseNotify
 {
     private Models.StudentToLateAndHomeEarlyModel studentToLateModel = new Models.StudentToLateAndHomeEarlyModel();
-
+    public ICollection<StatusKehadiran> AttendanceStatuses { get; set; }
     public ObservableCollection<Student> Students { get; set; } = new ObservableCollection<Student>();
 
     public Models.StudentToLateAndHomeEarlyModel Model
@@ -64,9 +66,9 @@ internal class AddTerlambatPageViewModel : BaseNotify
         set { SetProperty(ref searchText, value); }
     }
 
-    [Obsolete]
-    public AddTerlambatPageViewModel(Picker pickerStudent)
+    public AddGoHomeEarlyPageViewModel(Picker pickerStudent)
     {
+        AttendanceStatuses = new List<StatusKehadiran> { StatusKehadiran.Sakit, StatusKehadiran.Izin, StatusKehadiran.Lainnya };
         Model = new Models.StudentToLateAndHomeEarlyModel { AtTime = DateTime.Now.TimeOfDay };
         picker = pickerStudent;
         AddCommand = new AsyncRelayCommand<object>(AddAcommandAcation, AddCommandValidate);
@@ -90,6 +92,8 @@ internal class AddTerlambatPageViewModel : BaseNotify
             }
 
         };
+
+
     }
 
     private void CloseAction(object? obj)
@@ -132,14 +136,15 @@ internal class AddTerlambatPageViewModel : BaseNotify
         }
     }
 
-    [Obsolete]
     private async Task AddAcommandAcation(object? obj)
     {
         try
         {
             IsBusy = true;
             var picketService = ServiceHelper.GetService<IPicketService>();
-            var result = await picketService.PostToLate(new SharedModel.Requests.StudentToLateAndEarlyRequest(Model.Student.Id, Model.AtTime, Model.Description));
+            var result = await picketService.PostToComeHomeEarly(new SharedModel.Requests.
+                StudentToLateAndEarlyRequest(Model.Student.Id, Model.AtTime, Model.Description,
+                 (AttendanceStatus)Convert.ToInt32(Model.StatusKehadiran)));
             if (result != null)
             {
                 Model.Id = result.Id;
@@ -161,7 +166,7 @@ internal class AddTerlambatPageViewModel : BaseNotify
 
     private bool AddCommandValidate(object? obj)
     {
-        if (Model.Student == null || (Model.AtTime < new TimeSpan(8, 0, 0)))
+        if (Model.StatusKehadiran == StatusKehadiran.Hadir || Model.StatusKehadiran == StatusKehadiran.Alpa || Model.Student == null || (Model.AtTime < new TimeSpan(8, 0, 0)))
         {
             return false;
         }

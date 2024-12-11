@@ -5,36 +5,39 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              Title="Picket Hari Ini">
     <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="plus.svg"  />
+        <ToolbarItem IconImageSource="addcircle.svg"  Command="{Binding AddStudentLateCommand}"  />
     </ContentPage.ToolbarItems>
 
-    <CollectionView ItemsSource="{Binding DataStudentTolate}" Margin="0,10">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
-                    <Grid.Background>
-                        <LinearGradientBrush EndPoint="1,0">
-                            <GradientStop Color="#e9edb4" Offset="0.1" />
-                            <GradientStop Color="#add9bf" Offset="0.9" />
-                        </LinearGradientBrush>
-                    </Grid.Background>
-                    <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60"  TextColor="White"
-                                            Margin="5,0" HeightRequest="60" CornerRadius="100" Text="ZS" 
-                                            BackgroundColor="#fe5f75" ImageSource="{Binding Photo}" />
-                    <StackLayout Grid.Column="1" VerticalOptions="Center" >
-                        <Label FontSize="16" Text="{Binding Student.Name}" ></Label>
-                        <Grid ColumnDefinitions="*,auto">
-                            <Label Text="X RPL" FontSize="13" ></Label>
-                            <HorizontalStackLayout HorizontalOptions="End" >
-                                <Label Text="Izin" FontSize="13"  Margin="10,0" ></Label>
-                                <Label Text="|" FontSize="13"   ></Label>
-                                <Label Text="8:30 am" FontSize="13"  Margin="10,0" ></Label>
-                            </HorizontalStackLayout>
-                        </Grid>
-                    </StackLayout>
-                </Grid>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+
+    <RefreshView Command="{Binding AsyncCommand}" IsRefreshing="{Binding IsBusy}">
+        <CollectionView ItemsSource="{Binding DataStudentTolate}" Margin="0,10">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
+                        <Grid.Background>
+                            <LinearGradientBrush EndPoint="1,0">
+                                <GradientStop Color="#fc9840" Offset="0.1" />
+                                <GradientStop Color="#fe5f75" Offset="0.9" />
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60" Text="{Binding StudentInitial}" TextColor="White"
+                                         Margin="5,0" HeightRequest="60" CornerRadius="100" 
+                                         BackgroundColor="#56d388" ImageSource="{Binding StudentPhoto}" />
+                        <StackLayout Grid.Column="1" VerticalOptions="Center" >
+                            <Label FontSize="16" Text="{Binding StudentName}" TextColor="White"></Label>
+                            <Grid ColumnDefinitions="*,auto">
+                                <Label Text="{Binding ClassRoomName}" FontSize="13" TextColor="White"></Label>
+                                <HorizontalStackLayout>
+                                    <Label Text="{Binding AttendanceStatus, StringFormat='{0:HH:mm}'}" FontSize="13" TextColor="White" Margin="10,0" ></Label>
+                                    <Label Text="|" FontSize="13" TextColor="White" Margin="10,0"  ></Label>
+                                    <Label Text="{Binding CreateAt, StringFormat='{0:HH:mm}'}" FontSize="13" TextColor="White" Margin="10,0" HorizontalOptions="End" ></Label>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </StackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
 
 </ContentPage>

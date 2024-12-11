@@ -1,4 +1,4 @@
-﻿namespace SharedModel.Models
+﻿namespace PiketWebApi.Data
 {
     public class Schedule
     {
