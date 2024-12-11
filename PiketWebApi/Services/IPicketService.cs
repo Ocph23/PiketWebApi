@@ -117,23 +117,20 @@ namespace PiketWebApi.Services
                     throw new SystemException("Siswa sudah di daftarkan !");
                 }
 
-                var toLate = new 
+                var toLate = new LateAndGoHomeEarly
                 {
                     Student = new Student { Id = late.StudentId },
                     CreatedBy = userClaim.Item2,
-                    AttendanceStatus = SharedModel.AttendanceStatus.Hadir,
+                    AttendanceStatus = late.StudentAttendance,
                     CreateAt = DateTime.Now.ToUniversalTime(),
                     Description = late.Description,
-                    AtTime = late.AtTime
+                    Time = late.AtTime
                 };
 
                 dbContext.Entry(toLate.Student).State = EntityState.Unchanged;
                 picket.LateAndComeHomeEarly.Add(toLate);
                 dbContext.SaveChanges();
-                var result = GenerateStudentToLateAndComeHomeSoEarlyResponse(toLate);
-
-                picketToday.StudentsToLate.Add(result);
-
+                var result = await GenerateStudentToLateAndComeHomeSoEarlyResponse(toLate);
                 return result;
             }
             catch (Exception ex)
@@ -144,7 +141,7 @@ namespace PiketWebApi.Services
 
 
 
-        private async Task<StudentToLateAndComeHomeSoEarlyResponse?> GenerateStudentToLateAndComeHomeSoEarlyResponse(StudentToLate x)
+        private async Task<StudentToLateAndComeHomeSoEarlyResponse?> GenerateStudentToLateAndComeHomeSoEarlyResponse(LateAndGoHomeEarly x)
         {
             var sx = await studentService.GetStudentWithClass(x.Id);
             return new StudentToLateAndComeHomeSoEarlyResponse
@@ -152,7 +149,7 @@ namespace PiketWebApi.Services
                 Id = x.Id,
                 AttendanceStatus = x.AttendanceStatus,
                 CreateAt = x.CreateAt,
-                AtTime = x.AtTime,
+                Time = x.Time,
                 TeacherId = x.CreatedBy.Id,
                 TeacherName = x.CreatedBy.Name,
                 TeacherPhoto = x.CreatedBy.Photo,
@@ -180,12 +177,12 @@ namespace PiketWebApi.Services
                 Id = response.Id,
                 StartAt = response.StartAt,
                 Weather = response.Weather,
-                StudentsComeHomeEarly = Enumerable.Empty<StudentToLateAndComeHomeSoEarlyResponse>(),
-                StudentsToLate = Enumerable.Empty<StudentToLateAndComeHomeSoEarlyResponse>()
+                StudentsComeHomeEarly = Enumerable.Empty<StudentToLateAndComeHomeSoEarlyResponse>().ToList(),
+                StudentsToLate = Enumerable.Empty<StudentToLateAndComeHomeSoEarlyResponse>().ToList()
             };
 
             var students = await studentService.GetAlStudentWithClass();
-            result.StudentsToLate = (from x in response.StudentsToLate
+            result.StudentsToLate = (from x in response.LateAndComeHomeEarly
                                      join s in students on x.Student.Id equals s.Id into sGroup
                                      from sx in sGroup.DefaultIfEmpty()
                                      select
@@ -193,7 +190,7 @@ namespace PiketWebApi.Services
                                      {
                                          Id = x.Id,
                                          AttendanceStatus = x.AttendanceStatus,
-                                         AtTime = x.AtTime,
+                                         Time = x.Time,
                                          CreateAt = x.CreateAt,
                                          TeacherId = x.CreatedBy.Id,
                                          TeacherName = x.CreatedBy.Name,
@@ -207,32 +204,10 @@ namespace PiketWebApi.Services
                                          DepartmentId = sx == null ? null : sx.DepartmenId,
                                          DepartmentName = sx == null ? null : sx.DepartmenName
 
-                                     }).AsEnumerable();
+                                     }).ToList();
 
 
-            result.StudentsComeHomeEarly = (from x in response.StudentsComeHomeEarly
-                                            join s in students on x.Student.Id equals s.Id into sGroup
-                                            from sx in sGroup.DefaultIfEmpty()
-                                            select new StudentToLateAndComeHomeSoEarlyResponse
-                                            {
-                                                Id = x.Id,
-                                                AttendanceStatus = x.AttendanceStatus,
-                                                CreateAt = x.CreateAt,
-                                                AtTime = x.Time,
-                                                TeacherId = x.CreatedBy.Id,
-                                                TeacherName = x.CreatedBy.Name,
-                                                TeacherPhoto = x.CreatedBy.Photo,
-                                                Description = x.Description,
-                                                StudentPhoto = x.Student.Photo,
-                                                StudentId = x.Student.Id,
-                                                StudentName = x.Student.Name,
-                                                ClassRoomId = sx == null ? null : sx.ClassRoomId,
-                                                ClassRoomName = sx == null ? null : sx.ClassRoomName,
-                                                DepartmentId = sx == null ? null : sx.DepartmenId,
-                                                DepartmentName = sx == null ? null : sx.DepartmenName
-                                            }).AsEnumerable();
-
-
+            
             return result;
 
         }

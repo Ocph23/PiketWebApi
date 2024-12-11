@@ -175,22 +175,32 @@ namespace PiketWebApi.Services
 
 
                 var student = req.ClassRommLeaderId > 0 ? new Student { Id = req.ClassRommLeaderId } : null;
+                var teacher = req.HomeRoomTeacherId > 0 ? new Teacher { Id = req.HomeRoomTeacherId } : null;
+                var department = req.DepartmentId > 0 ? new Department { Id = req.DepartmentId } : null;
+                
                 var model = new ClassRoom()
                 {
                     Name = req.Name,
                     SchoolYear = shoolYearActive,
-                    ClassLeader = student,
-                    HomeroomTeacher = req.HomeRoomTeacherId > 0 ? new Teacher { Id = req.HomeRoomTeacherId } : null,
-                    Department = req.DepartmentId > 0 ? new Department { Id = req.DepartmentId } : null,
+                    ClassLeader = student??student,
+                    HomeroomTeacher = teacher??teacher,
+                    Department = department??department,
                 };
 
-                dbContext.Entry(model.Department).State = EntityState.Unchanged;
-                dbContext.Entry(model.HomeroomTeacher).State = EntityState.Unchanged;
-                dbContext.Entry(model.ClassLeader).State = EntityState.Unchanged;
-                model.Students.Add(new ClassRoomMember
+
+                if(model.Department!=null)
+                    dbContext.Entry(model.Department).State = EntityState.Unchanged;
+                if(model.ClassLeader!=null)
                 {
-                    Student = student
-                });
+                    dbContext.Entry(model.ClassLeader).State = EntityState.Unchanged;
+                    model.Students.Add(new ClassRoomMember
+                    {
+                        Student = student
+                    });
+                }
+                if(model.HomeroomTeacher!=null)
+                    dbContext.Entry(model.HomeroomTeacher).State = EntityState.Unchanged;
+
                 dbContext.ClassRooms.Add(model);
                 dbContext.SaveChanges();
                 var xx = await GetClassRoomById(model.Id);

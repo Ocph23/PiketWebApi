@@ -12,8 +12,8 @@ using PiketWebApi.Data;
 namespace PiketWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241130113008__initial")]
-    partial class _initial
+    [Migration("20241211025148_fixClassRoom")]
+    partial class fixClassRoom
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,7 +224,7 @@ namespace PiketWebApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("SharedModel.Models.ClassRoom", b =>
+            modelBuilder.Entity("PiketWebApi.Data.ClassRoom", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -261,7 +261,7 @@ namespace PiketWebApi.Migrations
                     b.ToTable("ClassRooms");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.ClassRoomMember", b =>
+            modelBuilder.Entity("PiketWebApi.Data.ClassRoomMember", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -284,7 +284,7 @@ namespace PiketWebApi.Migrations
                     b.ToTable("ClassRoomMember");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.Department", b =>
+            modelBuilder.Entity("PiketWebApi.Data.Department", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -306,7 +306,47 @@ namespace PiketWebApi.Migrations
                     b.ToTable("Departments");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.Picket", b =>
+            modelBuilder.Entity("PiketWebApi.Data.LateAndGoHomeEarly", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttendanceStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("PicketId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("LateAndGoHomeEarly");
+                });
+
+            modelBuilder.Entity("PiketWebApi.Data.Picket", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -323,11 +363,11 @@ namespace PiketWebApi.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<TimeOnly?>("EndAt")
-                        .HasColumnType("time without time zone");
+                    b.Property<TimeSpan?>("EndAt")
+                        .HasColumnType("interval");
 
-                    b.Property<TimeOnly?>("StartAt")
-                        .HasColumnType("time without time zone");
+                    b.Property<TimeSpan?>("StartAt")
+                        .HasColumnType("interval");
 
                     b.Property<int>("Weather")
                         .HasColumnType("integer");
@@ -336,10 +376,12 @@ namespace PiketWebApi.Migrations
 
                     b.HasIndex("CreatedById");
 
+                    b.HasIndex("Date");
+
                     b.ToTable("Picket");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.Schedule", b =>
+            modelBuilder.Entity("PiketWebApi.Data.Schedule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -365,7 +407,7 @@ namespace PiketWebApi.Migrations
                     b.ToTable("Schedules");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.SchoolYear", b =>
+            modelBuilder.Entity("PiketWebApi.Data.SchoolYear", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -384,13 +426,13 @@ namespace PiketWebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Year")
+                    b.HasIndex("Year", "Semester")
                         .IsUnique();
 
                     b.ToTable("SchoolYears");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.Student", b =>
+            modelBuilder.Entity("PiketWebApi.Data.Student", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -430,87 +472,7 @@ namespace PiketWebApi.Migrations
                     b.ToTable("Students");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.StudentComeHomeEarly", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AttendanceStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedById")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("PicketId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer");
-
-                    b.Property<TimeSpan>("Time")
-                        .HasColumnType("interval");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("PicketId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("StudentComeHomeEarly");
-                });
-
-            modelBuilder.Entity("SharedModel.Models.StudentToLate", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<TimeSpan?>("AtTime")
-                        .HasColumnType("interval");
-
-                    b.Property<int>("AttendanceStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreateAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("PicketId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("StudentId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("PicketId");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("StudentToLate");
-                });
-
-            modelBuilder.Entity("SharedModel.Models.Teacher", b =>
+            modelBuilder.Entity("PiketWebApi.Data.Teacher", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -539,9 +501,6 @@ namespace PiketWebApi.Migrations
                     b.Property<string>("Photo")
                         .HasColumnType("text");
 
-                    b.Property<int?>("PicketId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("PlaceOfBorn")
                         .HasColumnType("text");
 
@@ -550,9 +509,42 @@ namespace PiketWebApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.ToTable("Teachers");
+                });
+
+            modelBuilder.Entity("PiketWebApi.Data.TeacherAttendance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttendanceStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("PicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TeacherId")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan?>("Time")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
                     b.HasIndex("PicketId");
 
-                    b.ToTable("Teachers");
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("TeacherAttendance");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -606,23 +598,23 @@ namespace PiketWebApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SharedModel.Models.ClassRoom", b =>
+            modelBuilder.Entity("PiketWebApi.Data.ClassRoom", b =>
                 {
-                    b.HasOne("SharedModel.Models.Student", "ClassLeader")
+                    b.HasOne("PiketWebApi.Data.Student", "ClassLeader")
                         .WithMany()
                         .HasForeignKey("ClassLeaderId");
 
-                    b.HasOne("SharedModel.Models.Department", "Department")
+                    b.HasOne("PiketWebApi.Data.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedModel.Models.Teacher", "HomeroomTeacher")
+                    b.HasOne("PiketWebApi.Data.Teacher", "HomeroomTeacher")
                         .WithMany()
                         .HasForeignKey("HomeroomTeacherId");
 
-                    b.HasOne("SharedModel.Models.SchoolYear", "SchoolYear")
+                    b.HasOne("PiketWebApi.Data.SchoolYear", "SchoolYear")
                         .WithMany()
                         .HasForeignKey("SchoolYearId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -637,13 +629,13 @@ namespace PiketWebApi.Migrations
                     b.Navigation("SchoolYear");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.ClassRoomMember", b =>
+            modelBuilder.Entity("PiketWebApi.Data.ClassRoomMember", b =>
                 {
-                    b.HasOne("SharedModel.Models.ClassRoom", null)
+                    b.HasOne("PiketWebApi.Data.ClassRoom", null)
                         .WithMany("Students")
                         .HasForeignKey("ClassRoomId");
 
-                    b.HasOne("SharedModel.Models.Student", "Student")
+                    b.HasOne("PiketWebApi.Data.Student", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -652,24 +644,43 @@ namespace PiketWebApi.Migrations
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.Picket", b =>
+            modelBuilder.Entity("PiketWebApi.Data.LateAndGoHomeEarly", b =>
                 {
-                    b.HasOne("SharedModel.Models.Teacher", "CreatedBy")
+                    b.HasOne("PiketWebApi.Data.Teacher", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("PiketWebApi.Data.Picket", null)
+                        .WithMany("LateAndComeHomeEarly")
+                        .HasForeignKey("PicketId");
+
+                    b.HasOne("PiketWebApi.Data.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("PiketWebApi.Data.Picket", b =>
+                {
+                    b.HasOne("PiketWebApi.Data.Teacher", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.Schedule", b =>
+            modelBuilder.Entity("PiketWebApi.Data.Schedule", b =>
                 {
-                    b.HasOne("SharedModel.Models.SchoolYear", "SchoolYear")
+                    b.HasOne("PiketWebApi.Data.SchoolYear", "SchoolYear")
                         .WithMany()
                         .HasForeignKey("SchoolYearId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SharedModel.Models.Teacher", "Teacher")
+                    b.HasOne("PiketWebApi.Data.Teacher", "Teacher")
                         .WithMany()
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -680,65 +691,27 @@ namespace PiketWebApi.Migrations
                     b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.StudentComeHomeEarly", b =>
+            modelBuilder.Entity("PiketWebApi.Data.TeacherAttendance", b =>
                 {
-                    b.HasOne("SharedModel.Models.Teacher", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SharedModel.Models.Picket", null)
-                        .WithMany("StudentsComeHomeEarly")
-                        .HasForeignKey("PicketId");
-
-                    b.HasOne("SharedModel.Models.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SharedModel.Models.StudentToLate", b =>
-                {
-                    b.HasOne("SharedModel.Models.Teacher", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("SharedModel.Models.Picket", null)
-                        .WithMany("StudentsToLate")
-                        .HasForeignKey("PicketId");
-
-                    b.HasOne("SharedModel.Models.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("SharedModel.Models.Teacher", b =>
-                {
-                    b.HasOne("SharedModel.Models.Picket", null)
+                    b.HasOne("PiketWebApi.Data.Picket", null)
                         .WithMany("TeacherAttendance")
                         .HasForeignKey("PicketId");
+
+                    b.HasOne("PiketWebApi.Data.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId");
+
+                    b.Navigation("Teacher");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.ClassRoom", b =>
+            modelBuilder.Entity("PiketWebApi.Data.ClassRoom", b =>
                 {
                     b.Navigation("Students");
                 });
 
-            modelBuilder.Entity("SharedModel.Models.Picket", b =>
+            modelBuilder.Entity("PiketWebApi.Data.Picket", b =>
                 {
-                    b.Navigation("StudentsComeHomeEarly");
-
-                    b.Navigation("StudentsToLate");
+                    b.Navigation("LateAndComeHomeEarly");
 
                     b.Navigation("TeacherAttendance");
                 });

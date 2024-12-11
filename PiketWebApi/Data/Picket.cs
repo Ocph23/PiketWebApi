@@ -10,8 +10,8 @@ namespace PiketWebApi.Data
         public int Id { get; set; }
         public DateOnly Date { get; set; }
         public Weather Weather { get; set; }
-        public TimeOnly? StartAt { get; set; }
-        public TimeOnly? EndAt { get; set; }
+        public TimeSpan? StartAt { get; set; }
+        public TimeSpan? EndAt { get; set; }
         public Teacher? CreatedBy { get; set; }
         public DateTime CreateAt { get; set; } = DateTime.Now.ToUniversalTime();
         public ICollection<TeacherAttendance> TeacherAttendance { get; set; } = default;
@@ -23,8 +23,8 @@ namespace PiketWebApi.Data
                 CreateAt = DateTime.Now.ToUniversalTime(),
                 CreatedBy = teacher,
                 Date = DateOnly.FromDateTime(DateTime.Now),                         
-                StartAt = TimeOnly.FromTimeSpan(new TimeSpan(7, 15, 0)),
-                EndAt= TimeOnly.FromTimeSpan(new TimeSpan(15, 00, 0)), Weather= Weather.Cerah
+                StartAt = new TimeSpan(7, 15, 0),
+                EndAt= new TimeSpan(15, 00, 0), Weather= Weather.Cerah
             };
         }
     }

@@ -30,13 +30,13 @@ namespace SharedModel.Responses
         public string? StudentName { get; set; }
         
         public string? StudentPhoto { get; set; }
-        public AttendanceStatus AttendanceStatus { get; set; }
+        public LateAndGoHomeEarlyAttendanceStatus AttendanceStatus { get; set; }
         public string? Description { get; set; }
         public int TeacherId { get; set; }
         public string? TeacherName { get; set; }
         public string? TeacherPhoto { get; set; }
         public DateTime CreateAt { get; set; } = DateTime.Now;
-        public TimeSpan? AtTime { get; set; } = DateTime.Now.TimeOfDay;
+        public TimeSpan? Time { get; set; } = DateTime.Now.TimeOfDay;
         public int? ClassRoomId { get; set; }
         public string? ClassRoomName { get; set; }
         public int? DepartmentId { get; set; }

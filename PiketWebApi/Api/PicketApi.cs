@@ -14,9 +14,8 @@ namespace PiketWebApi.Api
             group.MapGet("/", GetPickerToday);
             group.MapPost("/", PostPicket);
             group.MapPut("/{id}", PutPicket);
-            group.MapPost("/late", Createlate);
-            group.MapPost("/early", Createsoearly);
-            group.MapDelete("/late/{id}", RemoveLate);
+            group.MapPost("/lateandearly", AddLateandearly);
+            group.MapDelete("/lateandearly/{id}", RemoveLateandearly);
             return group.WithTags("picket").RequireAuthorization(); ;
         }
 
@@ -48,7 +47,7 @@ namespace PiketWebApi.Api
         }
 
 
-        private static async Task<IResult> RemoveLate(HttpContext context, ApplicationDbContext dbContext, int id)
+        private static async Task<IResult> RemoveLateandearly(HttpContext context, ApplicationDbContext dbContext, int id)
         {
             try
             {
@@ -70,25 +69,12 @@ namespace PiketWebApi.Api
             }
         }
 
-        private static async Task<IResult> Createsoearly(HttpContext context, IPicketService picketService, StudentToLateAndEarlyRequest early)
+     
+        private static async Task<IResult> AddLateandearly(HttpContext context, IPicketService picketService, StudentToLateAndEarlyRequest late)
         {
             try
             {
-                var picket = await picketService.AddStudentComeHomeSoEarly(early);
-                return Results.Ok(early);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
-
-        }
-
-        private static async Task<IResult> Createlate(HttpContext context, IPicketService picketService, StudentToLateAndEarlyRequest late)
-        {
-            try
-            {
-                var result = await picketService.AddStudentToLate(late);
+                var result = await picketService.AddStudentToLateComeHomeSoEarly(late);
                 return Results.Ok(late);
             }
             catch (Exception ex)

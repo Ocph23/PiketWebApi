@@ -40,7 +40,7 @@ namespace PiketWebApi.Api
             throw new NotImplementedException();
         }
 
-        private static async ValueTask<AuthenticateResponse> LoginAction(
+        private static async Task<IResult> LoginAction(
            SharedModel.Requests.LoginRequest request,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager, IConfiguration _config,
@@ -71,7 +71,8 @@ namespace PiketWebApi.Api
                     {
                         profile = dbContext.Students.FirstOrDefault(x => x.UserId == identity.Id);
                     }
-                    return new AuthenticateResponse(user.Name, user.Email, roles, token, profile);
+                    return Results.Ok(new AuthenticateResponse
+                    (user.Name, user.Email, roles, token, profile));
                 }
 
                 if (result.IsNotAllowed)
@@ -81,7 +82,7 @@ namespace PiketWebApi.Api
             }
             catch (System.Exception ex)
             {
-                throw new SystemException(ex.Message);
+                return Results.Unauthorized();
             }
         }
 
