@@ -1,5 +1,5 @@
 @url = https://localhost:7203/api
-@token = bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0OWYxZTRjLWFhM2QtNDY1MC1iZTYzLWY4NzdhODkzZWQzNCIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6ImZkMWE0MmVkLTcwOTgtNGFhNi05NjAxLTlkMGI5OGI3ZWYxMCIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczMDE4NDI1OSwiZXhwIjoxNzMwNzg5MDU5LCJpYXQiOjE3MzAxODQyNTksImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.oLNNjIwkIXduQHqnLf1IX_B-T8azm3i4Qz3DNx4LKR4a4OiFsBSXshGDdlG-a05OHUBVushUxhVbae6UY7FmbQ
+@token = bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiODVhNmRjLTBhYTItNDM3ZS1iMmU3LTBmZjdmMzM5YWE2NiIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6Ijk2MWMyYTU4LTY4Y2YtNDUzNS05OWRhLTdhZjA0OGYwMTMzMyIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczMzU2OTQxNSwiZXhwIjoxNzM0MTc0MjE1LCJpYXQiOjE3MzM1Njk0MTUsImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.6kEo-vRwDc-NNeVQq-ChP1EBAZwZUw37ho84qzHzJPdUzC-13Us1OMVLcKqNGUoghZvdEtsby0mkQIpLGM1odQ
 ####
 POST {{url}}/auth/login HTTP/1.1
 Content-Type:application/json
@@ -28,7 +28,7 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "name": "X",
+  "name": "",
   "departmentId": 1,
   "classRommLeaderId": 1,
   "homeRoomTeacherId": 1

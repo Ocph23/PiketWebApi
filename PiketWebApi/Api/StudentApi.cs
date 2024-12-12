@@ -1,8 +1,10 @@
 ﻿
+using ErrorOr;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PiketWebApi.Abstractions;
 using PiketWebApi.Data;
 using PiketWebApi.Services;
 using SharedModel.Models;
@@ -26,98 +28,53 @@ namespace PiketWebApi.Api
 
         private static async Task<IResult> GetStudentWithClass(HttpContext context, IStudentService studentService, int id)
         {
-            try
-            {
-                return Results.Ok(await studentService.GetStudentWithClass(id));
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await studentService.GetStudentWithClass(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
         }
 
-        private static async Task<IResult> GetAllStudentWithClass(HttpContext context,IStudentService studentService)
+        private static async Task<IResult> GetAllStudentWithClass(HttpContext context, IStudentService studentService)
         {
-            try
-            {
-               return Results.Ok(await studentService.GetAlStudentWithClass());
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await studentService.GetAlStudentWithClass();
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> SearchStudent(HttpContext context, IStudentService studentService, string searchtext)
         {
-            try
-            {
-                return Results.Ok(await studentService.SearchStudent(searchtext));
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await studentService.SearchStudent(searchtext);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
         }
 
         private static async Task<IResult> DeleteStudent(HttpContext context, IStudentService studentService, int id)
         {
-            try
-            {
-                return Results.Ok(await studentService.DeleteStudent(id));
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(Helper.ApiCreateError);
-            }
+            var result = await studentService.DeleteStudent(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> PutStudent(HttpContext context, IStudentService studentService, int id, Student model)
         {
-            try
-            {
-                return Results.Ok(await studentService.PutStudent(id,model));
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(Helper.ApiCreateError);
-            }
+            var result = await studentService.PutStudent(id, model);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> PostStudent(HttpContext context, IStudentService studentService, Student model)
         {
-            try
-            {
-                return Results.Ok(await studentService.PostStudent(model));
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(Helper.ApiCreateError);
-            }
+            var result = await studentService.PostStudent(model);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> GetAllStudent(HttpContext context, IStudentService studentService)
         {
-            try
-            {
-                return Results.Ok(await studentService.GetAllStudent());
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+
+            var result = await studentService.GetAllStudent();
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> GetStudentById(HttpContext context, IStudentService studentService, int id)
         {
-            try
-            {
-                return Results.Ok(await studentService.GetStudentById(id));
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(Helper.ApiCreateError);
-            }
+            var result = await studentService.GetStudentById(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
     }
 }

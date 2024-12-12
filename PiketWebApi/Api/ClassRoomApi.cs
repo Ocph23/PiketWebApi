@@ -1,9 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ErrorOr;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PiketWebApi.Abstractions;
 using PiketWebApi.Data;
+using PiketWebApi.Exceptions;
 using PiketWebApi.Services;
 using SharedModel.Models;
 using SharedModel.Requests;
 using SharedModel.Responses;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PiketWebApi.Api
 {
@@ -24,111 +30,51 @@ namespace PiketWebApi.Api
 
         private static async Task<IResult> GetClassRoomBySchoolYear(HttpContext context, IClassRoomService classRoomService, int id)
         {
-            try
-            {
-                var data = await classRoomService.GetClassRoomBySchoolYear(id);
-                return Results.Ok(data);
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await classRoomService.GetClassRoomBySchoolYear(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
-        private static async Task<IResult> PostClassRoom(HttpContext context, IClassRoomService classRoomService,  ClassRoomRequest req)
+        private static async Task<IResult> PostClassRoom(HttpContext context, IClassRoomService classRoomService, ClassRoomRequest req)
         {
-            try
-            {
-                var result = await classRoomService.PostClassRoom(req);
-                return Results.Ok(result);
-    
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await classRoomService.PostClassRoom(req);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> GetClassRoomById(HttpContext context, ApplicationDbContext dbContext, IClassRoomService classRoomService, int id)
         {
-            try
-            {
-                var data = await classRoomService.GetClassRoomById(id);
-                return Results.Ok(data);
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await classRoomService.GetClassRoomById(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> RemoveStudentFromClassRoom(HttpContext context, IClassRoomService classRoomService, int classroomId, int studentId)
         {
-            try
-            {
-                var data = await classRoomService.RemoveStudentFromClassRoom(classroomId, studentId);
-                return Results.Ok(data);
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await classRoomService.RemoveStudentFromClassRoom(classroomId, studentId);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> AddStudentToClassRoom(HttpContext context, IClassRoomService classRoomService, int classroomId, Student student)
         {
-            try
-            {
-                var data = await classRoomService.AddStudentToClassRoom(classroomId, student);
-                return Results.Ok(data);
-
-            }
-            catch (Exception)
-            {
-                return TypedResults.BadRequest(Helper.ApiCreateError);
-            }
+            var result = await classRoomService.AddStudentToClassRoom(classroomId, student);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> DeleteClassRoom(HttpContext context, IClassRoomService classRoomService, int id)
         {
-
-            try
-            {
-                var data = await classRoomService.DeleteClassRoom(id);
-                return Results.Ok(data);
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
-
+            var result = await classRoomService.DeleteClassRoom(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> PutClassRoom(HttpContext context, IClassRoomService classRoomService, int id, ClassRoomRequest req)
         {
-            try
-            {
-                var data = await classRoomService.PutClassRoom(id,req);
-                return Results.Ok(data);
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCreateError);
-            }
+            var result = await classRoomService.PutClassRoom(id, req);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
 
         private static async Task<IResult> GetAllClassRoom(HttpContext context, IClassRoomService classRoomService)
         {
-            try
-            {
-                var data = await classRoomService.GetAllClassRoom();
-                return Results.Ok(data);
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await classRoomService.GetAllClassRoom();
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
     }
 }

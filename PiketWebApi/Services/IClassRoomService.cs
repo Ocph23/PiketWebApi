@@ -1,24 +1,24 @@
 ﻿
+using ErrorOr;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
-using SharedModel.Models;
+using PiketWebApi.Validators;
 using SharedModel.Requests;
 using SharedModel.Responses;
-using static System.Net.WebRequestMethods;
 
 namespace PiketWebApi.Services
 {
     public interface IClassRoomService
     {
-        Task<bool> AddStudentToClassRoom(int classroomId, Student student);
-        Task<bool> DeleteClassRoom(int id);
-        Task<IEnumerable<ClassRoomResponse>> GetAllClassRoom();
-        Task<ClassRoomResponse> GetClassRoomById(int id);
-        Task<IEnumerable<ClassRoomResponse>> GetClassRoomBySchoolYear(int id);
-        Task<ClassRoomResponse> PostClassRoom(ClassRoomRequest req);
-        Task<bool> PutClassRoom(int id, ClassRoomRequest req);
-        Task<bool> RemoveStudentFromClassRoom(int classroomId, int studentId);
+        Task<ErrorOr<bool>> AddStudentToClassRoom(int classroomId, Student student);
+        Task<ErrorOr<bool>> DeleteClassRoom(int id);
+        Task<ErrorOr<IEnumerable<ClassRoomResponse>>> GetAllClassRoom();
+        Task<ErrorOr<ClassRoomResponse>> GetClassRoomById(int id);
+        Task<ErrorOr<IEnumerable<ClassRoomResponse>>> GetClassRoomBySchoolYear(int id);
+        Task<ErrorOr<ErrorOr<ClassRoomResponse>>> PostClassRoom(ClassRoomRequest req);
+        Task<ErrorOr<bool>> PutClassRoom(int id, ClassRoomRequest req);
+        Task<ErrorOr<bool>> RemoveStudentFromClassRoom(int classroomId, int studentId);
     }
 
     public class ClassRoomService : IClassRoomService
@@ -34,26 +34,25 @@ namespace PiketWebApi.Services
             dbContext = _dbContext;
         }
 
-        public Task<bool> AddStudentToClassRoom(int classroomId, Student student)
+        public async Task<ErrorOr<bool>> AddStudentToClassRoom(int classroomId, Student student)
         {
             try
             {
 
                 var classroom = dbContext.ClassRooms.Include(x => x.Students).ThenInclude(x => x.Student).SingleOrDefault(x => x.Id == classroomId);
                 if (classroom == null)
-                    throw new SystemException("Class Room Not Found");
+                    return Error.Failure("Class Room", "Data Kelas Tidak Ditemukan");
 
                 var existsStudent = classroom.Students.SingleOrDefault(x => x.Student.Id == student.Id);
                 if (existsStudent != null)
                 {
-                    throw new SystemException($"{student.Name} Sudah Terdaftar di kelas ini ");
+                    return Error.Failure("Class Room", $"{student.Name} Sudah Terdaftar di kelas ini ");
                 }
-
                 var member = new ClassRoomMember { Student = student };
                 dbContext.Entry(member.Student).State = EntityState.Unchanged;
                 classroom.Students.Add(member);
                 dbContext.SaveChanges();
-                return Task.FromResult(true);
+                return await Task.FromResult(true);
             }
             catch (Exception)
             {
@@ -61,7 +60,7 @@ namespace PiketWebApi.Services
             }
         }
 
-        public Task<bool> DeleteClassRoom(int id)
+        public async Task<ErrorOr<bool>> DeleteClassRoom(int id)
         {
             try
             {
@@ -77,15 +76,15 @@ namespace PiketWebApi.Services
                     dbContext.Remove(result);
                     dbContext.SaveChanges();
                 }
-                return Task.FromResult(true);
+                return await Task.FromResult(true);
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
 
-        public Task<IEnumerable<ClassRoomResponse>> GetAllClassRoom()
+        public async Task<ErrorOr<IEnumerable<ClassRoomResponse>>> GetAllClassRoom()
         {
             try
             {
@@ -98,15 +97,16 @@ namespace PiketWebApi.Services
                     .Select(x => new ClassRoomResponse(x.Id, x.Name, x.SchoolYear.Id, x.SchoolYear.Year,
                     x.Department.Id, x.Department.Name, x.Department.Initial, x.ClassLeader.Id, x.ClassLeader.Name,
                     x.HomeroomTeacher.Id, x.HomeroomTeacher.Name, null));
-                return Task.FromResult(result.AsEnumerable());
+
+                return await Task.FromResult(result.ToList());
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict(); ;
             }
         }
 
-        public Task<ClassRoomResponse> GetClassRoomById(int id)
+        public async Task<ErrorOr<ClassRoomResponse>> GetClassRoomById(int id)
         {
             try
             {
@@ -120,17 +120,17 @@ namespace PiketWebApi.Services
                   .Select(x => new ClassRoomResponse(x.Id, x.Name, x.SchoolYear.Id, x.SchoolYear.Year,
                   x.Department.Id, x.Department.Name, x.Department.Initial, x.ClassLeader.Id, x.ClassLeader.Name,
                   x.HomeroomTeacher.Id, x.HomeroomTeacher.Name,
-                  x.Students.Select(x => new { Id = x.Student.Id, Nis = x.Student.Number, Name = x.Student.Name })));
-                return Task.FromResult(result.FirstOrDefault());
+                  x.Students.Select(x => new { Id = x.Student.Id, NIS = x.Student.NIS, NISN= x.Student.NISN, Name = x.Student.Name })));
+                return await Task.FromResult(result.FirstOrDefault());
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw;
+                return Error.Conflict(); ;
             }
 
         }
 
-        public Task<IEnumerable<ClassRoomResponse>> GetClassRoomBySchoolYear(int id)
+        public async Task<ErrorOr<IEnumerable<ClassRoomResponse>>> GetClassRoomBySchoolYear(int id)
         {
             try
             {
@@ -140,26 +140,38 @@ namespace PiketWebApi.Services
                     .Include(x => x.HomeroomTeacher)
                     .Include(x => x.ClassLeader)
                     .Include(x => x.Students).ThenInclude(x => x.Student)
-                    .Where(x => x.SchoolYear.Id==id)
+                    .Where(x => x.SchoolYear.Id == id)
                     .Select(x => new ClassRoomResponse(x.Id, x.Name, x.SchoolYear.Id, x.SchoolYear.Year,
                     x.Department.Id, x.Department.Name, x.Department.Initial, x.ClassLeader.Id, x.ClassLeader.Name,
                     x.HomeroomTeacher.Id, x.HomeroomTeacher.Name, null));
-                return Task.FromResult(result.AsEnumerable());
+                return await Task.FromResult(result.ToList());
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
 
-        public async Task<ClassRoomResponse> PostClassRoom(ClassRoomRequest req)
+        public async Task<ErrorOr<ErrorOr<ClassRoomResponse>>> PostClassRoom(ClassRoomRequest req)
         {
             try
             {
-
                 var shoolYearActive = dbContext.SchoolYears.SingleOrDefault(x => x.Actived);
                 if (shoolYearActive == null)
-                    throw new SystemException("Tahun Ajaran belum ada, hubungi administrator");
+                    return Error.Failure(StatusCodes.Status400BadRequest.ToString(), "Tahun ajaran baru belum dibuka.");
+
+
+                var validator = new ClassRoomValidator();
+                var result = await validator.ValidateAsync(req);
+                List<Error> errors = new List<Error>();
+                if (!result.IsValid)
+                {
+                    foreach (var item in result.Errors)
+                    {
+                        errors.Add(Error.Validation(item.PropertyName, item.ErrorMessage));
+                    }
+                    return errors;
+                }
 
                 Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<ClassRoom, SchoolYear> includableQueryable = dbContext.ClassRooms
                                     .Include(x => x.Department)
@@ -177,20 +189,19 @@ namespace PiketWebApi.Services
                 var student = req.ClassRommLeaderId > 0 ? new Student { Id = req.ClassRommLeaderId } : null;
                 var teacher = req.HomeRoomTeacherId > 0 ? new Teacher { Id = req.HomeRoomTeacherId } : null;
                 var department = req.DepartmentId > 0 ? new Department { Id = req.DepartmentId } : null;
-                
+
                 var model = new ClassRoom()
                 {
                     Name = req.Name,
                     SchoolYear = shoolYearActive,
-                    ClassLeader = student??student,
-                    HomeroomTeacher = teacher??teacher,
-                    Department = department??department,
+                    ClassLeader = student ?? student,
+                    HomeroomTeacher = teacher ?? teacher,
+                    Department = department ?? department,
                 };
 
-
-                if(model.Department!=null)
+                if (model.Department != null)
                     dbContext.Entry(model.Department).State = EntityState.Unchanged;
-                if(model.ClassLeader!=null)
+                if (model.ClassLeader != null)
                 {
                     dbContext.Entry(model.ClassLeader).State = EntityState.Unchanged;
                     model.Students.Add(new ClassRoomMember
@@ -198,23 +209,21 @@ namespace PiketWebApi.Services
                         Student = student
                     });
                 }
-                if(model.HomeroomTeacher!=null)
+                if (model.HomeroomTeacher != null)
                     dbContext.Entry(model.HomeroomTeacher).State = EntityState.Unchanged;
 
                 dbContext.ClassRooms.Add(model);
                 dbContext.SaveChanges();
                 var xx = await GetClassRoomById(model.Id);
                 return xx;
-
             }
             catch (Exception ex)
             {
-                throw;
+                return Error.Conflict(ex.Message);
             }
-
         }
 
-        public Task<bool> PutClassRoom(int id, ClassRoomRequest req)
+        public async Task<ErrorOr<bool>> PutClassRoom(int id, ClassRoomRequest req)
         {
 
             try
@@ -250,37 +259,36 @@ namespace PiketWebApi.Services
                     }
 
                     dbContext.SaveChanges();
-                    return Task.FromResult(true);
+                    return await Task.FromResult(true);
                 }
-                throw new SystemException("Kelas tidak ditemukan.");
+                return Error.Conflict("ClassRoom", "Kelas tidak ditemukan.");
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
 
-        public Task<bool> RemoveStudentFromClassRoom(int classroomId, int studentId)
+        public async Task<ErrorOr<bool>> RemoveStudentFromClassRoom(int classroomId, int studentId)
         {
             try
             {
                 var classroom = dbContext.ClassRooms.Include(x => x.Students)
        .ThenInclude(x => x.Student).SingleOrDefault(x => x.Id == classroomId);
                 if (classroom == null)
-                    throw new SystemException("Class Room Not Found");
+                   return Error.Failure("ClassRoom","Kelas tidak ditemukan");
 
                 var member = classroom.Students.SingleOrDefault(x => x.Student.Id == studentId);
                 if (member == null)
-                    throw new SystemException("Student  Not Found");
+                   return Error.Failure("ClassRoom", "Data siswa tidak ditemukan");
 
                 classroom.Students.Remove(member);
                 dbContext.SaveChanges();
-                return Task.FromResult(true);
+                return await Task.FromResult(true);
             }
             catch (Exception)
             {
-
-                throw;
+                return Error.Conflict();
             }
         }
     }

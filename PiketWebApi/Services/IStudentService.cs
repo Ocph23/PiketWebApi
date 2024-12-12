@@ -1,26 +1,20 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using ErrorOr;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
-using SharedModel.Models;
-using SharedModel.Requests;
-using SharedModel.Responses;
-using System.Net.Sockets;
-using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PiketWebApi.Services
 {
     public interface IStudentService
     {
-        Task<IEnumerable<StudentClassRoom>> GetAlStudentWithClass();
-        Task<IEnumerable<StudentClassRoom>> SearchStudent(string searchtext);
-        Task<bool> DeleteStudent(int id);
-        Task<bool> PutStudent(int id, Student model);
-        Task<Student> PostStudent(Student model);
-        Task<IEnumerable<Student>> GetAllStudent();
-        Task<Student> GetStudentById(int id);
-        Task<StudentClassRoom?> GetStudentWithClass(int id);
+        Task<ErrorOr<IEnumerable<StudentClassRoom>>> GetAlStudentWithClass();
+        Task<ErrorOr<IEnumerable<StudentClassRoom>>> SearchStudent(string searchtext);
+        Task<ErrorOr<bool>> DeleteStudent(int id);
+        Task<ErrorOr<bool>> PutStudent(int id, Student model);
+        Task<ErrorOr<Student>> PostStudent(Student model);
+        Task<ErrorOr<IEnumerable<Student>>> GetAllStudent();
+        Task<ErrorOr<Student>> GetStudentById(int id);
+        Task<ErrorOr<StudentClassRoom?>> GetStudentWithClass(int id);
     }
 
     public class StudentService : IStudentService
@@ -40,14 +34,14 @@ namespace PiketWebApi.Services
             schoolYearService = _schoolYearService;
         }
 
-        public async Task<IEnumerable<StudentClassRoom>> GetAlStudentWithClass()
+        public async Task<ErrorOr<IEnumerable<StudentClassRoom>>> GetAlStudentWithClass()
         {
             try
             {
 
                 var schoolYearActive = await schoolYearService.GetActiveSchoolYear();
                 if (schoolYearService == null)
-                    throw new SystemException("Belum Ada Tahun Ajaran Aktif !");
+                    return Error.Failure("Belum Ada Tahun Ajaran Aktif !");
 
                 List<StudentClassRoom> list = new List<StudentClassRoom>();
 
@@ -62,7 +56,8 @@ namespace PiketWebApi.Services
                         Gender = x.Student.Gender,
                         Id = x.Student.Id,
                         Name = x.Student.Name,
-                        Number = x.Student.Number,
+                        NIS = x.Student.NIS,
+                        NISN = x.Student.NISN,
                         Photo = x.Student.Photo,
                         ClassRoomId = item.Id,
                         ClassRoomName = item.Name,
@@ -71,82 +66,95 @@ namespace PiketWebApi.Services
                     });
                     list = data.ToList();
                 }
-                return list.AsEnumerable();
+                return await Task.FromResult(list.ToList());
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
-        public async Task<IEnumerable<StudentClassRoom>> SearchStudent(string searchtext)
+        public async Task<ErrorOr<IEnumerable<StudentClassRoom>>> SearchStudent(string searchtext)
         {
             try
             {
                 var txtSearch = searchtext.ToLower();
-                var result = dbContext.Students.Where(x => x.Name.ToLower().Contains(txtSearch)
-                || x.Email.ToLower().Contains(txtSearch)
-                || x.Number.ToLower().Contains(txtSearch)).ToList();
+                IEnumerable<Student>? result = dbContext.Students.Where(x => x.Name.ToLower().Contains(txtSearch)
+                || x.Email!.ToLower().Contains(txtSearch)
+                || x.NISN!.ToLower().Contains(txtSearch)
+                || x.NIS!.ToLower().Contains(txtSearch)).AsEnumerable();
 
                 var xx = await GetAlStudentWithClass();
-                return from r in result
-                       join x in xx on r.Id equals x.Id into xGroup
-                       from xc in xGroup.DefaultIfEmpty()
-                       select new StudentClassRoom
-                       {
-                           Gender = r.Gender,
-                           Id = r.Id,
-                           Name = r.Name,
-                           Number = r.Number,
-                           Photo = r.Photo,
-                           ClassRoomId = xc == null ? null : xc.ClassRoomId,
-                           ClassRoomName = xc == null ? null : xc.ClassRoomName,
-                           DepartmenName = xc == null ? null : xc.DepartmenName,
-                       };
+                if (xx.IsError)
+                    return xx.Errors;
+
+                var data = from r in result
+                           join x in xx.Value on r.Id equals x.Id into xGroup
+                           from xc in xGroup.DefaultIfEmpty()
+                           select new StudentClassRoom
+                           {
+                               Gender = r.Gender,
+                               Id = r.Id,
+                               Name = r.Name,
+                               NIS = r.NIS,
+                               NISN = xc.NISN,
+                               Photo = r.Photo,
+                               ClassRoomId = xc == null ? null : xc.ClassRoomId,
+                               ClassRoomName = xc == null ? null : xc.ClassRoomName,
+                               DepartmenName = xc == null ? null : xc.DepartmenName,
+                           };
+                return data.ToList();
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
 
-        public Task<bool> DeleteStudent(int id)
+        public async Task<ErrorOr<bool>> DeleteStudent(int id)
         {
             try
             {
                 var result = dbContext.Students.SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    dbContext.Remove(result);
-                    dbContext.SaveChanges();
-                }
-                return Task.FromResult(true);
+                if (result == null)
+                    return Error.NotFound("Data siswa tidak ditemukan.");
+
+
+                dbContext.Remove(result);
+                dbContext.SaveChanges();
+                return await Task.FromResult(true);
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
 
-        public Task<bool> PutStudent(int id, Student model)
+        public async Task<ErrorOr<bool>> PutStudent(int id, Student model)
         {
             try
             {
                 var result = dbContext.Students.SingleOrDefault(x => x.Id == id);
-                if (result != null)
+                if (result == null)
                 {
-                    dbContext.Entry(result).CurrentValues.SetValues(model);
-                    dbContext.SaveChanges();
+                    return Error.NotFound("Data siswa tidak ditemukan.");
                 }
-                return Task.FromResult(true);
+                dbContext.Entry(result).CurrentValues.SetValues(model);
+                dbContext.SaveChanges();
+                return await Task.FromResult(true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
 
-        public async Task<Student> PostStudent(Student model)
+        public async Task<ErrorOr<Student>> PostStudent(Student model)
         {
+            var validator = new Validators.StudentValidator();
+
+
+
+
             var trans = dbContext.Database.BeginTransaction();
             try
             {
@@ -161,7 +169,7 @@ namespace PiketWebApi.Services
                     }
                     else
                     {
-                        throw new SystemException("User Gagal Dibuat !");
+                        return Error.Failure("User Gagal Dibuat !");
                     }
                 }
 
@@ -177,62 +185,63 @@ namespace PiketWebApi.Services
             }
         }
 
-        public Task<IEnumerable<Student>> GetAllStudent()
+        public async Task<ErrorOr<IEnumerable<Student>>> GetAllStudent()
         {
             try
             {
-                return Task.FromResult(dbContext.Students.AsEnumerable());
+                return await Task.FromResult(dbContext.Students.ToList());
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
 
-        public Task<Student> GetStudentById(int id)
+        public async Task<ErrorOr<Student>> GetStudentById(int id)
         {
             try
             {
                 var result = dbContext.Students.SingleOrDefault(x => x.Id == id);
-                return Task.FromResult(result);
+                return await Task.FromResult(result);
             }
             catch (Exception)
             {
-                throw;
+                return Error.Conflict();
             }
         }
 
-        public async Task<StudentClassRoom?> GetStudentWithClass(int id)
+        public async Task<ErrorOr<StudentClassRoom?>> GetStudentWithClass(int studentId)
         {
             try
             {
                 var schoolYearActive = await schoolYearService.GetActiveSchoolYear();
                 if (schoolYearService == null)
-                    throw new SystemException("Belum Ada Tahun Ajaran Aktif !");
+                    return Error.Failure("Belum Ada Tahun Ajaran Aktif !");
 
                 var item = dbContext.ClassRooms
                      .Include(x => x.SchoolYear)
                      .Include(x => x.Department)
                      .Include(x => x.Students)
                      .ThenInclude(x => x.Student)
-                     .FirstOrDefault(x => x.SchoolYear.Id == schoolYearActive.Id && x.Students.Any(x => x.Student.Id == id));
+                     .FirstOrDefault(x => x.SchoolYear.Id == schoolYearActive.Id && x.Students.Any(x => x.Student.Id == studentId));
 
-                if (item != null)
+                if (item == null)
+                    return Error.NotFound();
+
+                return item.Students.Select(x => new StudentClassRoom
                 {
-                    return item.Students.Select(x => new StudentClassRoom
-                    {
-                        Gender = x.Student.Gender,
-                        Id = x.Student.Id,
-                        Name = x.Student.Name,
-                        Number = x.Student.Number,
-                        Photo = x.Student.Photo,
-                        ClassRoomId = item.Id,
-                        ClassRoomName = item.Name,
-                        DepartmenId = item.Department.Id,
-                        DepartmenName = item.Department.Name,
-                    }).FirstOrDefault();
-                }
-                return null;
+                    Gender = x.Student.Gender,
+                    Id = x.Student.Id,
+                    Name = x.Student.Name,
+                    NIS = x.Student.NIS,
+                    NISN = x.Student.NISN,
+                    Photo = x.Student.Photo,
+                    ClassRoomId = item.Id,
+                    ClassRoomName = item.Name,
+                    DepartmenId = item.Department.Id,
+                    DepartmenName = item.Department.Name,
+                }).FirstOrDefault();
+
             }
             catch (Exception)
             {

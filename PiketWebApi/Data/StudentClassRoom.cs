@@ -6,7 +6,8 @@ namespace PiketWebApi.Data
     public class StudentClassRoom
     {
         public int Id { get; set; }
-        public string? Number { get; set; }
+        public string? NIS { get; set; }
+        public string? NISN { get; set; }
         public string? Name { get; set; }
         public Gender Gender { get; set; }
         public string? Photo { get; set; }

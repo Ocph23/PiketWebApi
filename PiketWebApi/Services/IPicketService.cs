@@ -143,7 +143,8 @@ namespace PiketWebApi.Services
 
         private async Task<StudentToLateAndComeHomeSoEarlyResponse?> GenerateStudentToLateAndComeHomeSoEarlyResponse(LateAndGoHomeEarly x)
         {
-            var sx = await studentService.GetStudentWithClass(x.Id);
+            var studentClass = await studentService.GetStudentWithClass(x.Id);
+            var sx = studentClass.Value;
             return new StudentToLateAndComeHomeSoEarlyResponse
             {
                 Id = x.Id,
@@ -171,7 +172,7 @@ namespace PiketWebApi.Services
                 CreateAt = response.CreateAt,
                 CreatedId = response.CreatedBy.Id,
                 CreatedName = response.CreatedBy.Name,
-                CreatedNumber = response.CreatedBy.Number,
+                CreatedNumber = response.CreatedBy.RegisterNumber,
                 Date = response.Date,
                 EndAt = response.EndAt,
                 Id = response.Id,
@@ -182,8 +183,9 @@ namespace PiketWebApi.Services
             };
 
             var students = await studentService.GetAlStudentWithClass();
+
             result.StudentsToLate = (from x in response.LateAndComeHomeEarly
-                                     join s in students on x.Student.Id equals s.Id into sGroup
+                                     join s in students.Value on x.Student.Id equals s.Id into sGroup
                                      from sx in sGroup.DefaultIfEmpty()
                                      select
                                      new StudentToLateAndComeHomeSoEarlyResponse

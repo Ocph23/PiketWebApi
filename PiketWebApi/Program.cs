@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using PiketWebApi;
 using PiketWebApi.Api;
 using PiketWebApi.Data;
+using PiketWebApi.Exceptions;
 using PiketWebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
 });
 
+
+//builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails(x =>
+{
+    x.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path} ";
+        if(context.Exception!=null && context.Exception.GetType() == typeof(BadRequestException))
+        {
+            BadRequestException badRequest = (BadRequestException)context.Exception;
+            context.ProblemDetails.Extensions.Add("errors", badRequest.Errors);
+        }
+    };
+});
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -89,7 +105,7 @@ builder.Services.AddSwaggerGen(setup =>
 });
 builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IPicketService,PicketService>();
+builder.Services.AddScoped<IPicketService, PicketService>();
 builder.Services.AddScoped<IClassRoomService, ClassRoomService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ISchoolYearService, SchoolYearService>();
@@ -133,7 +149,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
-    app.UseDeveloperExceptionPage();
+app.UseDeveloperExceptionPage();
 
 //if (app.Environment.IsDevelopment())
 //{
@@ -155,5 +171,6 @@ app.MapGroup("/api/department").MapDepartmentApi().WithOpenApi();
 app.MapGroup("/api/classroom").MapClassRoomApi().WithOpenApi();
 app.MapGroup("/api/schedule").MapScheduleApi().WithOpenApi();
 app.MapGroup("/api/picket").MapPickerApi().WithOpenApi();
+
 
 app.Run();

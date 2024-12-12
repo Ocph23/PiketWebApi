@@ -11,7 +11,6 @@ namespace PiketWebApi.Data
     public class Profile
     {
         public int Id { get; set; }
-        public string? Number { get; set; }
         public string? Name { get; set; }
         public Gender Gender { get; set; }
         public string? PlaceOfBorn { get; set; }
