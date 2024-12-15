@@ -40,8 +40,8 @@ namespace PiketWebApi.Services
             {
 
                 var schoolYearActive = await schoolYearService.GetActiveSchoolYear();
-                if (schoolYearService == null)
-                    return Error.Failure("Belum Ada Tahun Ajaran Aktif !");
+                if (schoolYearActive.IsError)
+                    return schoolYearActive.Errors;
 
                 List<StudentClassRoom> list = new List<StudentClassRoom>();
 
@@ -49,7 +49,7 @@ namespace PiketWebApi.Services
                     .Include(x => x.SchoolYear)
                     .Include(x => x.Department).Include(x => x.Students)
                     .ThenInclude(x => x.Student)
-                    .Where(x => x.SchoolYear.Id == schoolYearActive.Id))
+                    .Where(x => x.SchoolYear.Id == schoolYearActive.Value.Id))
                 {
                     var data = item.Students.Select(x => new StudentClassRoom
                     {
@@ -78,10 +78,10 @@ namespace PiketWebApi.Services
             try
             {
                 var txtSearch = searchtext.ToLower();
-                IEnumerable<Student>? result = dbContext.Students.Where(x => x.Name.ToLower().Contains(txtSearch)
+                IEnumerable<Student> result = dbContext.Students.Where(x => x.Name.ToLower().Contains(txtSearch)
                 || x.Email!.ToLower().Contains(txtSearch)
                 || x.NISN!.ToLower().Contains(txtSearch)
-                || x.NIS!.ToLower().Contains(txtSearch)).AsEnumerable();
+                || x.NIS!.ToLower().Contains(txtSearch)).ToList();
 
                 var xx = await GetAlStudentWithClass();
                 if (xx.IsError)
@@ -96,11 +96,12 @@ namespace PiketWebApi.Services
                                Id = r.Id,
                                Name = r.Name,
                                NIS = r.NIS,
-                               NISN = xc.NISN,
-                               Photo = r.Photo,
+                               NISN = r.NISN,
+                               Photo = r.Photo, 
                                ClassRoomId = xc == null ? null : xc.ClassRoomId,
                                ClassRoomName = xc == null ? null : xc.ClassRoomName,
                                DepartmenName = xc == null ? null : xc.DepartmenName,
+                               DepartmenId = xc == null ? null : xc.DepartmenId,
                            };
                 return data.ToList();
             }
@@ -131,19 +132,38 @@ namespace PiketWebApi.Services
 
         public async Task<ErrorOr<bool>> PutStudent(int id, Student model)
         {
+            var trans = dbContext.Database.BeginTransaction();
             try
             {
+                var validator = new Validators.StudentValidator();
+                var validatorResult = validator.Validate(model);
+                if (!validatorResult.IsValid)
+                    return validatorResult.GetErrors();
                 var result = dbContext.Students.SingleOrDefault(x => x.Id == id);
                 if (result == null)
                 {
                     return Error.NotFound("Data siswa tidak ditemukan.");
                 }
+
+                if (!string.IsNullOrEmpty(model.Email) && string.IsNullOrEmpty(result.Email))
+                {
+                    var userResult = await CreateUser(model);
+                    if (userResult.IsError)
+                    {
+                        trans.Rollback();
+                        return userResult.Errors;
+                    }
+                    model.UserId = userResult.Value.Id;
+                }
+
                 dbContext.Entry(result).CurrentValues.SetValues(model);
                 dbContext.SaveChanges();
+                trans.Commit();
                 return await Task.FromResult(true);
             }
             catch (Exception)
             {
+                trans.Rollback();
                 return Error.Conflict();
             }
         }
@@ -151,8 +171,9 @@ namespace PiketWebApi.Services
         public async Task<ErrorOr<Student>> PostStudent(Student model)
         {
             var validator = new Validators.StudentValidator();
-
-
+            var validatorResult = validator.Validate(model);
+            if (!validatorResult.IsValid)
+                return validatorResult.GetErrors();
 
 
             var trans = dbContext.Database.BeginTransaction();
@@ -160,19 +181,11 @@ namespace PiketWebApi.Services
             {
                 if (!string.IsNullOrEmpty(model.Email))
                 {
-                    var user = new ApplicationUser { Email = model.Email, EmailConfirmed = true, Name = model.Name, UserName = model.Email };
-                    var createResult = await userManager.CreateAsync(user, "Password@123");
-                    if (createResult.Succeeded)
-                    {
-                        await userManager.AddToRoleAsync(user, "Student");
-                        model.UserId = user.Id;
-                    }
-                    else
-                    {
-                        return Error.Failure("User Gagal Dibuat !");
-                    }
+                    var userResult = await CreateUser(model);
+                    if (userResult.IsError)
+                        return userResult.Errors;
+                    model.UserId = userResult.Value.Id;
                 }
-
                 var result = dbContext.Students.Add(model);
                 dbContext.SaveChanges();
                 trans.Commit();
@@ -183,6 +196,18 @@ namespace PiketWebApi.Services
                 trans.Rollback();
                 throw;
             }
+        }
+
+        private async Task<ErrorOr<ApplicationUser>> CreateUser(Student model)
+        {
+            var user = new ApplicationUser { Email = model.Email, EmailConfirmed = true, Name = model.Name, UserName = model.Email };
+            var createResult = await userManager.CreateAsync(user, "Password@123");
+            if (createResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, "Student");
+                return await Task.FromResult(user);
+            }
+            return Error.Failure("Failure", "User gagal dibuat !");
         }
 
         public async Task<ErrorOr<IEnumerable<Student>>> GetAllStudent()
@@ -202,6 +227,8 @@ namespace PiketWebApi.Services
             try
             {
                 var result = dbContext.Students.SingleOrDefault(x => x.Id == id);
+                if (result == null)
+                    return Error.NotFound("NotFound", "Data siswa tidak ditemukan");
                 return await Task.FromResult(result);
             }
             catch (Exception)
@@ -223,7 +250,7 @@ namespace PiketWebApi.Services
                      .Include(x => x.Department)
                      .Include(x => x.Students)
                      .ThenInclude(x => x.Student)
-                     .FirstOrDefault(x => x.SchoolYear.Id == schoolYearActive.Id && x.Students.Any(x => x.Student.Id == studentId));
+                     .FirstOrDefault(x => x.SchoolYear.Id == schoolYearActive.Value.Id && x.Students.Any(x => x.Student.Id == studentId));
 
                 if (item == null)
                     return Error.NotFound();

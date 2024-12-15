@@ -44,6 +44,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.AddDateOnlyTimeOnlyStringConverters();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
@@ -110,6 +112,7 @@ builder.Services.AddScoped<IClassRoomService, ClassRoomService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ISchoolYearService, SchoolYearService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
+builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddProblemDetails();
 
 

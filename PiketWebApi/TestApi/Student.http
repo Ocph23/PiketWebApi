@@ -1,0 +1,68 @@
+@url = https://localhost:7203/api/student
+@token = bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc0ZjMzM2NlLTJjZTQtNDhmNS1iYTRjLTAwNzE3NDNhNWUyOCIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6IjEwZmU2NGRhLTlhM2QtNDk3ZS04YTIzLWNjNmY5NWU5MWQ2YiIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczNDE4NDc0MiwiZXhwIjoxNzM0Nzg5NTQyLCJpYXQiOjE3MzQxODQ3NDIsImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.k8fz6zpmFl9YP2ZSYuOIw8cOWe44uf5AMCS0rC_WjtiBVaR694_1ahiLr6BIUQVyk2UYBd1BEbmfH0_HLaY4YA
+####
+
+Get {{url}} HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+####
+
+Get {{url}}/2 HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+
+####
+
+Get {{url}}/search/al HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+
+####
+POST {{url}} HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+{
+  "id": 0,
+  "name": "Aldrich",
+  "gender": 0,
+  "placeOfBorn": "Telur apa",
+  "dateOfBorn": "2016-02-06",
+  "email": "",
+  "description": "",
+  "photo": "",
+  "userId": "",
+  "nis": "123123123",
+  "nisn": ""
+}
+####
+
+
+put {{url}}/2 HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+{
+  "nis": "123123123",
+  "nisn": "1111111",
+  "id": 2,
+  "name": "Aldrich",
+  "gender": 0,
+  "placeOfBorn": "Telur apa",
+  "dateOfBorn": "2016-02-06",
+  "email": "aldrich@ocph23.tech",
+  "description": "",
+  "photo": "",
+  "userId": ""
+}
+####
+
+
+delete {{url}}/1 HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+####

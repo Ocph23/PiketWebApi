@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using DateOnlyTimeOnly.AspNet.Converters;
+using ErrorOr;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
+using SharedModel;
 using SharedModel.Models;
 using System.Security.Claims;
 
@@ -8,7 +13,7 @@ namespace PiketWebApi
 {
     public static class AppExtention
     {
-        public static async Task<(bool,Teacher?)> IsTeacherPicket(this IHttpContextAccessor http, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
+        public static async Task<(bool, Teacher?)> IsTeacherPicket(this IHttpContextAccessor http, UserManager<ApplicationUser> userManager, ApplicationDbContext dbContext)
         {
             try
             {
@@ -32,5 +37,24 @@ namespace PiketWebApi
                 return (false, null);
             }
         }
+
+
+        public static List<Error> GetErrors(this ValidationResult? validateResult)
+        {
+            List<Error> errors = new();
+            errors.Add(Error.Validation("Message", "Data tidak valid."));
+
+            if (validateResult != null)
+            {
+                foreach (var item in validateResult?.Errors)
+                {
+                    errors.Add(Error.Validation(item.PropertyName, item.ErrorMessage));
+                }
+            }
+            return errors;
+        }
+
     }
+
+   
 }

@@ -1,4 +1,6 @@
-﻿using PiketWebApi.Data;
+﻿using PiketWebApi.Abstractions;
+using PiketWebApi.Data;
+using PiketWebApi.Services;
 using SharedModel.Models;
 
 namespace PiketWebApi.Api
@@ -15,83 +17,34 @@ namespace PiketWebApi.Api
             return group.WithTags("department").RequireAuthorization(); ;
         }
 
-        private static IResult DeleteDepartment(HttpContext context, ApplicationDbContext dbContext, int id)
+        private static async Task<IResult>  DeleteDepartment(HttpContext context, IDepartmentService departmenService, int id)
         {
-            try
-            {
-                var result = dbContext.Departments.SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    dbContext.Remove(result);
-                    dbContext.SaveChanges();
-                    return Results.Ok(true);
-                }
-                throw new Exception("Data Not Found !");
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
+            var result = await departmenService.DeleteAsync(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
-        private static IResult PutDepartment(HttpContext context, ApplicationDbContext dbContext, int id, Department model)
+        private static async Task<IResult> PutDepartment(HttpContext context, IDepartmentService departmenService, int id, Department model)
         {
-            try
-            {
-                var result = dbContext.Departments.SingleOrDefault(x=>x.Id==id);
-                if (result != null)
-                {
-                    dbContext.Entry(result).CurrentValues.SetValues(model);
-                    dbContext.SaveChanges();
-                    return Results.Ok(true);
-                }
-                throw new Exception("Data Not Found !");
-
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
+            var result = await departmenService.PutAsync(id, model);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
-        private static IResult PostDepartment(HttpContext context, ApplicationDbContext dbContext, Department model)
+        private static async Task<IResult> PostDepartment(HttpContext context, IDepartmentService departmenService, Department model)
         {
-            try
-            {
-                var result = dbContext.Departments.Add(model);
-                dbContext.SaveChanges();
-                return Results.Ok(model);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
+            var result = await departmenService.PostAsync(model);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
-        private static object GetAllDepartment(HttpContext context, ApplicationDbContext dbContext)
+        private static async Task<IResult> GetAllDepartment(HttpContext context, IDepartmentService departmenService)
         {
-            try
-            {
-                var result = dbContext.Departments.ToList();
-                return Results.Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
+            var result = await departmenService.GetAllAsync();
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
-        private static IResult GetDepartmentById(HttpContext context, ApplicationDbContext dbContext, int id)
+        private static async Task<IResult> GetDepartmentById(HttpContext context, IDepartmentService departmenService, int id)
         {
-            try
-            {
-                var result = dbContext.Departments.SingleOrDefault(x=>x.Id ==id);
-                return Results.Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
+            var result = await departmenService.GetByIdAsync(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
     }
 }
