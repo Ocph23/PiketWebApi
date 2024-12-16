@@ -1,7 +1,9 @@
 ﻿
 
 using ErrorOr;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PiketWebApi.Data;
 using PiketWebApi.Exceptions;
 
 namespace PiketWebApi
@@ -27,7 +29,7 @@ namespace PiketWebApi
             return problemDetails;
         }
 
-        internal static ProblemDetails? CreateBadRequestProbleDetail(HttpContext context, List<Error> errors)
+        public static ProblemDetails? CreateBadRequestProbleDetail(HttpContext context, List<Error> errors)
         {
             ProblemDetails problemDetails = new ProblemDetails();
             problemDetails.Instance = $"{context.Request.Method} {context.Request.Path} ";
@@ -39,5 +41,20 @@ namespace PiketWebApi
 
             return problemDetails;
         }
+
+        public static async Task<ErrorOr<ApplicationUser>> CreateUser(UserManager<ApplicationUser> userManager,  ApplicationUser user, string role)
+        {
+            //var user = new ApplicationUser { Email = model.Email, EmailConfirmed = true, Name = model.Name, UserName = model.Email };
+            var createResult = await userManager.CreateAsync(user, "Password@123");
+            if (createResult.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, role);
+                return await Task.FromResult(user);
+            }
+            return Error.Failure("Failure", "User gagal dibuat !");
+        }
+
+
+
     }
 }

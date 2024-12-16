@@ -3,6 +3,7 @@ using ErrorOr;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
 using SharedModel;
@@ -38,7 +39,6 @@ namespace PiketWebApi
             }
         }
 
-
         public static List<Error> GetErrors(this ValidationResult? validateResult)
         {
             List<Error> errors = new();
@@ -52,6 +52,21 @@ namespace PiketWebApi
                 }
             }
             return errors;
+        }
+
+        public static ProblemDetails CreateProblemDetail<T>(this ErrorOr<T> errors, HttpContext context)
+        {
+            ProblemDetails problemDetails = new ProblemDetails();
+            problemDetails.Instance = $"{context.Request.Method} {context.Request.Path} ";
+            problemDetails.Status = StatusCodes.Status400BadRequest;
+            problemDetails.Title = " An error occured";
+            problemDetails.Type = "BadRequest";
+            problemDetails.Detail = errors.Errors.FirstOrDefault().Description;
+            problemDetails.Extensions.Add("errors", errors.Errors);
+
+            return problemDetails;
+
+
         }
 
     }

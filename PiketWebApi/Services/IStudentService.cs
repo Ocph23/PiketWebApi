@@ -97,7 +97,7 @@ namespace PiketWebApi.Services
                                Name = r.Name,
                                NIS = r.NIS,
                                NISN = r.NISN,
-                               Photo = r.Photo, 
+                               Photo = r.Photo,
                                ClassRoomId = xc == null ? null : xc.ClassRoomId,
                                ClassRoomName = xc == null ? null : xc.ClassRoomName,
                                DepartmenName = xc == null ? null : xc.DepartmenName,
@@ -147,7 +147,9 @@ namespace PiketWebApi.Services
 
                 if (!string.IsNullOrEmpty(model.Email) && string.IsNullOrEmpty(result.Email))
                 {
-                    var userResult = await CreateUser(model);
+
+                    var userResult = await Helper.CreateUser(userManager,
+                        new ApplicationUser { Email = model.Email, EmailConfirmed = true, Name = model.Name, UserName = model.Email }, "Student");
                     if (userResult.IsError)
                     {
                         trans.Rollback();
@@ -181,7 +183,9 @@ namespace PiketWebApi.Services
             {
                 if (!string.IsNullOrEmpty(model.Email))
                 {
-                    var userResult = await CreateUser(model);
+                    var userResult = await Helper.CreateUser(userManager,
+                        new ApplicationUser { Email = model.Email, EmailConfirmed = true, Name = model.Name, UserName = model.Email },
+                        "Student");
                     if (userResult.IsError)
                         return userResult.Errors;
                     model.UserId = userResult.Value.Id;
@@ -198,17 +202,7 @@ namespace PiketWebApi.Services
             }
         }
 
-        private async Task<ErrorOr<ApplicationUser>> CreateUser(Student model)
-        {
-            var user = new ApplicationUser { Email = model.Email, EmailConfirmed = true, Name = model.Name, UserName = model.Email };
-            var createResult = await userManager.CreateAsync(user, "Password@123");
-            if (createResult.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, "Student");
-                return await Task.FromResult(user);
-            }
-            return Error.Failure("Failure", "User gagal dibuat !");
-        }
+
 
         public async Task<ErrorOr<IEnumerable<Student>>> GetAllStudent()
         {

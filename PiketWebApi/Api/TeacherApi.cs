@@ -16,70 +16,47 @@ namespace PiketWebApi.Api
         {
             group.MapGet("/", GetAllTeacher);
             group.MapGet("/{id}", GetTeacherById);
+            group.MapGet("/search/{searchtext}", SearchTeacher);
             group.MapPost("/", PostTeacher);
             group.MapPut("/{id}", PutTeacher);
             group.MapDelete("/{id}", DeleteTeacher);
             return group.WithTags("teacher").RequireAuthorization(); ;
         }
 
+        private static async Task SearchTeacher(HttpContext context, ITeacherService teacherService, string textSearch)
+        {
+            var result = await teacherService.SearchTextAsync(textSearch);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+        }
+
         private static async Task<IResult> DeleteTeacher(HttpContext context, ITeacherService teacherService, int id)
         {
-            try
-            {
-                return Results.Ok(await teacherService.Delete(id));
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await teacherService.DeleteAsync(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> PutTeacher(HttpContext context, ITeacherService teacherService, int id, Teacher teacher)
         {
-            try
-            {
-                return Results.Ok(await teacherService.Put(id,teacher));
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await teacherService.PutAsync(id , teacher);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> PostTeacher(HttpContext context, ITeacherService teacherService, Teacher teacher)
         {
-            try
-            {
-                return Results.Ok(await teacherService.Post(teacher));
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await teacherService.PostAsync(teacher);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> GetAllTeacher(HttpContext context, ITeacherService teacherService)
         {
-            try
-            {
-                return Results.Ok(await teacherService.Get());
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await teacherService.GetAsync();
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> GetTeacherById(HttpContext context, ITeacherService teacherService, int id)
         {
-            try
-            {
-                return Results.Ok(await teacherService.GetById(id));
-            }
-            catch (Exception)
-            {
-                return Results.BadRequest(Helper.ApiCommonError);
-            }
+            var result = await teacherService.GetByIdAsync(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
     }
 }
