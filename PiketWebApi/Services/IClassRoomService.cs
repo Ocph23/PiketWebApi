@@ -26,12 +26,14 @@ namespace PiketWebApi.Services
         private IHttpContextAccessor http;
         private UserManager<ApplicationUser> userManager;
         private ApplicationDbContext dbContext;
+        private readonly ISchoolYearService schoolYearService;
 
-        public ClassRoomService(IHttpContextAccessor _http, UserManager<ApplicationUser> _userManager, ApplicationDbContext _dbContext)
+        public ClassRoomService(IHttpContextAccessor _http, UserManager<ApplicationUser> _userManager, ApplicationDbContext _dbContext, ISchoolYearService _schoolYearService)
         {
             http = _http;
             userManager = _userManager;
             dbContext = _dbContext;
+            schoolYearService = _schoolYearService;
         }
 
         public async Task<ErrorOr<bool>> AddStudentToClassRoom(int classroomId, Student student)
@@ -39,15 +41,32 @@ namespace PiketWebApi.Services
             try
             {
 
-                var classroom = dbContext.ClassRooms.Include(x => x.Students).ThenInclude(x => x.Student).SingleOrDefault(x => x.Id == classroomId);
+                var schoolYearActive = dbContext.SchoolYears.SingleOrDefault(x => x.Actived);
+                if (schoolYearActive == null)
+                    return Error.Failure("SchoolYear", "Tahun ajaran baru belum dibuka.");
+
+
+
+                var classroom = dbContext.ClassRooms.Include(x => x.Students)
+                    .ThenInclude(x => x.Student)
+                    .SingleOrDefault(x => x.Id == classroomId);
                 if (classroom == null)
                     return Error.Failure("Class Room", "Data Kelas Tidak Ditemukan");
 
-                var existsStudent = classroom.Students.SingleOrDefault(x => x.Student.Id == student.Id);
-                if (existsStudent != null)
+                //student register on other class
+                var studentExists = from x in dbContext.ClassRooms
+                                .Include(x => x.Department)
+                                .Include(x => x.Students)
+                                .ThenInclude(x => x.Student)
+                                .Where(x => x.SchoolYear.Id == schoolYearActive.Id &&
+                                x.Students.Any(x => x.Student.Id == student.Id))
+                                    select x;
+                if (studentExists.Any())
                 {
-                    return Error.Failure("Class Room", $"{student.Name} Sudah Terdaftar di kelas ini ");
+                    var s = studentExists.FirstOrDefault();
+                    return Error.Failure("ClassRoom", $"{s.Students.FirstOrDefault().Student.Name} sudah terdaftar di kelas {s.Name}-{s.Department.Initial}");
                 }
+
                 var member = new ClassRoomMember { Student = student };
                 dbContext.Entry(member.Student).State = EntityState.Unchanged;
                 classroom.Students.Add(member);
@@ -120,7 +139,11 @@ namespace PiketWebApi.Services
                   .Select(x => new ClassRoomResponse(x.Id, x.Name, x.SchoolYear.Id, x.SchoolYear.Year,
                   x.Department.Id, x.Department.Name, x.Department.Initial, x.ClassLeader.Id, x.ClassLeader.Name,
                   x.HomeroomTeacher.Id, x.HomeroomTeacher.Name,
-                  x.Students.Select(x => new { Id = x.Student.Id, NIS = x.Student.NIS, NISN= x.Student.NISN, Name = x.Student.Name })));
+                  x.Students.Select(x => new { Id = x.Student.Id, NIS = x.Student.NIS, NISN = x.Student.NISN, Name = x.Student.Name })));
+
+                if (!result.Any())
+                    return Error.Conflict("ClassRoom", "Kelas tidak ditemukan.");
+
                 return await Task.FromResult(result.FirstOrDefault());
             }
             catch (Exception)
@@ -156,34 +179,35 @@ namespace PiketWebApi.Services
         {
             try
             {
-                var shoolYearActive = dbContext.SchoolYears.SingleOrDefault(x => x.Actived);
-                if (shoolYearActive == null)
-                    return Error.Failure(StatusCodes.Status400BadRequest.ToString(), "Tahun ajaran baru belum dibuka.");
 
+                var schoolYearActive = await schoolYearService.GetActiveSchoolYear();
+                if (schoolYearActive.IsError)
+                    return schoolYearActive.Errors;
 
                 var validator = new ClassRoomValidator();
-                var result = await validator.ValidateAsync(req);
-                List<Error> errors = new List<Error>();
-                if (!result.IsValid)
+                var resultValidator = await validator.ValidateAsync(req);
+
+                if (!resultValidator.IsValid)
                 {
-                    foreach (var item in result.Errors)
-                    {
-                        errors.Add(Error.Validation(item.PropertyName, item.ErrorMessage));
-                    }
-                    return errors;
+                    return resultValidator.GetErrors();
                 }
 
-                Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<ClassRoom, SchoolYear> includableQueryable = dbContext.ClassRooms
+                var includableQueryable = dbContext.ClassRooms
                                     .Include(x => x.Department)
                                     .Include(x => x.HomeroomTeacher)
-                                    .Include(x => x.SchoolYear);
-                ClassRoom classRoom = includableQueryable
-                    .FirstOrDefault(x => x.HomeroomTeacher != null
-                    && x.HomeroomTeacher.Id == req.HomeRoomTeacherId
-                    && x.SchoolYear.Id == shoolYearActive.Id);
+                                    .Include(x => x.ClassLeader)
+                                    .Include(x => x.SchoolYear).Where(x => x.SchoolYear.Id == schoolYearActive.Value.Id);
+                //Check Teacher is HomeroomTeacer
 
+
+                var classRoom = includableQueryable.FirstOrDefault(x => x.HomeroomTeacher.Id == req.HomeRoomTeacherId);
                 if (classRoom != null)
-                    throw new SystemException($"{classRoom.HomeroomTeacher.Name} sudah menjadi wali kelas {classRoom.Name} {classRoom.Department.Name}");
+                    return Error.Conflict("ClassRoom", $"{classRoom.HomeroomTeacher.Name} sudah menjadi wali kelas {classRoom.Name} {classRoom.Department.Name}");
+
+
+                classRoom = includableQueryable.FirstOrDefault(x => x.ClassLeader.Id == req.ClassRommLeaderId);
+                if (classRoom != null)
+                    return Error.Conflict("ClassRoom", $"{classRoom.ClassLeader.Name} sudah menjadi ketua kelas {classRoom.Name} {classRoom.Department.Name}");
 
 
                 var student = req.ClassRommLeaderId > 0 ? new Student { Id = req.ClassRommLeaderId } : null;
@@ -193,7 +217,7 @@ namespace PiketWebApi.Services
                 var model = new ClassRoom()
                 {
                     Name = req.Name,
-                    SchoolYear = shoolYearActive,
+                    SchoolYear = schoolYearActive.Value,
                     ClassLeader = student ?? student,
                     HomeroomTeacher = teacher ?? teacher,
                     Department = department ?? department,
@@ -228,11 +252,20 @@ namespace PiketWebApi.Services
 
             try
             {
+                var validator = new ClassRoomValidator();
+                var resultValidator = await validator.ValidateAsync(req);
+
+                if (!resultValidator.IsValid)
+                {
+                    return resultValidator.GetErrors();
+                }
+
                 var result = dbContext.ClassRooms
                     .Include(x => x.Department)
                     .Include(x => x.HomeroomTeacher)
                     .Include(x => x.ClassLeader)
                     .SingleOrDefault(x => x.Id == id);
+
                 if (result != null)
                 {
                     result.Name = req.Name;
@@ -273,16 +306,23 @@ namespace PiketWebApi.Services
         {
             try
             {
-                var classroom = dbContext.ClassRooms.Include(x => x.Students)
-       .ThenInclude(x => x.Student).SingleOrDefault(x => x.Id == classroomId);
+
+                var classroom = dbContext.ClassRooms
+                    .Include(x => x.ClassLeader)
+                    .Include(x => x.Students)
+                    .ThenInclude(x => x.Student).SingleOrDefault(x => x.Id == classroomId);
                 if (classroom == null)
-                   return Error.Failure("ClassRoom","Kelas tidak ditemukan");
+                    return Error.Failure("ClassRoom", "Kelas tidak ditemukan");
 
                 var member = classroom.Students.SingleOrDefault(x => x.Student.Id == studentId);
                 if (member == null)
-                   return Error.Failure("ClassRoom", "Data siswa tidak ditemukan");
+                    return Error.Failure("ClassRoom", "Data siswa tidak ditemukan");
 
-                classroom.Students.Remove(member);
+                if(classroom?.ClassLeader?.Id == studentId)
+                {
+                    return Error.Failure("ClassRoom", $"{member.Student.Name} adalah Ketua Kelas. Pilih  Ketua Kelas baru sebelum mengeluarkannya.");
+                }
+                classroom?.Students.Remove(member);
                 dbContext.SaveChanges();
                 return await Task.FromResult(true);
             }

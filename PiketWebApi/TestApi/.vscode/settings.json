@@ -1,0 +1,14 @@
+{
+    "rest-client.environmentVariables": {
+    "$shared": {
+    },
+    "Development":{
+      "url":"https://localhost:7203/api",
+      "token":"bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiODVhNmRjLTBhYTItNDM3ZS1iMmU3LTBmZjdmMzM5YWE2NiIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6ImUwNTNkNTc3LWZkYTItNDcxYy05ZjE2LWVkZGU3YWYxZWMwMSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczNDQyODQ4MCwiZXhwIjoxNzM1MDMzMjgwLCJpYXQiOjE3MzQ0Mjg0ODAsImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.lxUZMN3EBkQsixkcPfF4nSQ1lhPpMdzQg9DifsAPjD9gGZN0AXNEMHxdP9hZ0PFIuo9PRAxSkqsvriSS3zv2ng"
+    },
+    "Production":{
+      "url":"https://picket.ocph23.tech/api",
+      "token":"bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiODVhNmRjLTBhYTItNDM3ZS1iMmU3LTBmZjdmMzM5YWE2NiIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6ImUwNTNkNTc3LWZkYTItNDcxYy05ZjE2LWVkZGU3YWYxZWMwMSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczNDQyODQ4MCwiZXhwIjoxNzM1MDMzMjgwLCJpYXQiOjE3MzQ0Mjg0ODAsImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.lxUZMN3EBkQsixkcPfF4nSQ1lhPpMdzQg9DifsAPjD9gGZN0AXNEMHxdP9hZ0PFIuo9PRAxSkqsvriSS3zv2ng"
+    }
+  },
+}

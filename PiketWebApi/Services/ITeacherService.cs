@@ -75,15 +75,22 @@ namespace PiketWebApi.Services
                         trans.Rollback();
                         return userResult.Errors;
                     }
-                    model.UserId = userResult.Value.Id;
+                    result.UserId = userResult.Value.Id;
                 }
 
-                dbContext.Entry(result).CurrentValues.SetValues(model);
+
+                result.RegisterNumber = model.RegisterNumber;
+                result.Gender = model.Gender;
+                result.DateOfBorn = model.DateOfBorn;
+                result.PlaceOfBorn = model.PlaceOfBorn;
+                result.Name = model.Name;
+                result.Photo = model.Photo;
+                result.Description= model.Description;
                 dbContext.SaveChanges();
                 trans.Commit();
                 return await Task.FromResult(true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 trans.Rollback();
                 return Error.Conflict();
@@ -95,6 +102,12 @@ namespace PiketWebApi.Services
             var trans = dbContext.Database.BeginTransaction();
             try
             {
+                var validator = new Validators.TeacherValidator();
+                var validatorResult = validator.Validate(model);
+                if (!validatorResult.IsValid)
+                    return validatorResult.GetErrors();
+
+
                 if (!string.IsNullOrEmpty(model.Email))
                 {
                     var userResult = await Helper.CreateUser(userManager,
@@ -138,7 +151,7 @@ namespace PiketWebApi.Services
             {
                 var result = dbContext.Teachers.SingleOrDefault(x => x.Id == id);
                 if (result == null)
-                    return Error.NotFound("NotFound", "Data siswa tidak ditemukan");
+                    return Error.NotFound("NotFound", "Data guru tidak ditemukan");
                 return await Task.FromResult(result);
             }
             catch (Exception)

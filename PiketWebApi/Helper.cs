@@ -51,7 +51,12 @@ namespace PiketWebApi
                 await userManager.AddToRoleAsync(user, role);
                 return await Task.FromResult(user);
             }
-            return Error.Failure("Failure", "User gagal dibuat !");
+
+            var errors = from x in createResult.Errors
+                         select Error.Failure(x.Code, x.Description);
+
+
+            return errors.ToList();
         }
 
 

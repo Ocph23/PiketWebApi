@@ -1,24 +1,20 @@
-@url = https://picket.ocph23.tech/api/schedule
-@token = bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiODVhNmRjLTBhYTItNDM3ZS1iMmU3LTBmZjdmMzM5YWE2NiIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6Ijg0NTE1M2Q3LWU2Y2MtNGU3NS05ZmYxLTE4NTA0ZWJhYmIzYyIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczNDMxNjc2NiwiZXhwIjoxNzM0OTIxNTY2LCJpYXQiOjE3MzQzMTY3NjYsImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.jLQMmRF8pfIlDuUhxMNrJ6hDpOd8AlIiwDekjoKRqJDgdlgp--Lwj0U4nMpE9vSrUCxDMfTCJ0qaKG-ut945ZQ
-####
-
-Get {{url}} HTTP/1.1
+Get {{url}}/schedule HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
 ###
-Get {{url}}/byschoolyearId/4 HTTP/1.1
+Get {{url}}/schedule/byschoolyearId/4 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
 ###
-Get {{url}}/active HTTP/1.1
+Get {{url}}/schedule/active HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
 
 ####
-POST {{url}} HTTP/1.1
+POST {{url}}/schedule HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
@@ -30,7 +26,7 @@ Authorization : {{token}}
 ####
 
 
-put {{url}}/7 HTTP/1.1
+put {{url}}/schedule/7 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
@@ -42,7 +38,7 @@ Authorization : {{token}}
 ####
 
 
-delete {{url}}/15 HTTP/1.1
+delete {{url}}/schedule/15 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 

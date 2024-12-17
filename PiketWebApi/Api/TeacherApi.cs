@@ -23,9 +23,9 @@ namespace PiketWebApi.Api
             return group.WithTags("teacher").RequireAuthorization(); ;
         }
 
-        private static async Task SearchTeacher(HttpContext context, ITeacherService teacherService, string textSearch)
+        private static async Task<IResult> SearchTeacher(HttpContext context, ITeacherService teacherService, string searchtext)
         {
-            var result = await teacherService.SearchTextAsync(textSearch);
+            var result = await teacherService.SearchTextAsync(searchtext);
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 

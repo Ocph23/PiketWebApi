@@ -126,10 +126,10 @@ namespace PiketWebApi.Services
                     return validateResult.GetErrors();
                 }
 
-                var isExists = dbContext.SchoolYears.Any(x => x.Year == model.Year && model.Semester == model.Semester);
+                var isExists = dbContext.SchoolYears.Any(x => x.Year == model.Year && x.Semester == model.Semester);
                 if (isExists)
                 {
-                    return Error.Conflict($"Data tahun ajaran {model.Year} semester {model.Year} sudah ada");
+                    return Error.Conflict("SchoolYear", $"Data tahun ajaran {model.Year} semester {model.Semester} sudah ada");
                 }
 
                 var activeData = dbContext.SchoolYears.Where(x => x.Actived);
