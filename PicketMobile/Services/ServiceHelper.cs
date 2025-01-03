@@ -9,14 +9,15 @@ namespace PicketMobile.Services
 {
     public class ServiceHelper
     {
-        public static TService GetService<TService>() => Current.GetService<TService>();
+        [Obsolete]
+        public static TService GetService<TService>() => Current.GetService<TService>()!;
 
         internal static T GetProfile<T>()
         {
             var profile = Preferences.Get("profile", null);
             if (profile == null)
                 return default(T);
-            return JsonSerializer.Deserialize<T>(profile, Helper.JsonOption);
+            return JsonSerializer.Deserialize<T>(profile, Helper.JsonOption)!;
         }
 
         [Obsolete]

@@ -48,7 +48,11 @@ internal class LoginPageViewModel : BaseNotify
             IsBusy = true;
 
             IAccountService service = ServiceHelper.GetService<IAccountService>();
-            var result = await service.Login(UserName, Password);
+            var loginSuccess = await service.Login(UserName, Password);
+            if (loginSuccess)
+            {
+                Application.Current.MainPage = new AppShell();
+            }
         }
         catch (Exception ex)
         {

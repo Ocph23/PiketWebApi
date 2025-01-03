@@ -37,7 +37,7 @@ namespace PicketMobile.Services
             }
         }
 
-     
+
         public StringContent GenerateHttpContent(object data)
         {
             var json = JsonSerializer.Serialize(data);
@@ -63,16 +63,9 @@ namespace PicketMobile.Services
                 if (string.IsNullOrEmpty(content))
                     throw new SystemException();
 
-                if (content.Contains("message"))
-                {
-                    var error = JsonSerializer.Deserialize<ErrorMessage>(content, Helper.JsonOption);
-                    return error.Message;
-                }
-                else if (content.Contains("tools.ietf"))
-                {
-                    var errors = JsonSerializer.Deserialize<ErrorMessages>(content, Helper.JsonOption);
-                    return errors.Title;
-                }
+                var error = JsonSerializer.Deserialize<ErrorMessage>(content, Helper.JsonOption);
+                if (error != null)
+                    return string.IsNullOrEmpty(error.Message) ? error.Detail : error.Message;
                 return content;
             }
             catch (Exception)
@@ -105,25 +98,26 @@ namespace PicketMobile.Services
 
     }
 
+    public class Error
+    {
+        public string Code { get; set; }
+        public string Description { get; set; }
+        public int Type { get; set; }
+        public int NumericType { get; set; }
+    }
 
 
     public class ErrorMessage
     {
-        public string Message { get; set; }
-    }
-
-    public class Errors
-    {
-        public List<string> Email { get; set; }
-    }
-
-    public class ErrorMessages
-    {
         public string Type { get; set; }
         public string Title { get; set; }
+        public string Detail { get; set; }
+        public string Message { get; set; }
+        public string Instance { get; set; }
         public int Status { get; set; }
         public string TraceId { get; set; }
-        public Errors Errors { get; set; }
+        public IEnumerable<Error> Errors { get; set; }
+        public object Exception { get; set; }
     }
 
 

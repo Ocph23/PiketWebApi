@@ -9,8 +9,8 @@ namespace PiketWebApi.Validators
         public ScheduleValidator()
         {
             RuleFor(x => x.TeacherId).NotEmpty().WithMessage("Guru tidak boleh kosong");
-            RuleFor(x => x.DayOfWeek).LessThan(0).WithMessage("Hari tidak boleh kosong")
-                .GreaterThan(6).WithMessage("Hari tidak boleh kosong");
+            RuleFor(x => x.DayOfWeek).GreaterThan(0).WithMessage("Hari tidak boleh kosong");
+            RuleFor(x => x.DayOfWeek).LessThan(7).WithMessage("Hari tidak boleh kosong");
         }
     }
 }

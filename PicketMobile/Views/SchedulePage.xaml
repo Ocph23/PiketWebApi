@@ -3,41 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PicketMobile.Views.SchedulePage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:PicketMobile.Views"
+             xmlns:model="clr-namespace:PicketMobile.Models"
+             BackgroundImageSource="background.jpg"
+             Shell.NavBarIsVisible="False"
              Title="Jadwal Piket">
 
     <ContentPage.Resources>
         <DataTemplate x:Key="AndroidItemTemplate">
-            <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60"  TextColor="White"
-                           Margin="5,0" HeightRequest="60" CornerRadius="100" Text="{Binding TeacherName}" 
-                           BackgroundColor="#56d388" ImageSource="{Binding Photo}"  />
+            <HorizontalStackLayout>
+                <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60"  TextColor="White"
+                Margin="5,0" HeightRequest="60" CornerRadius="100" Text="{Binding TeacherInitial}" 
+                BackgroundColor="#56d388"   />
+                <Label VerticalOptions="CenterAndExpand"   Text="{Binding TeacherName}"></Label>
+            </HorizontalStackLayout>
         </DataTemplate>
     </ContentPage.Resources>
-    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsBusy}">
-    <CollectionView ItemsSource="{Binding Datas}">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Frame Padding="10" Margin="5">
-                        <Frame.Background>
-                            <LinearGradientBrush>
-                                <GradientStop  Color="#B2FEFA" Offset="1"></GradientStop>
-                                <GradientStop  Color="#0ED2F7" Offset="0.1"></GradientStop>
-                            </LinearGradientBrush>
-                        </Frame.Background>
-                    <Grid RowDefinitions="auto,*">
-                        <HorizontalStackLayout>
-                            <Frame CornerRadius="50" HeightRequest="10" WidthRequest="10" BackgroundColor="Red"></Frame>
-                            <Label Text="{Binding Day}" FontSize="Medium" FontAttributes="Bold" Margin="5,5" ></Label>
-                        </HorizontalStackLayout>
-                        <FlexLayout  Grid.Row="1" Wrap="Wrap" JustifyContent="Start" AlignItems="Start"
+
+    <Grid RowDefinitions="auto,*">
+        <StackLayout Margin="10">
+            <Label FontSize="Title" Text="Jadwal Piket"></Label>
+        </StackLayout>
+        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Datas}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource borderInput}" >
+
+                            <Grid RowDefinitions="auto,*">
+                                <HorizontalStackLayout>
+                                    <Label Text="{Binding Day}" FontSize="Default" FontAttributes="Bold" Margin="5,5" ></Label>
+                                </HorizontalStackLayout>
+                                <FlexLayout  Grid.Row="1" Wrap="Wrap" JustifyContent="Start" AlignItems="Start"
                                      BindableLayout.ItemsSource="{Binding Members}"
-                                     BindableLayout.ItemTemplate="{StaticResource AndroidItemTemplate}"
-                                     >
-                         
-                        </FlexLayout>
-                    </Grid>
-                </Frame>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
-    </RefreshView>
+                                     BindableLayout.ItemTemplate="{StaticResource AndroidItemTemplate}">
+                                </FlexLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+
+
 </ContentPage>

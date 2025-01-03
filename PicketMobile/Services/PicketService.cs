@@ -1,14 +1,8 @@
 ﻿using PicketMobile.Models;
-using SharedModel.Models;
 using SharedModel.Requests;
 using SharedModel.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace PicketMobile.Services
 {
@@ -17,12 +11,10 @@ namespace PicketMobile.Services
     {
         Task<PicketResponse> GetPicketToday();
         Task<PicketModel> Create(PicketModel model);
-        Task<StudentToLateAndHomeEarlyModel> PostToLate(StudentToLateAndEarlyRequest model);
+        Task<LateAndGoHomeEarlyResponse> AddLateandEarly(StudentToLateAndEarlyRequest model);
         Task<bool> DeleteToLate(int studentTolateId);
-
-        Task<StudentToLateAndHomeEarlyModel> PostToComeHomeEarly(StudentToLateAndEarlyRequest model);
         Task<bool> DeleteToComeHomeEarly(int studentGoHomeErly);
-        Task<bool> Put(int id, PicketModel model);
+        Task<bool> Put(int id, PicketRequest model);
     }
 
     public class PicketService : IPicketService
@@ -60,7 +52,6 @@ namespace PicketMobile.Services
                 HttpResponseMessage response = await client.GetAsync($"api/picket");
                 if (response.IsSuccessStatusCode)
                 {
-                    List<ScheduleModel> schedules = new List<ScheduleModel>();
                     picket = await response.GetResultAsync<PicketResponse>();
                     return picket;
 
@@ -72,8 +63,6 @@ namespace PicketMobile.Services
                 throw new SystemException(ex.Message);
             }
         }
-
-
         public async Task<bool> DeleteToComeHomeEarly(int studentGoHomeErly)
         {
             try
@@ -106,31 +95,7 @@ namespace PicketMobile.Services
             }
         }
 
-
-        public async Task<StudentToLateAndHomeEarlyModel> PostToComeHomeEarly(StudentToLateAndEarlyRequest model)
-        {
-            try
-            {
-                using var client = new RestClient();
-                var content = client.GenerateHttpContent(model);
-                HttpResponseMessage response = await client.PostAsJsonAsync($"/api/picket/early", model);
-                if (response.IsSuccessStatusCode)
-                {
-                    var stringContent = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<StudentToLateAndHomeEarlyModel>(stringContent);
-                    if (result != null)
-                        return result;
-
-                }
-                throw new SystemException("Maaf Terjadi Kesalahan, Coba Ulangi Lagi");
-            }
-            catch (Exception ex)
-            {
-                throw new SystemException(ex.Message);
-            }
-        }
-
-        public async Task<StudentToLateAndHomeEarlyModel> PostToLate(StudentToLateAndEarlyRequest model)
+        public async Task<LateAndGoHomeEarlyResponse> AddLateandEarly(StudentToLateAndEarlyRequest model)
         {
             try
             {
@@ -139,14 +104,19 @@ namespace PicketMobile.Services
                 var data = client.GenerateHttpContent(model);
 
 
-                HttpResponseMessage response = await client.PostAsJsonAsync($"/api/picket/late", model);
+                HttpResponseMessage response = await client.PostAsJsonAsync($"/api/picket/lateandearly", model);
                 if (response.IsSuccessStatusCode)
                 {
                     var stringContent = await response.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<StudentToLateAndHomeEarlyModel>(stringContent);
+                    var result = JsonSerializer.Deserialize<LateAndGoHomeEarlyResponse>(stringContent,Helper.JsonOption);
                     if (result != null)
-                        return result;
-
+                    {
+                        if(picket !=null && picket.StudentsLateAndComeHomeEarly != null)
+                        {
+                            picket.StudentsLateAndComeHomeEarly.Add(result);
+                        }
+                        return result; 
+                    }
                 }
                 throw new SystemException(await client.Error(response));
             }
@@ -156,7 +126,7 @@ namespace PicketMobile.Services
             }
         }
 
-        public async Task<bool> Put(int id, PicketModel model)
+        public async Task<bool> Put(int id, PicketRequest model)
         {
             try
             {

@@ -21,11 +21,19 @@ namespace PiketWebApi.Api
             group.MapGet("/{id}", GetClassRoomById);
             group.MapGet("/schoolyear/{id}", GetClassRoomBySchoolYear);
             group.MapPost("/", PostClassRoom);
+            group.MapPost("/classroomfromlast",CreateClassRoomFromLastClass);
             group.MapPut("/{id}", PutClassRoom);
             group.MapDelete("/{id}", DeleteClassRoom);
             group.MapPost("/addstudent/{classroomId}", AddStudentToClassRoom);
             group.MapDelete("/removestudent/{classroomId}/{studentId}", RemoveStudentFromClassRoom);
             return group.WithTags("classroom").RequireAuthorization(); ;
+        }
+
+        private static async Task<IResult> CreateClassRoomFromLastClass(HttpContext context,IClassRoomService classRoomService,ClassRoomFromLastClassRequest req)
+        {
+            var result = await classRoomService.CreateClassRoomFromLastClass(req);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
         }
 
         private static async Task<IResult> GetClassRoomBySchoolYear(HttpContext context, IClassRoomService classRoomService, int id)

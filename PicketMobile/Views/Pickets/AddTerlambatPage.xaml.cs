@@ -1,6 +1,10 @@
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using PicketMobile.Models;
 using PicketMobile.Services;
-using SharedModel.Models;
+using SharedModel;
+using SharedModel.Requests;
+using SharedModel.Responses;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -19,7 +23,7 @@ internal class AddTerlambatPageViewModel : BaseNotify
 {
     private Models.StudentToLateAndHomeEarlyModel studentToLateModel = new Models.StudentToLateAndHomeEarlyModel();
 
-    public ObservableCollection<Student> Students { get; set; } = new ObservableCollection<Student>();
+    public ObservableCollection<StudentResponse> Students { get; set; } = new ObservableCollection<StudentResponse>();
 
     public Models.StudentToLateAndHomeEarlyModel Model
     {
@@ -111,6 +115,7 @@ internal class AddTerlambatPageViewModel : BaseNotify
     {
         try
         {
+            IsBusy = true;
             var studentService = ServiceHelper.GetService<IStudentService>();
             var students = await studentService.SearchStudent(SearchText);
             Students.Clear();
@@ -130,6 +135,10 @@ internal class AddTerlambatPageViewModel : BaseNotify
                 await Shell.Current.DisplayAlert("Error", ex.Message, "Ok");
             }
         }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [Obsolete]
@@ -139,10 +148,14 @@ internal class AddTerlambatPageViewModel : BaseNotify
         {
             IsBusy = true;
             var picketService = ServiceHelper.GetService<IPicketService>();
-            var result = await picketService.PostToLate(new SharedModel.Requests.StudentToLateAndEarlyRequest(Model.Student.Id, Model.AtTime, Model.Description));
+            var result = await picketService.AddLateandEarly(new StudentToLateAndEarlyRequest(Model.Student.Id,
+                Model.AtTime,
+                Model.Description,
+                AttendanceStatus.Hadir,
+                SharedModel.LateAndGoHomeEarlyAttendanceStatus.Terlambat));
             if (result != null)
             {
-                Model.Id = result.Id;
+                WeakReferenceMessenger.Default.Send(new ToLateChangeMessage(result));
                 await Shell.Current.DisplayAlert("Success", $"{Model.Student.Name} berhasil ditambahkan dalam daftar terlamabat", "OK");
                 SearchText = string.Empty;
                 Model = new Models.StudentToLateAndHomeEarlyModel();

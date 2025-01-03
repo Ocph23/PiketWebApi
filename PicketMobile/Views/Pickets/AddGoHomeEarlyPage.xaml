@@ -2,12 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PicketMobile.Views.Pickets.AddGoHomeEarlyPage"
+              BackgroundImageSource="background.jpg"
              Title="AddGoHomeEarlyPage">
 
     <VerticalStackLayout >
         <Grid>
             <StackLayout>
-                <Label Text="Tambah Siswa Terlambat" FontSize="18" Margin="20" FontAttributes="Bold"></Label>
+                <Label Text="Tambah Siswa Pulang Lebih Cepat" FontSize="18" Margin="20" FontAttributes="Bold"></Label>
                 <Grid ColumnDefinitions="*,auto,auto">
                     <SearchBar x:Name="searchBar" Placeholder="Cari Siswa (NIS / Nama)"
                   Text="{Binding SearchText}"/>

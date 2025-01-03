@@ -10,6 +10,8 @@ namespace PiketWebApi
 {
     public class Helper
     {
+        public static string TeacherPhotoPath => Path.Combine(Directory.GetCurrentDirectory(), "photos/teacher/");
+        public static string StudentPhotoPath => Path.Combine(Directory.GetCurrentDirectory(), "photos/student/");
         public static string ApiCreateError => "Maaf terjadi kesalahan, coba lengkapi data dan coba ulangi lagi.";
         public static string ApiCommonError => "Maaf terjadi kesalahan, coba ulangi lagi.";
 
@@ -42,7 +44,7 @@ namespace PiketWebApi
             return problemDetails;
         }
 
-        public static async Task<ErrorOr<ApplicationUser>> CreateUser(UserManager<ApplicationUser> userManager,  ApplicationUser user, string role)
+        public static async Task<ErrorOr<ApplicationUser>> CreateUser(UserManager<ApplicationUser> userManager, ApplicationUser user, string role)
         {
             //var user = new ApplicationUser { Email = model.Email, EmailConfirmed = true, Name = model.Name, UserName = model.Email };
             var createResult = await userManager.CreateAsync(user, "Password@123");
@@ -59,7 +61,15 @@ namespace PiketWebApi
             return errors.ToList();
         }
 
+        internal static void DeleteFile(string v)
+        {
+            File.Delete(v);
+        }
 
-
+        internal static bool IsMaxUpload(int length)
+        {
+            const int max = 1; //1mb
+            return length / 2048 > max ? true : false;
+        }
     }
 }

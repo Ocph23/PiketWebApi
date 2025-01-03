@@ -10,6 +10,10 @@ namespace PiketWebApi.Validators
         {
             RuleFor(x=> x.Name).NotEmpty().WithMessage("Nama Kelas Tidak Boleh Kosong");
             RuleFor(x=> x.DepartmentId).GreaterThan(0).WithMessage("Jurusan Tidak Boleh Kosong");
+            RuleFor(x=> x.Level)
+                .GreaterThanOrEqualTo(1)
+                .LessThanOrEqualTo(3)
+                .WithMessage("Tingkatan hanya boleh 1-3");
             RuleFor(x=> x.HomeRoomTeacherId).GreaterThan(0).WithMessage("Wali Kelas Tidak Boleh Kosong");
             RuleFor(x=> x.ClassRommLeaderId).GreaterThan(0).WithMessage("Ketua Kelas Tidak Boleh Kosong");
         }

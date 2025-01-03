@@ -7,6 +7,8 @@ using PiketWebApi.Data;
 using PiketWebApi.Services;
 using SharedModel;
 using SharedModel.Models;
+using System.Linq;
+using System.Net;
 
 namespace PiketWebApi.Api
 {
@@ -20,7 +22,15 @@ namespace PiketWebApi.Api
             group.MapPost("/", PostTeacher);
             group.MapPut("/{id}", PutTeacher);
             group.MapDelete("/{id}", DeleteTeacher);
+            group.MapPut("/photo/{id}", UploadFoto);
             return group.WithTags("teacher").RequireAuthorization(); ;
+        }
+
+        private static async Task<IResult> UploadFoto(HttpContext context, ITeacherService teacherService, int id, byte[] data)
+        {
+            var result = await teacherService.UploadPhoto(id,data);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
         }
 
         private static async Task<IResult> SearchTeacher(HttpContext context, ITeacherService teacherService, string searchtext)
@@ -37,7 +47,7 @@ namespace PiketWebApi.Api
 
         private static async Task<IResult> PutTeacher(HttpContext context, ITeacherService teacherService, int id, Teacher teacher)
         {
-            var result = await teacherService.PutAsync(id , teacher);
+            var result = await teacherService.PutAsync(id, teacher);
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 

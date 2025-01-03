@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PicketMobile.Views.Pickets.GoHomeEarlyPage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+              BackgroundImageSource="background.jpg"
              Title="Picket Hari Ini">
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="addcircle.svg"  Command="{Binding AddStudentLateCommand}"  />
@@ -10,7 +11,7 @@
 
 
     <RefreshView Command="{Binding AsyncCommand}" IsRefreshing="{Binding IsBusy}">
-        <CollectionView ItemsSource="{Binding DataStudentTolate}" Margin="0,10">
+        <CollectionView ItemsSource="{Binding DataStudentGoHomeEarly}" Margin="0,10">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
@@ -27,11 +28,11 @@
                             <Label FontSize="16" Text="{Binding StudentName}" TextColor="White"></Label>
                             <Grid ColumnDefinitions="*,auto">
                                 <Label Text="{Binding ClassRoomName}" FontSize="13" TextColor="White"></Label>
-                                <HorizontalStackLayout>
+                                <FlexLayout JustifyContent="SpaceBetween">
                                     <Label Text="{Binding AttendanceStatus, StringFormat='{0:HH:mm}'}" FontSize="13" TextColor="White" Margin="10,0" ></Label>
                                     <Label Text="|" FontSize="13" TextColor="White" Margin="10,0"  ></Label>
-                                    <Label Text="{Binding CreateAt, StringFormat='{0:HH:mm}'}" FontSize="13" TextColor="White" Margin="10,0" HorizontalOptions="End" ></Label>
-                                </HorizontalStackLayout>
+                                    <Label Text="{Binding Time, StringFormat='{0:HH:mm}'}" FontSize="13" TextColor="White" Margin="10,0" HorizontalOptions="End" ></Label>
+                                </FlexLayout>
                             </Grid>
                         </StackLayout>
                     </Grid>

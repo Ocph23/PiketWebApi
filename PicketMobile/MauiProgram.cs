@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using PicketMobile.Services;
+using ZXing.Net.Maui.Controls;
 
 namespace PicketMobile
 {
@@ -20,7 +21,8 @@ namespace PicketMobile
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             })
                 .UseMauiCommunityToolkit()
-                ;
+                .UseBarcodeReader()
+            ;
 #if DEBUG
             builder.Logging.AddDebug();
 #endif

@@ -73,7 +73,7 @@ namespace PiketWebApi.Services
                     dbContext.SaveChanges();
                     return await Task.FromResult(true);
                 }
-                return Error.NotFound("Data tidak ditemukan");
+                return Error.NotFound("NotFound","Data tidak ditemukan");
             }
             catch (Exception)
             {
@@ -92,12 +92,6 @@ namespace PiketWebApi.Services
                     return validateResult.GetErrors();
                 }
 
-                var isExists = dbContext.SchoolYears.Any(x => x.Id != id && x.Year == model.Year && model.Semester == model.Semester);
-                if (isExists)
-                {
-                    return Error.Conflict($"Data tahun ajaran {model.Year} semester {model.Year} sudah ada");
-                }
-
                 var result = dbContext.SchoolYears.SingleOrDefault(x => x.Id == id);
                 if (result != null)
                 {
@@ -105,7 +99,7 @@ namespace PiketWebApi.Services
                     dbContext.SaveChanges();
                     return await Task.FromResult(true);
                 }
-                return Error.NotFound("Data tidak ditemukan");
+                return Error.NotFound("SchoolYear","Data tidak ditemukan");
             }
             catch (Exception)
             {

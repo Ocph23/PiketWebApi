@@ -8,6 +8,7 @@ using PiketWebApi.Abstractions;
 using PiketWebApi.Data;
 using PiketWebApi.Services;
 using SharedModel.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PiketWebApi.Api
 {
@@ -16,6 +17,7 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapStudentApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAllStudent);
+            group.MapGet("/paginate", GetAllStudentWithPanitate);
             group.MapGet("/withclass", GetAllStudentWithClass);
             group.MapGet("/withclas/{id}", GetStudentWithClass);
             group.MapGet("/{id}", GetStudentById);
@@ -23,9 +25,24 @@ namespace PiketWebApi.Api
             group.MapPost("/", PostStudent);
             group.MapPut("/{id}", PutStudent);
             group.MapDelete("/{id}", DeleteStudent);
+            group.MapPut("/photo/{id}", UploadFoto);
             return group.WithTags("student").RequireAuthorization(); ;
         }
 
+        private static async Task<IResult> GetAllStudentWithPanitate(HttpContext context, IStudentService studentService,
+            string searchTerm, string columnOrder, string sortOrder, int page, int pagesize)
+        {
+            var result = await studentService.GetAllStudentWithPanitate(searchTerm,columnOrder,sortOrder, page,pagesize);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
+        }
+
+        private static async Task<IResult> UploadFoto(HttpContext context, IStudentService studentService, int id, byte[] data)
+        {
+            var result = await studentService.UploadPhoto(id, data);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
+        }
         private static async Task<IResult> GetStudentWithClass(HttpContext context, IStudentService studentService, int id)
         {
             var result = await studentService.GetStudentWithClass(id);

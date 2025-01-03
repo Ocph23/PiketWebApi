@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using SharedModel.Models;
 using SharedModel;
+using SharedModel.Responses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,26 +22,19 @@ namespace PicketMobile.Models
         Weather weather;
 
         [ObservableProperty]
-        TimeOnly? startAt = TimeOnly.FromTimeSpan(new TimeSpan(7, 15, 0));
+        TimeSpan? startAt = new TimeSpan(7, 15, 0);
 
         [ObservableProperty]
-        TimeOnly? endAt;
+        TimeSpan? endAt;
 
         [ObservableProperty]
-        Teacher? createdBy;
+        TeacherResponse? createdBy;
 
         [ObservableProperty]
         DateTime createAt = DateTime.Now.ToUniversalTime();
 
-        [ObservableProperty]
-        List<Teacher> teacherAttendance = new();
-
-        [ObservableProperty]
-        List<StudentComeHomeEarly> studentsComeHomeEarly = new();
-
-        [ObservableProperty]
-        List<StudentToLate> studentsToLate = new();
-       
+        public ICollection<TeacherAttendanceResponse> TeacherAttendance { get; set; } = default;
+        public ICollection<LateAndGoHomeEarlyResponse> LateAndComeHomeEarly { get; set; } = default;
 
     }
 }

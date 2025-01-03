@@ -61,15 +61,31 @@ namespace PiketWebApi
             problemDetails.Status = StatusCodes.Status400BadRequest;
             problemDetails.Title = " An error occured";
             problemDetails.Type = "BadRequest";
-            problemDetails.Detail = errors.Errors.FirstOrDefault().Description;
+            problemDetails.Detail = errors.FirstError.Description;
             problemDetails.Extensions.Add("errors", errors.Errors);
 
             return problemDetails;
 
-
         }
+
+        public static IResult GetErrorResult<T>(this ErrorOr<T> errors, HttpContext context)
+        {
+            ProblemDetails problemDetails = new ProblemDetails();
+            problemDetails.Instance = $"{context.Request.Method} {context.Request.Path} ";
+            problemDetails.Status = StatusCodes.Status400BadRequest;
+            problemDetails.Title = "An error occured";
+            problemDetails.Type = errors.FirstError.Code;
+            problemDetails.Detail = errors.FirstError.Description;
+            problemDetails.Extensions.Add("errors", errors.Errors);
+
+            if (errors.FirstError.Type == ErrorType.Unauthorized)
+                problemDetails.Status = StatusCodes.Status401Unauthorized;
+
+            return Results.BadRequest(problemDetails);
+        }
+
 
     }
 
-   
+
 }

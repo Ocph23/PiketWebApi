@@ -19,6 +19,17 @@
         <Setter Property="StrokeThickness" Value="1"/>
     </Style>
 
+
+    <Style x:Key="borderInput" TargetType="Border">
+        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray500}}" />
+        <Setter Property="StrokeThickness" Value="2"/>
+        <Setter Property="StrokeShape" Value="RoundRectangle 5,5,5,5"></Setter>
+        <Setter Property="Background" Value="Wheat"></Setter>
+        <Setter Property="Opacity" Value="0.7"></Setter>
+        <Setter Property="Padding" Value="15,5"></Setter>
+    </Style>
+    
+
     <Style TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
@@ -114,6 +125,7 @@
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
+        <Setter Property="FontAttributes" Value="Bold"/>
         <Setter Property="FontSize" Value="14" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
         <Setter Property="MinimumHeightRequest" Value="44"/>

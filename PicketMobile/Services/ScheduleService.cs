@@ -1,5 +1,4 @@
 ﻿using PicketMobile.Models;
-using SharedModel.Models;
 using SharedModel.Responses;
 using System;
 using System.Collections.Generic;
@@ -20,9 +19,7 @@ namespace PicketMobile.Services
 
     public class ScheduleService : IScheduleService
     {
-        static List<ScheduleModel> schedules = new List<ScheduleModel>();
-
-
+       private static List<ScheduleModel> schedules = new List<ScheduleModel>();
 
         public async Task<IEnumerable<ScheduleModel>> GetScheduleActive()
         {
@@ -31,7 +28,7 @@ namespace PicketMobile.Services
                 if (schedules.Count <= 0)
                 {
                     using var db = new RestClient();
-                    HttpResponseMessage response = await db.GetAsync($"api/schedule/active");
+                    HttpResponseMessage response = await db.GetAsync($"api/schedule");
                     if (response.IsSuccessStatusCode)
                     {
                         schedules.Clear();
@@ -43,7 +40,7 @@ namespace PicketMobile.Services
                             {
                                 schedules.Add(new ScheduleModel
                                 {
-                                    Day = item.Key.ToString(),
+                                    Day = Helper.GetIndonesiaDayName(item.Key.ToString()),
                                     Members = item.ToList()
                                 });
                             }
@@ -67,12 +64,19 @@ namespace PicketMobile.Services
             try
             {
                 var schedules = await GetScheduleActive();
-                var profile = new Teacher() { Id=1};
+                var profileString = Preferences.Get("profile", null);
+                if (profileString != null)
+                {
+                    var profile = JsonSerializer.Deserialize<TeacherResponse>(profileString, Helper.JsonOption);
+                    if (profile != null)
+                    {
+                        var myschedulu = schedules.Where(x => x.Members.Any(z => z.TeacherId == profile.Id)).FirstOrDefault();
 
-                var myschedulu = schedules.Where(x => x.Members.Any(z => z.TeacherId == profile.Id)).FirstOrDefault();
+                        if (myschedulu != null && myschedulu.Day == Helper.GetIndonesiaDayName(DateTime.Now.DayOfWeek.ToString()))
+                            return true;
+                    }
 
-                if (myschedulu!=null && myschedulu.Day== DateTime.Now.DayOfWeek.ToString())
-                    return true;
+                }
                 return false;
 
             }

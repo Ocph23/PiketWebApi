@@ -14,6 +14,7 @@ namespace PiketWebApi.Services
         Task<ErrorOr<IEnumerable<Teacher>>> GetAsync();
         Task<ErrorOr<Teacher>> GetByIdAsync(int id);
         Task<ErrorOr<IEnumerable<Teacher>>> SearchTextAsync(string text);
+        Task<ErrorOr<string>> UploadPhoto(int teacherId, byte[] image);
     }
 
     public class TeacherService : ITeacherService
@@ -31,13 +32,48 @@ namespace PiketWebApi.Services
             dbContext = _dbContext;
         }
 
+
+        public async Task<ErrorOr<string>> UploadPhoto(int teacherId, byte[] image)
+        {
+            try
+            {
+                if (image.Length <= 0) 
+                    return Error.Validation("Teacher", "Data file yg anda kirim kosong, periksa kembali file yang anda kirim.");
+
+                if(Helper.IsMaxUpload(image.Length))
+                    return Error.Validation("Teacher", "Data file lebih besar dari 1 MB");
+
+
+                var teacher = dbContext.Teachers.FirstOrDefault(t => t.Id == teacherId);
+                if (teacher == null)
+                    return Error.NotFound("Teacher", "Data guru tidak ditemukan.");
+
+                var fileName = Path.GetRandomFileName() + ".png";
+                if (!Directory.Exists(Helper.TeacherPhotoPath))
+                {
+                    Directory.CreateDirectory(Helper.TeacherPhotoPath);
+                }
+                System.IO.File.WriteAllBytes(Helper.TeacherPhotoPath + fileName, image);
+                if (!string.IsNullOrEmpty(teacher.Photo))
+                    Helper.DeleteFile(Helper.TeacherPhotoPath + teacher.Photo);
+                teacher.Photo = fileName;
+                dbContext.SaveChanges();
+                return fileName;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+
         public async Task<ErrorOr<bool>> DeleteAsync(int id)
         {
             try
             {
                 var result = dbContext.Teachers.SingleOrDefault(x => x.Id == id);
                 if (result == null)
-                    return Error.NotFound("Data guru tidak ditemukan.");
+                    return Error.NotFound("Teacher", "Data guru tidak ditemukan.");
 
 
                 dbContext.Remove(result);
@@ -85,7 +121,7 @@ namespace PiketWebApi.Services
                 result.PlaceOfBorn = model.PlaceOfBorn;
                 result.Name = model.Name;
                 result.Photo = model.Photo;
-                result.Description= model.Description;
+                result.Description = model.Description;
                 dbContext.SaveChanges();
                 trans.Commit();
                 return await Task.FromResult(true);

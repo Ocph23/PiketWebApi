@@ -18,16 +18,14 @@ Authorization : {{token}}
 
 ####
 ####
-put {{url}}/schoolyear/1 HTTP/1.1
+put {{url}}/schoolyear/7 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
 {
-    "id": 1,
+    "id": 7,
     "year": 2024,
-    "semester": 1,
-    "semesterName": "Ganjil",
-    "name": "2024/2025",
+    "semester": 2,
     "actived": true
   }
 
@@ -39,12 +37,12 @@ Authorization : {{token}}
 
 {
   "id": 0,
-  "year": 2024,
-  "semester":2
+  "year": 2023,
+  "semester":1
 }
 ####
 
-Delete {{url}}/schoolyear/2 HTTP/1.1
+Delete {{url}}/schoolyear/7 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 ####

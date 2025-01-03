@@ -11,13 +11,13 @@ namespace PicketMobile.Models
     }
 
 
-    public enum StatusKehadiran
-    {
-        Hadir,
-        Alpa,
-        Sakit,
-        Izin    ,
-        Lainnya
+    //public enum StatusKehadiran
+    //{
+    //    Hadir,
+    //    Alpa,
+    //    Sakit,
+    //    Izin    ,
+    //    Lainnya
 
-    }
+    //}
 }

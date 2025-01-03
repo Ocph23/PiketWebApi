@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using PicketMobile.Models;
 using PicketMobile.Services;
-using SharedModel.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -28,12 +27,32 @@ internal class SchedulePageViewModel : BaseNotify
     [Obsolete]
     public SchedulePageViewModel()
     {
-        RefreshCommand = new RelayCommand(async () => await RefreshCommandAction());
+        RefreshCommand = new AsyncRelayCommand(async (x) => await RefreshCommandAction(x));
         IsBusy = true;
     }
 
+    private async Task RefreshCommandAction(object obj)
+    {
+        try
+        {
+            var service = ServiceHelper.GetService<IScheduleService>();
+            var data = await service.GetScheduleActive();
+            Datas.Clear();
+            foreach (var item in data)
+            {
+                Datas.Add(item);
+            }
+            IsBusy = false;
+        }
+        catch (Exception ex)
+        {
+            await AppShell.Current.DisplayAlert("Error", ex.Message, "Ok");
+        }
+        finally { IsBusy = false; }
+    }
+
     [Obsolete]
-    private async Task RefreshCommandAction()
+    private async Task RefreshCommandActionx()
     {
         try
         {

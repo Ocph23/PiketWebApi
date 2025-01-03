@@ -1,12 +1,9 @@
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using JetBrains.Annotations;
-using SharedModel.Models;
 using SharedModel.Responses;
-using SharedModel;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using PicketMobile.Services;
+using CommunityToolkit.Mvvm.Messaging;
 using PicketMobile.Models;
 
 namespace PicketMobile.Views.Pickets;
@@ -23,7 +20,7 @@ public partial class GoHomeEarlyPage : ContentPage
 internal partial class GoHomeEarlyPageViewModel : BaseNotify
 {
 
-    public ObservableCollection<SharedModel.Responses.StudentToLateAndComeHomeSoEarlyResponse> DataStudentGoHomeEarly { get; set; }
+    public ObservableCollection<LateAndGoHomeEarlyResponse> DataStudentGoHomeEarly { get; set; }
 
   
 
@@ -41,10 +38,13 @@ internal partial class GoHomeEarlyPageViewModel : BaseNotify
 
     public GoHomeEarlyPageViewModel()
     {
-      
         AsyncCommand = new Command(async () => await LoadAction());
         AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
-        DataStudentGoHomeEarly = new ObservableCollection<StudentToLateAndComeHomeSoEarlyResponse>();
+        DataStudentGoHomeEarly = new ObservableCollection<LateAndGoHomeEarlyResponse>();
+        WeakReferenceMessenger.Default.Register<ToEarlyGoHomeChangeMessage>(this, (r, m) =>
+        {
+            DataStudentGoHomeEarly.Add(m.Value);
+        });
         IsBusy = true;
     }
 
@@ -70,7 +70,7 @@ internal partial class GoHomeEarlyPageViewModel : BaseNotify
             if (picket != null)
             {
                 DataStudentGoHomeEarly.Clear();
-                foreach (var item in picket.StudentsComeHomeEarly)
+                foreach (var item in picket.StudentsLateAndComeHomeEarly.Where(x=>x.LateAndGoHomeEarlyStatus== SharedModel.LateAndGoHomeEarlyAttendanceStatus.Pulang))
                 {
                     DataStudentGoHomeEarly.Add(item);
                 }

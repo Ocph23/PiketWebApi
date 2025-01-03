@@ -23,15 +23,14 @@
         Alpa,
         Sakit,
         Izin,
-        Lainnya ,
+        Bolos,
+        Lainnya 
     }
 
     public enum LateAndGoHomeEarlyAttendanceStatus
     {
-        None,
         Terlambat,
-        Sakit,
-        Izin,
+        Pulang,
     }
 
 

@@ -37,14 +37,13 @@ namespace PicketMobile.Services
                         Preferences.Set("user", data.UserName);
                         Preferences.Set("email", data.Email);
                         Preferences.Set("roles", JsonSerializer.Serialize(data.roles));
-                        Preferences.Set("profile", JsonSerializer.Serialize(data.Profile));
-                        Application.Current.MainPage = new AppShell();
+                        Preferences.Set("profile", data.Profile.ToString());
                         return true;
                     }
                 }
-                throw new SystemException(await client.Error(response)); ;
+                throw new SystemException($"'{response.RequestMessage.RequestUri.LocalPath}'  Anda Tidak Memiliki Akses !");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new SystemException("Maaf, Anda Tidak Memiliki Akses !");
             }

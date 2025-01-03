@@ -44,8 +44,8 @@ namespace PiketWebApi.Services
                              .Include(x => x.SchoolYear).Include(x => x.Teacher)
                              select new ScheduleResponse(a.Id, a.SchoolYear.Id, a.SchoolYear.Year,
                              a.SchoolYear.Semester,
-                             a.DayOfWeek.ToString(), a.Teacher.Id,
-                             a.Teacher.RegisterNumber, a.Teacher.Name, "");
+                             a.DayOfWeek.ToString(), a.Teacher.Id,    
+                             a.Teacher.RegisterNumber, a.Teacher.Name,a.Teacher.Photo);
 
                 return await Task.FromResult(result.ToList());
             }
@@ -54,7 +54,6 @@ namespace PiketWebApi.Services
                 return Error.Conflict();
             }
         }
-
 
         public async Task<ErrorOr<IEnumerable<ScheduleResponse>>> GetAsync()
         {
@@ -82,7 +81,7 @@ namespace PiketWebApi.Services
                              select new ScheduleResponse(a.Id, a.SchoolYear.Id, a.SchoolYear.Year,
                              a.SchoolYear.Semester,
                              a.DayOfWeek.ToString(), a.Teacher.Id,
-                             a.Teacher.RegisterNumber, a.Teacher.Name, "");
+                             a.Teacher.RegisterNumber, a.Teacher.Name, a.Teacher.Photo);
 
                 if (!result.Any())
                     return Error.Failure("Schedule", "Data jadwal tidak ditemukan");
@@ -123,7 +122,7 @@ namespace PiketWebApi.Services
 
                 var resultResponse = new ScheduleResponse(model.Id, model.SchoolYear.Id,
                     model.SchoolYear.Year, model.SchoolYear.Semester, model.DayOfWeek.ToString(), model.Teacher.Id,
-                    model.Teacher.RegisterNumber, model.Teacher.Name);
+                    model.Teacher.RegisterNumber, model.Teacher.Name, model.Teacher.Photo);
                 return await Task.FromResult(resultResponse);
             }
             catch (Exception ex)
@@ -143,7 +142,7 @@ namespace PiketWebApi.Services
 
                 Schedule? result = dbContext.Schedules.SingleOrDefault(x => x.Id == id);
                 if (result == null)
-                    Error.Failure("Schedule", "Data jadal piket tidak ditemukan.");
+                  return  Error.Failure("Schedule", "Data jadal piket tidak ditemukan.");
 
                 result.DayOfWeek = (DayOfWeek)req.DayOfWeek;
                 result.Teacher = new Teacher { Id = req.TeacherId };

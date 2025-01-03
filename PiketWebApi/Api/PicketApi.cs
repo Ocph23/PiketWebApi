@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
 using PiketWebApi.Services;
 using SharedModel.Models;
 using SharedModel.Requests;
+using SharedModel.Responses;
 
 namespace PiketWebApi.Api
 {
@@ -19,94 +21,70 @@ namespace PiketWebApi.Api
             return group.WithTags("picket").RequireAuthorization(); ;
         }
 
-        private static async Task<IResult> PutPicket(HttpContext context, ApplicationDbContext dbContext, int id, Picket model)
+        private static async Task<IResult> PutPicket(HttpContext context, IPicketService picketService, int id, PicketRequest picket)
         {
-            try
-            {
-                var result = dbContext.Picket.Include(x => x.CreatedBy)
-                    .SingleOrDefault(x => x.Id == id);
-                if (result != null)
-                {
-                    result.Weather = model.Weather;
-                    result.StartAt = model.StartAt;
-                    result.EndAt = model.EndAt;
-                    if (result.CreatedBy.Id != model.CreatedBy.Id)
-                    {
-                        dbContext.Entry(result.CreatedBy).State = EntityState.Unchanged;
-                        result.CreatedBy = model.CreatedBy;
-                    }
-                    dbContext.SaveChanges();
-                    return TypedResults.Ok(true);
-                }
-                throw new SystemException("Terjadi Kesalahan !, Coba Ulangi Lagi");
-            }
-            catch (Exception ex)
-            {
-                return TypedResults.BadRequest(ex.Message);
-            }
-        }
-
-
-        private static async Task<IResult> RemoveLateandearly(HttpContext context, ApplicationDbContext dbContext, int id)
-        {
-            try
-            {
-                var result = dbContext.Picket.Include(x => x.LateAndComeHomeEarly)
-                    .Where(x => x.Id == id)
-                    .SelectMany(x => x.LateAndComeHomeEarly).SingleOrDefault();
-                if (result != null)
-                {
-                    dbContext.Remove(result);
-                    dbContext.SaveChanges();
-                    return TypedResults.Ok(true);
-                }
-                throw new SystemException("Terjadi Kesalahan !, Coba Ulangi Lagi");
-            }
-            catch (Exception ex)
-            {
-
-                return TypedResults.BadRequest(ex.Message);
-            }
-        }
-
-     
-        private static async Task<IResult> AddLateandearly(HttpContext context, IPicketService picketService, StudentToLateAndEarlyRequest late)
-        {
-            try
-            {
-                var result = await picketService.AddStudentToLateComeHomeSoEarly(late);
-                return Results.Ok(late);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
-        }
-
-        private static async Task<IResult> PostPicket(HttpContext context, IPicketService picketService)
-        {
-            try
-            {
-                var result = await picketService.CreateNewPicket();
-                return Results.Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
+            var result = await picketService.UpdatePicket(id, picket);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> GetPickerToday(HttpContext context, IPicketService picketService)
         {
-            try
-            {
-                var result = await picketService.GetPicketToday();
-                return Results.Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return Results.BadRequest(ex.Message);
-            }
+            var result = await picketService.GetPicketToday();
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
         }
+
+        //private static async Task<IResult> PutPicket(HttpContext context, IPicketService picketService, int id, Picket model)
+        //{
+
+        //    var result = await picketService.GetAsync();
+        //    return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
+        //    try
+        //    {
+        //        var result = dbContext.Picket.Include(x => x.CreatedBy)
+        //            .SingleOrDefault(x => x.Id == id);
+        //        if (result != null)
+        //        {
+        //            result.Weather = model.Weather;
+        //            result.StartAt = model.StartAt;
+        //            result.EndAt = model.EndAt;
+        //            if (result.CreatedBy.Id != model.CreatedBy.Id)
+        //            {
+        //                dbContext.Entry(result.CreatedBy).State = EntityState.Unchanged;
+        //                result.CreatedBy = model.CreatedBy;
+        //            }
+        //            dbContext.SaveChanges();
+        //            return TypedResults.Ok(true);
+        //        }
+        //        throw new SystemException("Terjadi Kesalahan !, Coba Ulangi Lagi");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return TypedResults.BadRequest(ex.Message);
+        //    }
+        //}
+
+
+        private static async Task<IResult> RemoveLateandearly(HttpContext context, IPicketService picketService, int id)
+        {
+            var result = await picketService.RemoveStudentToLateComeHomeSoEarly(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+        }
+
+     
+        private static async Task<IResult> AddLateandearly(HttpContext context, IPicketService picketService, StudentToLateAndEarlyRequest model)
+        {
+            var result = await picketService.AddStudentToLateComeHomeSoEarly(model);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
+        }
+
+        private static async Task<IResult> PostPicket(HttpContext context, IPicketService picketService)
+        {
+            var result = await picketService.CreateNewPicket();
+            return result.Match(items => Results.Ok(items),  errors => result.GetErrorResult(context));
+        }
+
     }
 }

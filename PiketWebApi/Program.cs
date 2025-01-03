@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using PiketWebApi;
 using PiketWebApi.Api;
@@ -107,12 +108,13 @@ builder.Services.AddSwaggerGen(setup =>
 });
 builder.Services.AddSignalR();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IPicketService, PicketService>();
 builder.Services.AddScoped<IClassRoomService, ClassRoomService>();
-builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<ISchoolYearService, SchoolYearService>();
-builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<IPicketService, PicketService>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
+builder.Services.AddScoped<ISchoolYearService, SchoolYearService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddProblemDetails();
 
 
@@ -165,7 +167,13 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors(policyName);
-
+app.UseStaticFiles();    //Serve files from wwwroot
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+            Path.Combine(builder.Environment.ContentRootPath, "photos")),
+    RequestPath = "/photos"
+});
 app.MapGroup("/api/auth").MapAuthApi().WithOpenApi().WithTags("auth");
 app.MapGroup("/api/teacher").MapTeacherApi().WithOpenApi();
 app.MapGroup("/api/student").MapStudentApi().WithOpenApi();

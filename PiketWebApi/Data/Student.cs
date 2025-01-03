@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SharedModel.Responses;
 using System.Text.Json.Serialization;
 
 namespace PiketWebApi.Data
@@ -9,6 +10,7 @@ namespace PiketWebApi.Data
     {
         public string NIS { get; set; }
         public string? NISN { get; set; }
+
 
     }
 }

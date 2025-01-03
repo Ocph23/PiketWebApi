@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using PicketMobile.Models;
 using PicketMobile.Services;
 using SharedModel.Responses;
@@ -19,7 +20,7 @@ public partial class ToLatePage : ContentPage
 internal class ToLatePageViewModel : BaseNotify
 {
 
-    public ObservableCollection<SharedModel.Responses.StudentToLateAndComeHomeSoEarlyResponse> DataStudentTolate { get; set; }
+    public ObservableCollection<LateAndGoHomeEarlyResponse> DataStudentTolate { get; set; }
     public ICommand AsyncCommand { get; private set; }
 
     private ICommand addStudentLateCommand;
@@ -30,14 +31,35 @@ internal class ToLatePageViewModel : BaseNotify
         set { SetProperty(ref addStudentLateCommand, value); }
     }
 
+    private ICommand addStudentLateByScanCommand;
+
+    public ICommand AddStudentLateByScanCommand
+    {
+        get { return addStudentLateByScanCommand; }
+        set { SetProperty(ref addStudentLateByScanCommand , value); }
+    }
+
+
     public ICommand SelectBrowseStudent { get; set; }
 
     public ToLatePageViewModel()
     {
+
+        WeakReferenceMessenger.Default.Register<ToLateChangeMessage>(this, (r, m) =>
+        {
+            DataStudentTolate.Add(m.Value);
+        });
         AsyncCommand = new Command(async () => await LoadAction());
+        AddStudentLateByScanCommand = new AsyncRelayCommand(AddStudentLateCommandByScanAction);
         AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
-        DataStudentTolate = new ObservableCollection<StudentToLateAndComeHomeSoEarlyResponse>();
+        DataStudentTolate = new ObservableCollection<LateAndGoHomeEarlyResponse>();
         IsBusy = true;
+    }
+
+    private async Task AddStudentLateCommandByScanAction()
+    {
+        var form = new ScanBarcodePage();
+        await Shell.Current.Navigation.PushModalAsync(form);
     }
 
     [Obsolete]
@@ -66,7 +88,7 @@ internal class ToLatePageViewModel : BaseNotify
             if (picket != null)
             {
                 DataStudentTolate.Clear();
-                foreach (var item in picket.StudentsToLate)
+                foreach (var item in picket.StudentsLateAndComeHomeEarly.Where(x => x.LateAndGoHomeEarlyStatus == SharedModel.LateAndGoHomeEarlyAttendanceStatus.Terlambat))
                 {
                     DataStudentTolate.Add(item);
                 }

@@ -1,10 +1,56 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:tooltip="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             BackgroundImageSource="background.jpg"
+  Shell.NavBarIsVisible="False"
              x:Class="PicketMobile.Views.ProfilePage"
-             Title="ProfilePage">
-    <VerticalStackLayout>
-        <Button Margin="20" Command="{Binding LogoutCommand}" Text="Logout"></Button>
-        
-    </VerticalStackLayout>
+             Title="PROFIL">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30,0">
+            <StackLayout Margin="30">
+                <tooltip:AvatarView WidthRequest="100" HeightRequest="100" CornerRadius="75" BackgroundColor="ForestGreen" Text="{Binding Initial}"></tooltip:AvatarView>
+            </StackLayout>
+            <StackLayout Margin="10">
+                <Label   Text="NIP/Nomor Induk Guru"/>
+                <Entry IsReadOnly="True" Text="{Binding Profile.RegisterNumber}" Placeholder="User Name"></Entry>
+            </StackLayout>
+
+            <StackLayout Margin="10">
+                <Label    Text="Nama"/>
+                <Entry IsReadOnly="True" Text="{Binding Profile.Name}" Placeholder="User Name"></Entry>
+            </StackLayout>
+
+            <StackLayout Margin="10">
+                <Label   Text="Jenis Kelamin"/>
+                <Entry IsReadOnly="True" Text="{Binding Profile.Gender}" Placeholder="User Name"></Entry>
+            </StackLayout>
+
+            <StackLayout Margin="10">
+                <Label   Text="Tempat Lahir"/>
+                <Entry IsReadOnly="True" Text="{Binding Profile.PlaceOfBorn}" Placeholder="User Name"></Entry>
+            </StackLayout>
+
+
+            <StackLayout Margin="10">
+                <Label   Text="Tanggal Lahir"/>
+                <Entry IsReadOnly="True" Text="{Binding Profile.DateOfBorn}" Placeholder="User Name"></Entry>
+            </StackLayout>
+
+            <StackLayout Margin="10">
+                <Label   Text="Email"/>
+                <Entry IsReadOnly="True" Text="{Binding Profile.Email}" Placeholder="User Name"></Entry>
+            </StackLayout>
+
+            <StackLayout Margin="10">
+                <Label   Text="Catatan"/>
+                <Editor HeightRequest="100" IsReadOnly="True" Text="{Binding Profile.Description}"  Placeholder="User Name"></Editor>
+            </StackLayout>
+
+
+            <Button Margin="20" Command="{Binding LogoutCommand}" Text="Logout"></Button>
+        </VerticalStackLayout>
+
+    </ScrollView>
 </ContentPage>

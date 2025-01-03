@@ -238,6 +238,9 @@ namespace PiketWebApi.Migrations
                     b.Property<int?>("HomeroomTeacherId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -322,6 +325,9 @@ namespace PiketWebApi.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<int>("LateAndGoHomeEarlyStatus")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("PicketId")
                         .HasColumnType("integer");
