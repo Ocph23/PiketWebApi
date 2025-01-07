@@ -67,7 +67,7 @@ internal partial class PicketPageViewModel : ObservableObject
         AddCommand = new AsyncRelayCommand(AddCommandAction);
         UpdateCommand = new AsyncRelayCommand(UpdateCommandAction, UpdateCommandValidate);
         AsyncCommand = new Command(async () => await LoadAction());
-        CanSync = true;
+        AsyncCommand.Execute(null);
     }
 
     private bool UpdateCommandValidate()
@@ -96,7 +96,7 @@ internal partial class PicketPageViewModel : ObservableObject
                 Id = Model.Id
             };
             var result = await picketService.Put(Model.Id, requestModel);
-            if (result != null)
+            if (result)
             {
                 IsChange = false;
                 await Shell.Current.DisplayAlert("Success", "Data Piket berhasil diupdate", "Keluar");
@@ -133,11 +133,11 @@ internal partial class PicketPageViewModel : ObservableObject
     }
 
 
-    [Obsolete]
     private async Task LoadAction()
     {
         try
         {
+            Message= "Tunggu ......!";
             IamPicket = false;
             var service = ServiceHelper.GetService<IPicketService>();
             var response = await service.GetPicketToday();
@@ -150,8 +150,6 @@ internal partial class PicketPageViewModel : ObservableObject
                 Id = response.Id,
                 StartAt = response.StartAt,
                 Weather = response.Weather,
-                //LateAndComeHomeEarly = response.StudentsLateAndComeHomeEarly,
-                //TeacherAttendance = response.TeacherAttendance,
             };
             if (Model != null)
             {

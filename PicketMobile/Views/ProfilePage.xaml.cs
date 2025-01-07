@@ -29,18 +29,18 @@ internal partial class ProfilePageViewModel  :ObservableObject
     public ProfilePageViewModel()
     {
         LogoutCommand = new AsyncRelayCommand(LogoutAction);
-        var profileString = Preferences.Get("profile", null);
+        string? profileString = Preferences.Get("profile", null);
         if(!string.IsNullOrEmpty(profileString))
         {
-            this.Profile = JsonSerializer.Deserialize<TeacherResponse>(profileString, Helper.JsonOption);
-            this.Initial = Helper.GetInitial(Profile.Name);
+            Profile = JsonSerializer.Deserialize<TeacherResponse>(profileString, Helper.JsonOption)!;
+            Initial = Helper.GetInitial(Profile == null ? "" : Profile.Name)!;
         }
     }
 
     private Task LogoutAction()
     {
         Preferences.Set("profile", null);
-        App.Current.MainPage = new LoginPage();
+        Application.Current!.MainPage = new LoginPage();
         return Task.CompletedTask;
     }
 }

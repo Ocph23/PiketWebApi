@@ -5,10 +5,37 @@
              BackgroundImageSource="background.jpg"
   Shell.NavBarIsVisible="False"
              Title="AboutPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+
+    <Grid RowDefinitions="auto,*,auto" >
+        <Border Grid.RowSpan="3" Background="WhiteSmoke" Opacity="0.8"/>
+        <VerticalStackLayout Grid.Row="0" VerticalOptions="Center" Margin="0,30">
+            <Image WidthRequest="100" Source="logo.png" Margin="10,20"></Image>
+            <Label Text="SMK NEGERI 8" VerticalOptions="Center" HorizontalOptions="Center" />
+            <Label Text="TEKNOLOGI INFORMASI DAN KOMUNIKASI" VerticalOptions="Center" HorizontalOptions="Center" />
+            <Label Text="KOTA JAYAPURA - PAPUA" VerticalOptions="Center" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+        <StackLayout Grid.Row="1" VerticalOptions="Start"  HorizontalOptions="Center"  Margin="30" >
+            <Label Text="Tentang Aplikasi :" FontSize="20" VerticalOptions="Center" HorizontalOptions="Start"/>
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span FontSize="20" Text="'Aplikasi Piket' "></Span>
+                        <Span FontSize="15" Text=" ini dibuat untuk memudahkan dalam proses pancatatan oleh guru piket terhadap kehadiran guru dan siswa selama proses belajar mengajar." ></Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Label Text="Pembuat :" FontSize="20" VerticalOptions="Center" Margin="0,20,0,0" HorizontalOptions="Start"/>
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span FontSize="15" Text="SMKN8TIK DEVELOPMENT TEAM" ></Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </StackLayout>
+        <VerticalStackLayout Grid.Row="2" Margin="0,30">
+            <Label Text="@Ocph23 - 2024" VerticalOptions="Center" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+    </Grid>
+
 </ContentPage>

@@ -7,6 +7,27 @@ Authorization : {{token}}
 
 #####
 
+
+Get {{url}}/{{controller}}/10 HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+#####
+
+
+POST {{url}}/{{controller}}/paginate HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+{
+  "page": 2,
+  "pageSize": 2,
+  "searchTerm": null,
+  "sortOrder": "desc",
+  "columnOrder": null
+}
+
+
 ####Piket
 
 POST {{url}}/{{controller}} HTTP/1.1

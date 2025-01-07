@@ -3,47 +3,61 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PicketMobile.Views.Pickets.ToLatePage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:view="clr-namespace:PicketMobile.Views.Pickets"
+             xmlns:sharedModelResponse="clr-namespace:SharedModel.Responses;assembly=SharedModel"
+             x:DataType="view:ToLatePageViewModel"
               BackgroundImageSource="background.jpg"
              Title="Picket Hari Ini">
     <ContentPage.ToolbarItems>
         <ToolbarItem IconImageSource="scan.svg"  Command="{Binding AddStudentLateByScanCommand}"  />
         <ToolbarItem IconImageSource="addcircle.svg"  Command="{Binding AddStudentLateCommand}"  />
     </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
+    <Grid >
+        <StackLayout Margin="0,30" HorizontalOptions="Center" IsVisible="{Binding HasItems,  Converter={StaticResource InvertedBoolConverter}}" >
+            <Label FontSize="Medium" Text="{Binding Message}"></Label>
+        </StackLayout>
+        <RefreshView Command="{Binding AsyncCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding DataStudentTolate}" Margin="0,10">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border  Style="{StaticResource borderInput}" Background="#AA9E7B" x:DataType="sharedModelResponse:LateAndGoHomeEarlyResponse">
+                            <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
 
-    <RefreshView Command="{Binding AsyncCommand}" IsRefreshing="{Binding IsBusy}">
-        <CollectionView ItemsSource="{Binding DataStudentTolate}" Margin="0,10">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border  Style="{StaticResource borderInput}" Background="#AA9E7B">
-                        <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
-                            
-                            <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60" Text="{Binding StudentInitial}" TextColor="White"
+                                <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60" Text="{Binding StudentInitial}" TextColor="White"
                                             Margin="5,0" HeightRequest="60" CornerRadius="100" 
                                             BackgroundColor="#56d388"  />
-                            <StackLayout Grid.Column="1" VerticalOptions="Center" >
-                                <Label FontSize="16" Text="{Binding StudentName}" TextColor="White"></Label>
-                                <Grid ColumnDefinitions="*,auto">
-                                    <Label  FontSize="13" >
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span TextColor="White" Text="{Binding ClassRoomName}"></Span>
-                                                <Span TextColor="White" Text=" - "></Span>
-                                                <Span TextColor="White" Text="{Binding DepartmentName}"></Span>
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
-                                    <Label Text="{Binding CreateAt, StringFormat='{0:HH:mm}'}" FontSize="13" TextColor="White" Margin="10,0" HorizontalOptions="End" >
+                                <StackLayout Grid.Column="1" VerticalOptions="Center" >
+                                    <Label FontSize="16" Text="{Binding StudentName}" TextColor="White"></Label>
+                                    <Grid ColumnDefinitions="*,auto">
+                                        <Label  FontSize="13" >
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span TextColor="White" Text="{Binding ClassRoomName}"></Span>
+                                                    <Span TextColor="White" Text=" - "></Span>
+                                                    <Span TextColor="White" Text="{Binding DepartmentName}"></Span>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                        <Label Text="{Binding CreateAt, StringFormat='{0:HH:mm}'}" FontSize="13" TextColor="White" Margin="10,0" HorizontalOptions="End" >
 
-                                    </Label>
-                                </Grid>
-                            </StackLayout>
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-    </RefreshView>
+                                        </Label>
+                                    </Grid>
+                                </StackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+
+
 
 
 </ContentPage>

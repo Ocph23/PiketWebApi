@@ -1,8 +1,13 @@
 ﻿using ErrorOr;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using PiketWebApi.Abstractions;
 using PiketWebApi.Data;
+using PiketWebApi.Validators;
 using SharedModel.Models;
 using SharedModel.Requests;
 using SharedModel.Responses;
@@ -18,6 +23,8 @@ namespace PiketWebApi.Services
         Task<ErrorOr<PicketResponse>> CreateNewPicket();
         Task<ErrorOr<PicketResponse>> GetPicketToday();
         Task<ErrorOr<bool>> UpdatePicket(int id, PicketRequest picket);
+        Task<ErrorOr<PicketResponse>> GetById(int id);
+        Task<ErrorOr<PaginationResponse<PicketResponse>>> GetWithPaginate(PaginationRequest req);
     }
 
     public class PicketService : IPicketService
@@ -264,5 +271,68 @@ namespace PiketWebApi.Services
                 return Error.Conflict("Picket", ex.Message);
             }
         }
+
+        public async Task<ErrorOr<PicketResponse>> GetById(int id)
+        {
+            try
+            {
+                var ppicketToday = dbContext.Picket
+                    .Include(x => x.CreatedBy)
+                    .Include(x => x.TeacherAttendance).ThenInclude(x => x.Teacher)
+                    .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
+                    .FirstOrDefault(x => x.Id == id);
+
+                if (ppicketToday == null)
+                    return Error.NotFound("Picket", "Data tidak ditemukan.");
+
+                var response = await GeneratePicketResponse(ppicketToday);
+                return picketToday = response.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+        public async Task<ErrorOr<PaginationResponse<PicketResponse>>> GetWithPaginate(PaginationRequest req)
+        {
+            try
+            {
+                var validator = new PaginateRequestValidator();
+                var validateResult = validator.Validate(req);
+                if (!validateResult.IsValid)
+                    return validateResult.GetErrors();
+
+                IQueryable<Picket> iq = dbContext.Picket.Include(x => x.CreatedBy);
+
+                iq = iq.GetPicketOrder(req.ColumnOrder, req.SortOrder);
+
+                var totalData= await iq.CountAsync();
+
+                var data = await iq.Skip((req.Page-1)*req.PageSize)
+                    .Take(req.PageSize)
+                    .Select(x => new PicketResponse()
+                     {
+                         CreateAt = x.CreateAt,
+                         CreatedId = x.CreatedBy.Id,
+                         CreatedName = x.CreatedBy.Name,
+                         CreatedNumber = x.CreatedBy.RegisterNumber,
+                         Date = x.Date,
+                         EndAt = x.EndAt,
+                         Id = x.Id,
+                         StartAt = x.StartAt,
+                         Weather = x.Weather
+                     }).ToListAsync();
+
+                return new PaginationResponse<PicketResponse>(data, req.Page, req.PageSize, totalData);
+
+            }
+            catch (Exception ex)
+            {
+                return Error.Conflict();
+            }
+        }
+
+     
     }
 }

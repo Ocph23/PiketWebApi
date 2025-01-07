@@ -49,6 +49,7 @@ namespace PicketMobile.Services
             }
         }
 
+        [Obsolete]
         public Task Logout()
         {
             Preferences.Set("token", null);

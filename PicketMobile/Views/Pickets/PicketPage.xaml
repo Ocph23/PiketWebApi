@@ -3,8 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PicketMobile.Views.Pickets.PicketPage"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:view="clr-namespace:PicketMobile.Views.Pickets"
+            xmlns:sharedModelResponse="clr-namespace:SharedModel.Responses;assembly=SharedModel"
              xmlns:control="clr-namespace:PicketMobile.Controls"
-            BackgroundImageSource="background.jpg"
+            x:DataType="view:PicketPageViewModel"
+             BackgroundImageSource="background.jpg"
              Title="Picket Hari Ini">
     <ContentPage.ToolbarItems>
         <ToolbarItem Command="{Binding UpdateCommand}" IconImageSource="{Binding AsyncCommandIcon}" IsEnabled="{Binding IsChange}" ></ToolbarItem>
@@ -14,11 +17,11 @@
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
+
     <RefreshView Command="{Binding AsyncCommand}" IsRefreshing="{Binding CanSync}">
         <ScrollView Padding="0,5">
             <VerticalStackLayout Padding="5,0" >
-                <StackLayout Margin="0,30" HorizontalOptions="Center"
-           IsVisible="{Binding HasPicket,  Converter={StaticResource InvertedBoolConverter}}" >
+                <StackLayout Margin="0,30" HorizontalOptions="Center" IsVisible="{Binding HasPicket,  Converter={StaticResource InvertedBoolConverter}}" >
                     <Label FontSize="Medium" Text="{Binding Message}"></Label>
                 </StackLayout>
                 <control:AddButton  IsVisible="{Binding IamPicket}" Command="{Binding AddCommand}"></control:AddButton>
@@ -76,4 +79,5 @@
             </VerticalStackLayout>
         </ScrollView>
     </RefreshView>
+
 </ContentPage>

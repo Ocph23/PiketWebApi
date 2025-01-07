@@ -2,15 +2,19 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:tooltip="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:PicketMobile.Views"
+             xmlns:sharedModelResponse="clr-namespace:SharedModel.Responses;assembly=SharedModel"
              BackgroundImageSource="background.jpg"
-  Shell.NavBarIsVisible="False"
+             Shell.NavBarIsVisible="False"
+             x:DataType="local:ProfilePageViewModel"
              x:Class="PicketMobile.Views.ProfilePage"
              Title="PROFIL">
 
     <ScrollView>
         <VerticalStackLayout Padding="30,0">
             <StackLayout Margin="30">
-                <tooltip:AvatarView WidthRequest="100" HeightRequest="100" CornerRadius="75" BackgroundColor="ForestGreen" Text="{Binding Initial}"></tooltip:AvatarView>
+                <tooltip:AvatarView WidthRequest="100" HeightRequest="100" CornerRadius="75" 
+                                    BackgroundColor="#56d388" Text="{Binding Initial}"></tooltip:AvatarView>
             </StackLayout>
             <StackLayout Margin="10">
                 <Label   Text="NIP/Nomor Induk Guru"/>

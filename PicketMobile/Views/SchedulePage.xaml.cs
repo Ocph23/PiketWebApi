@@ -31,11 +31,12 @@ internal class SchedulePageViewModel : BaseNotify
         IsBusy = true;
     }
 
+    [Obsolete]
     private async Task RefreshCommandAction(object obj)
     {
         try
         {
-            var service = ServiceHelper.GetService<IScheduleService>();
+            var service = ServiceHelper.GetService<IScheduleService>()!;
             var data = await service.GetScheduleActive();
             Datas.Clear();
             foreach (var item in data)

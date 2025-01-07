@@ -5,13 +5,15 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:local="clr-namespace:PicketMobile.Views"
              xmlns:model="clr-namespace:PicketMobile.Models"
+             xmlns:sharedModelResponse="clr-namespace:SharedModel.Responses;assembly=SharedModel"
+             x:DataType="local:SchedulePageViewModel"
              BackgroundImageSource="background.jpg"
              Shell.NavBarIsVisible="False"
              Title="Jadwal Piket">
 
     <ContentPage.Resources>
-        <DataTemplate x:Key="AndroidItemTemplate">
-            <HorizontalStackLayout>
+        <DataTemplate x:Key="ScheduleItemTemplate">
+            <HorizontalStackLayout x:DataType="sharedModelResponse:ScheduleResponse">
                 <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60"  TextColor="White"
                 Margin="5,0" HeightRequest="60" CornerRadius="100" Text="{Binding TeacherInitial}" 
                 BackgroundColor="#56d388"   />
@@ -19,24 +21,24 @@
             </HorizontalStackLayout>
         </DataTemplate>
     </ContentPage.Resources>
+    
 
     <Grid RowDefinitions="auto,*">
         <StackLayout Margin="10">
             <Label FontSize="Title" Text="Jadwal Piket"></Label>
         </StackLayout>
-        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" CommandParameter="true" IsRefreshing="{Binding IsBusy}">
+        <RefreshView Grid.Row="1" Command="{Binding RefreshCommand}" CommandParameter="true"  IsRefreshing="{Binding IsBusy}">
             <CollectionView ItemsSource="{Binding Datas}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Style="{StaticResource borderInput}" >
-
-                            <Grid RowDefinitions="auto,*">
+                            <Grid RowDefinitions="auto,*" x:DataType="model:ScheduleModel">
                                 <HorizontalStackLayout>
                                     <Label Text="{Binding Day}" FontSize="Default" FontAttributes="Bold" Margin="5,5" ></Label>
                                 </HorizontalStackLayout>
                                 <FlexLayout  Grid.Row="1" Wrap="Wrap" JustifyContent="Start" AlignItems="Start"
                                      BindableLayout.ItemsSource="{Binding Members}"
-                                     BindableLayout.ItemTemplate="{StaticResource AndroidItemTemplate}">
+                                     BindableLayout.ItemTemplate="{StaticResource ScheduleItemTemplate}">
                                 </FlexLayout>
                             </Grid>
                         </Border>

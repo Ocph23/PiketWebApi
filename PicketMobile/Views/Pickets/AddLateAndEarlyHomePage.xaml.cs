@@ -1,27 +1,34 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using PicketMobile.Models;
 using PicketMobile.Services;
 using SharedModel;
+using SharedModel.Requests;
 using SharedModel.Responses;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace PicketMobile.Views.Pickets;
 
-public partial class AddGoHomeEarlyPage : ContentPage
+public partial class AddLateAndEarlyHomePage : ContentPage
 {
-    public AddGoHomeEarlyPage()
+    public AddLateAndEarlyHomePage(LateAndGoHomeEarlyAttendanceStatus lateAndGoHomeStatus)
     {
         InitializeComponent();
-        BindingContext = new AddGoHomeEarlyPageViewModel(pickerStudent);
+        BindingContext = new AddTerlambatPageViewModel(pickerStudent, lateAndGoHomeStatus);
     }
 }
 
-internal class AddGoHomeEarlyPageViewModel : BaseNotify
+public partial class AddTerlambatPageViewModel : BaseNotify
 {
+
+    [ObservableProperty]
+    private LateAndGoHomeEarlyAttendanceStatus lateAndGoHomeEarlyStatus;
+
+
     private Models.StudentToLateAndHomeEarlyModel studentToLateModel = new Models.StudentToLateAndHomeEarlyModel();
-    public ICollection<AttendanceStatus> AttendanceStatuses { get; set; }
+
     public ObservableCollection<StudentResponse> Students { get; set; } = new ObservableCollection<StudentResponse>();
 
     public Models.StudentToLateAndHomeEarlyModel Model
@@ -67,11 +74,12 @@ internal class AddGoHomeEarlyPageViewModel : BaseNotify
         set { SetProperty(ref searchText, value); }
     }
 
-    public AddGoHomeEarlyPageViewModel(Picker pickerStudent)
+    [Obsolete]
+    public AddTerlambatPageViewModel(Picker pickerStudent, LateAndGoHomeEarlyAttendanceStatus lateAndGoHomeStatus)
     {
-        AttendanceStatuses = Enum.GetValues(typeof(AttendanceStatus)).Cast<AttendanceStatus>().Where(x=>x== AttendanceStatus.Sakit || x== AttendanceStatus.Izin || x== AttendanceStatus.Lainnya|| x== AttendanceStatus.Bolos).ToList();
-        Model = new Models.StudentToLateAndHomeEarlyModel { AtTime = DateTime.Now.TimeOfDay, LateAndGoHomeEarlyStatus= LateAndGoHomeEarlyAttendanceStatus.Pulang, StatusKehadiran= AttendanceStatus.Bolos };
         picker = pickerStudent;
+        LateAndGoHomeEarlyStatus = lateAndGoHomeStatus;
+        Model = new Models.StudentToLateAndHomeEarlyModel { AtTime = DateTime.Now.TimeOfDay };
         AddCommand = new AsyncRelayCommand<object>(AddAcommandAcation, AddCommandValidate);
         SearchCommand = new RelayCommand<object>(async (x) => await SearchCommandAcation(x), SearchCommandValidate);
         ScandCommand = new RelayCommand<object>(ScanCommandAcation);
@@ -93,8 +101,6 @@ internal class AddGoHomeEarlyPageViewModel : BaseNotify
             }
 
         };
-
-
     }
 
     private void CloseAction(object? obj)
@@ -112,10 +118,12 @@ internal class AddGoHomeEarlyPageViewModel : BaseNotify
         return !string.IsNullOrEmpty(SearchText);
     }
 
+    [Obsolete]
     private async Task SearchCommandAcation(object? obj)
     {
         try
         {
+            IsBusy = true;
             var studentService = ServiceHelper.GetService<IStudentService>();
             var students = await studentService.SearchStudent(SearchText);
             Students.Clear();
@@ -135,20 +143,41 @@ internal class AddGoHomeEarlyPageViewModel : BaseNotify
                 await Shell.Current.DisplayAlert("Error", ex.Message, "Ok");
             }
         }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
+    [Obsolete]
     private async Task AddAcommandAcation(object? obj)
     {
         try
         {
             IsBusy = true;
             var picketService = ServiceHelper.GetService<IPicketService>();
-            var result = await picketService.AddLateandEarly(new SharedModel.Requests.
-                StudentToLateAndEarlyRequest(Model.Student.Id, Model.AtTime, Model.Description, Model.StatusKehadiran, LateAndGoHomeEarlyAttendanceStatus.Pulang));
+            var result = await picketService.AddLateandEarly(
+                new StudentToLateAndEarlyRequest(Model.Student.Id,
+                Model.AtTime,
+                Model.Description,
+                AttendanceStatus.Hadir,
+                LateAndGoHomeEarlyStatus));
+
+
             if (result != null)
             {
-                WeakReferenceMessenger.Default.Send(new ToEarlyGoHomeChangeMessage(result));
-                await Shell.Current.DisplayAlert("Success", $"{Model.Student.Name} berhasil ditambahkan dalam daftar pulang lebih cepat", "OK");
+                if (LateAndGoHomeEarlyStatus == LateAndGoHomeEarlyAttendanceStatus.Terlambat)
+                {
+                    WeakReferenceMessenger.Default.Send(new ToLateChangeMessage(result));
+                    await Shell.Current.DisplayAlert("Success", $"{Model.Student.Name} berhasil ditambahkan dalam daftar terlamabat", "OK");
+                }
+                else
+                {
+                    WeakReferenceMessenger.Default.Send(new ToEarlyGoHomeChangeMessage(result));
+                    await Shell.Current.DisplayAlert("Success", $"{Model.Student.Name} berhasil ditambahkan dalam daftar pulang", "OK");
+                }
+
+
                 SearchText = string.Empty;
                 Model = new Models.StudentToLateAndHomeEarlyModel();
             }
@@ -166,7 +195,7 @@ internal class AddGoHomeEarlyPageViewModel : BaseNotify
 
     private bool AddCommandValidate(object? obj)
     {
-        if (Model.StatusKehadiran == AttendanceStatus.Hadir || Model.StatusKehadiran == AttendanceStatus.Alpa || Model.Student == null || (Model.AtTime < new TimeSpan(8, 0, 0)))
+        if (Model.Student == null || (Model.AtTime < new TimeSpan(8, 0, 0)))
         {
             return false;
         }

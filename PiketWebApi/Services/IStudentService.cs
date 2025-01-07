@@ -2,8 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PiketWebApi.Abstractions;
 using PiketWebApi.Data;
+using PiketWebApi.Validators;
 using SharedModel.Models;
+using SharedModel.Requests;
 using SharedModel.Responses;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -21,7 +24,7 @@ public interface IStudentService
     Task<ErrorOr<Student>> GetStudentById(int id);
     Task<ErrorOr<StudentClassRoom?>> GetStudentWithClass(int id);
     Task<ErrorOr<string>> UploadPhoto(int teacherId, byte[] image);
-    Task<ErrorOr<PeginationResponse<Student>>> GetAllStudentWithPanitate(string searchTerm, string columnName, string sortOrder, int page, int pagesize);
+    Task<ErrorOr<PaginationResponse<Student>>> GetAllStudentWithPanitate(PaginationRequest req);
 }
 
 public class StudentService : IStudentService
@@ -304,28 +307,33 @@ public class StudentService : IStudentService
         }
     }
 
-    public async Task<ErrorOr<PeginationResponse<Student>>> GetAllStudentWithPanitate(string searchTerm, string columnName, string sortOrder, int page, int pagesize)
+    public async Task<ErrorOr<PaginationResponse<Student>>> GetAllStudentWithPanitate(PaginationRequest request)
     {
         try
         {
+            var validator = new PaginateRequestValidator();
+            var validateResult = validator.Validate(request);
+            if (!validateResult.IsValid)
+                return validateResult.GetErrors();
+
             IQueryable<Student> iq = dbContext.Students;
-            if (!string.IsNullOrEmpty(searchTerm))
+            if (!string.IsNullOrEmpty(request.SearchTerm))
             {
-                iq = iq.Where(x => x.Name.ToLower().Contains(searchTerm.ToLower()) ||
-                x.PlaceOfBorn.ToLower().Contains(searchTerm.ToLower()) ||
-                x.NIS.ToLower().Contains(searchTerm.ToLower()) ||
-                x.NISN.ToLower().Contains(searchTerm.ToLower()));
+                iq = iq.Where(x => x.Name.ToLower().Contains(request.SearchTerm.ToLower()) ||
+                x.PlaceOfBorn.ToLower().Contains(request.SearchTerm.ToLower()) ||
+                x.NIS.ToLower().Contains(request.SearchTerm.ToLower()) ||
+                x.NISN.ToLower().Contains(request.SearchTerm.ToLower()));
             }
 
-            iq = iq.GetStudentOrder(columnName, sortOrder);
+            iq = iq.GetStudentOrder(request.ColumnOrder, request.SortOrder);
 
             var totalSize = await iq.CountAsync();
 
-            var data = await iq.Skip((page - 1) * pagesize)
-                .Take(pagesize)
+            var data = await iq.Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync();
 
-            return new PeginationResponse<Student>(data, page, pagesize, totalSize);
+            return new PaginationResponse<Student>(data, request.Page, request.PageSize, totalSize);
 
         }
         catch (Exception ex)
@@ -333,36 +341,5 @@ public class StudentService : IStudentService
             return Error.Conflict();
         }
     }
-
-   
-
-  
 }
 
-
-public static partial class Appextention
-{
-    public static IQueryable<Student> GetStudentOrder(this IQueryable<Student> query, string columnName, string sortOrder)
-    {
-        if (sortOrder?.ToLower() == "desc")
-        {
-            return columnName?.ToLower() switch
-            {
-                "name" => query.OrderByDescending(x => x.Name),
-                "nis" => query.OrderByDescending(x => x.NIS),
-                "nisn" => query.OrderByDescending(x => x.NISN),
-                _ => query.OrderByDescending(x => x.Id)
-            };
-        }
-        else
-        {
-            return columnName?.ToLower() switch
-            {
-                "name" => query.OrderBy(x => x.Name),
-                "nis" => query.OrderBy(x => x.NIS),
-                "nisn" => query.OrderBy(x => x.NISN),
-                _ => query.OrderBy(x => x.Id)
-            };
-        }
-    }
-}

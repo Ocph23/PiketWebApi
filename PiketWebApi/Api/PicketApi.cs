@@ -6,6 +6,7 @@ using PiketWebApi.Services;
 using SharedModel.Models;
 using SharedModel.Requests;
 using SharedModel.Responses;
+using System.Net.Sockets;
 
 namespace PiketWebApi.Api
 {
@@ -14,11 +15,25 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapPickerApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetPickerToday);
+            group.MapPost("/paginate", GetAllWithPanitate);
+            group.MapGet("/{id}", GetById);
             group.MapPost("/", PostPicket);
             group.MapPut("/{id}", PutPicket);
             group.MapPost("/lateandearly", AddLateandearly);
             group.MapDelete("/lateandearly/{id}", RemoveLateandearly);
             return group.WithTags("picket").RequireAuthorization(); ;
+        }
+
+        private static async Task<IResult> GetAllWithPanitate(HttpContext context, IPicketService picketService, PaginationRequest req)
+        {
+            var result = await picketService.GetWithPaginate(req);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+        }
+
+        private static async Task<IResult> GetById(HttpContext context, IPicketService picketService, int id)
+        {
+            var result = await picketService.GetById(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> PutPicket(HttpContext context, IPicketService picketService, int id, PicketRequest picket)

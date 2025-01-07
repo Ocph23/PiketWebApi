@@ -8,6 +8,7 @@ using PiketWebApi.Abstractions;
 using PiketWebApi.Data;
 using PiketWebApi.Services;
 using SharedModel.Models;
+using SharedModel.Requests;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PiketWebApi.Api
@@ -17,7 +18,7 @@ namespace PiketWebApi.Api
         public static RouteGroupBuilder MapStudentApi(this RouteGroupBuilder group)
         {
             group.MapGet("/", GetAllStudent);
-            group.MapGet("/paginate", GetAllStudentWithPanitate);
+            group.MapPost("/paginate", GetAllStudentWithPanitate);
             group.MapGet("/withclass", GetAllStudentWithClass);
             group.MapGet("/withclas/{id}", GetStudentWithClass);
             group.MapGet("/{id}", GetStudentById);
@@ -29,10 +30,10 @@ namespace PiketWebApi.Api
             return group.WithTags("student").RequireAuthorization(); ;
         }
 
-        private static async Task<IResult> GetAllStudentWithPanitate(HttpContext context, IStudentService studentService,
-            string searchTerm, string columnOrder, string sortOrder, int page, int pagesize)
+        private static async Task<IResult> GetAllStudentWithPanitate(HttpContext context, IStudentService studentService, PaginationRequest req)
+            
         {
-            var result = await studentService.GetAllStudentWithPanitate(searchTerm,columnOrder,sortOrder, page,pagesize);
+            var result = await studentService.GetAllStudentWithPanitate(req);
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
 
         }

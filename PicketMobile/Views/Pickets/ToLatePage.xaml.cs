@@ -1,7 +1,9 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using PicketMobile.Models;
 using PicketMobile.Services;
+using SharedModel;
 using SharedModel.Responses;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -17,8 +19,14 @@ public partial class ToLatePage : ContentPage
     }
 }
 
-internal class ToLatePageViewModel : BaseNotify
+public partial class ToLatePageViewModel : BaseNotify
 {
+
+    [ObservableProperty]
+    private bool hasItems;
+
+    [ObservableProperty]
+    private string message = "";
 
     public ObservableCollection<LateAndGoHomeEarlyResponse> DataStudentTolate { get; set; }
     public ICommand AsyncCommand { get; private set; }
@@ -36,7 +44,7 @@ internal class ToLatePageViewModel : BaseNotify
     public ICommand AddStudentLateByScanCommand
     {
         get { return addStudentLateByScanCommand; }
-        set { SetProperty(ref addStudentLateByScanCommand , value); }
+        set { SetProperty(ref addStudentLateByScanCommand, value); }
     }
 
 
@@ -48,6 +56,7 @@ internal class ToLatePageViewModel : BaseNotify
         WeakReferenceMessenger.Default.Register<ToLateChangeMessage>(this, (r, m) =>
         {
             DataStudentTolate.Add(m.Value);
+            HasItems = DataStudentTolate.Count > 0;
         });
         AsyncCommand = new Command(async () => await LoadAction());
         AddStudentLateByScanCommand = new AsyncRelayCommand(AddStudentLateCommandByScanAction);
@@ -58,7 +67,7 @@ internal class ToLatePageViewModel : BaseNotify
 
     private async Task AddStudentLateCommandByScanAction()
     {
-        var form = new ScanBarcodePage();
+        var form = new ScanBarcodePage(LateAndGoHomeEarlyAttendanceStatus.Terlambat);
         await Shell.Current.Navigation.PushModalAsync(form);
     }
 
@@ -71,7 +80,7 @@ internal class ToLatePageViewModel : BaseNotify
 
     private async Task AddStudentLateCommandAction()
     {
-        var form = new AddTerlambatPage();
+        var form = new AddLateAndEarlyHomePage(LateAndGoHomeEarlyAttendanceStatus.Terlambat);
         await Shell.Current.Navigation.PushModalAsync(form);
         //var vm = form.BindingContext as AddTerlambatPageViewModel;
         //if (vm.Model.Id >= 0)
@@ -92,6 +101,17 @@ internal class ToLatePageViewModel : BaseNotify
                 {
                     DataStudentTolate.Add(item);
                 }
+
+                HasItems = DataStudentTolate.Count > 0;
+
+                if (!HasItems)
+                {
+                    Message = "Data Siswa Terlambat belum ada!";
+                }
+                else
+                {
+                    Message = string.Empty;
+                }
             }
         }
         catch (Exception ex)
@@ -99,6 +119,7 @@ internal class ToLatePageViewModel : BaseNotify
             if (Shell.Current != null)
             {
                 await Shell.Current.DisplayAlert("Warning", ex.Message, "Ok");
+                Message = ex.Message;
             }
         }
         finally

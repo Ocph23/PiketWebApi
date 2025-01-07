@@ -5,6 +5,8 @@ using System.Windows.Input;
 using PicketMobile.Services;
 using CommunityToolkit.Mvvm.Messaging;
 using PicketMobile.Models;
+using SharedModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace PicketMobile.Views.Pickets;
 
@@ -17,35 +19,55 @@ public partial class GoHomeEarlyPage : ContentPage
     }
 }
 
-internal partial class GoHomeEarlyPageViewModel : BaseNotify
+public partial class GoHomeEarlyPageViewModel : BaseNotify
 {
 
-    public ObservableCollection<LateAndGoHomeEarlyResponse> DataStudentGoHomeEarly { get; set; }
+    [ObservableProperty]
+    bool hasItems;
 
-  
 
-    public ICommand AsyncCommand { get; private set; }
+    [ObservableProperty]
+    string message="";
 
-    private ICommand addStudentLateCommand;
+    public ObservableCollection<LateAndGoHomeEarlyResponse> DataStudentToEarly { get; set; } = new ObservableCollection<LateAndGoHomeEarlyResponse>();
+    public ICommand? AsyncCommand { get; private set; }
 
-    public ICommand AddStudentLateCommand
+    private ICommand? addStudentLateCommand;
+
+    public ICommand? AddStudentLateCommand
     {
         get { return addStudentLateCommand; }
         set { SetProperty(ref addStudentLateCommand, value); }
     }
 
-    public ICommand SelectBrowseStudent { get; set; }
+    private ICommand? addStudentLateByScanCommand;
+
+    public ICommand? AddStudentLateByScanCommand
+    {
+        get { return addStudentLateByScanCommand; }
+        set { SetProperty(ref addStudentLateByScanCommand, value); }
+    }
+
+
+    public ICommand? SelectBrowseStudent { get; set; }
 
     public GoHomeEarlyPageViewModel()
     {
-        AsyncCommand = new Command(async () => await LoadAction());
-        AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
-        DataStudentGoHomeEarly = new ObservableCollection<LateAndGoHomeEarlyResponse>();
         WeakReferenceMessenger.Default.Register<ToEarlyGoHomeChangeMessage>(this, (r, m) =>
         {
-            DataStudentGoHomeEarly.Add(m.Value);
+            DataStudentToEarly.Add(m.Value);
+            HasItems = DataStudentToEarly.Count > 0;
         });
+        AsyncCommand = new Command(async () => await LoadAction());
+        AddStudentLateByScanCommand = new AsyncRelayCommand(AddStudentLateCommandByScanAction);
+        AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
         IsBusy = true;
+    }
+
+    private async Task AddStudentLateCommandByScanAction()
+    {
+        var form = new ScanBarcodePage(LateAndGoHomeEarlyAttendanceStatus.Pulang);
+        await Shell.Current.Navigation.PushModalAsync(form);
     }
 
     [Obsolete]
@@ -57,10 +79,10 @@ internal partial class GoHomeEarlyPageViewModel : BaseNotify
 
     private async Task AddStudentLateCommandAction()
     {
-        var form = new AddGoHomeEarlyPage();
+        var form = new AddLateAndEarlyHomePage(LateAndGoHomeEarlyAttendanceStatus.Pulang);
         await Shell.Current.Navigation.PushModalAsync(form);
-
     }
+
     private async Task LoadAction()
     {
         try
@@ -69,11 +91,23 @@ internal partial class GoHomeEarlyPageViewModel : BaseNotify
             var picket = await service.GetPicketToday();
             if (picket != null)
             {
-                DataStudentGoHomeEarly.Clear();
-                foreach (var item in picket.StudentsLateAndComeHomeEarly.Where(x=>x.LateAndGoHomeEarlyStatus== SharedModel.LateAndGoHomeEarlyAttendanceStatus.Pulang))
+                DataStudentToEarly.Clear();
+                foreach (var item in picket.StudentsLateAndComeHomeEarly.Where(x => x.LateAndGoHomeEarlyStatus == SharedModel.LateAndGoHomeEarlyAttendanceStatus.Pulang))
                 {
-                    DataStudentGoHomeEarly.Add(item);
+                    DataStudentToEarly.Add(item);
                 }
+
+                HasItems = DataStudentToEarly.Count > 0;
+
+                if (!HasItems)
+                {
+                    Message = "Data siswa pulang lebih cepat belum ada!";
+                }
+                else
+                {
+                    Message = string.Empty;
+                }
+
             }
         }
         catch (Exception ex)
@@ -81,6 +115,7 @@ internal partial class GoHomeEarlyPageViewModel : BaseNotify
             if (Shell.Current != null)
             {
                 await Shell.Current.DisplayAlert("Warning", ex.Message, "Ok");
+                Message = ex.Message;
             }
         }
         finally
@@ -88,7 +123,6 @@ internal partial class GoHomeEarlyPageViewModel : BaseNotify
             IsBusy = false;
         }
     }
-
 
 
 }

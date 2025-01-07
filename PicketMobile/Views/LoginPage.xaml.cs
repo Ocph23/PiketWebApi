@@ -16,7 +16,6 @@ public partial class LoginPage : ContentPage
 
 internal class LoginPageViewModel : BaseNotify
 {
-
     public LoginPageViewModel()
     {
 
@@ -37,7 +36,6 @@ internal class LoginPageViewModel : BaseNotify
         return true;
     }
 
-    [Obsolete]
     private async Task LoginCommandAction()
     {
         try
@@ -47,8 +45,8 @@ internal class LoginPageViewModel : BaseNotify
 
             IsBusy = true;
 
-            IAccountService service = ServiceHelper.GetService<IAccountService>();
-            var loginSuccess = await service.Login(UserName, Password);
+            IAccountService service = ServiceHelper.GetService<IAccountService>()!;
+            var loginSuccess = await service.Login(UserName!, Password!);
             if (loginSuccess)
             {
                 Application.Current.MainPage = new AppShell();
@@ -56,7 +54,7 @@ internal class LoginPageViewModel : BaseNotify
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+            await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK")!;
         }
         finally
         {
@@ -64,9 +62,9 @@ internal class LoginPageViewModel : BaseNotify
         }
     }
 
-    private string userName;
+    private string? userName;
 
-    public string UserName
+    public string? UserName
     {
         get { return userName; }
         set { SetProperty(ref userName, value); }
@@ -74,9 +72,9 @@ internal class LoginPageViewModel : BaseNotify
 
 
 
-    private string password;
+    private string? password;
 
-    public string Password
+    public string? Password
     {
         get { return password; }
         set { SetProperty(ref password, value); }
@@ -85,9 +83,9 @@ internal class LoginPageViewModel : BaseNotify
 
 
 
-    private ICommand loginCommand;
+    private ICommand? loginCommand;
 
-    public ICommand LoginCommand
+    public ICommand? LoginCommand
     {
         get { return loginCommand; }
         set { SetProperty(ref loginCommand, value); }
