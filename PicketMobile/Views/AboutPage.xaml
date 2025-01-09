@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PicketMobile.Views.AboutPage"
              BackgroundImageSource="background.jpg"
-  Shell.NavBarIsVisible="False"
+             Shell.NavBarIsVisible="False"
              Title="AboutPage">
 
     <Grid RowDefinitions="auto,*,auto" >

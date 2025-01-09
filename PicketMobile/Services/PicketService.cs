@@ -9,6 +9,8 @@ namespace PicketMobile.Services
 
     public interface IPicketService
     {
+        Task<PaginationResponse<PicketResponse>> Get(PaginationRequest req);
+        Task<PicketResponse> GetById(int id);
         Task<PicketResponse> GetPicketToday();
         Task<PicketModel> Create(PicketModel model);
         Task<LateAndGoHomeEarlyResponse> AddLateandEarly(StudentToLateAndEarlyRequest model);
@@ -139,6 +141,49 @@ namespace PicketMobile.Services
                     var result = await response.GetResultAsync<bool>();
                     if (result)
                         return result;
+                }
+                throw new SystemException(await client.Error(response));
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+        public async Task<PaginationResponse<PicketResponse>> Get(PaginationRequest req)
+        {
+            try
+            {
+                using var client = new RestClient();
+                HttpResponseMessage response = await client.PostAsJsonAsync($"api/picket/paginate", req);
+                if (response.IsSuccessStatusCode)
+                {
+                    var stringContent = await response.Content.ReadAsStringAsync();
+                    var result = await response.GetResultAsync<PaginationResponse<PicketResponse>>();
+                    if (result != null)
+                        return result;
+                }
+                throw new SystemException(await client.Error(response));
+            }
+            catch (Exception ex)
+            {
+                throw new SystemException(ex.Message);
+            }
+        }
+
+     
+
+        public async Task<PicketResponse> GetById(int id)
+        {
+            try
+            {
+                using var client = new RestClient();
+                HttpResponseMessage response = await client.GetAsync($"api/picket/{id}");
+                if (response.IsSuccessStatusCode)
+                {
+                    picket = await response.GetResultAsync<PicketResponse>();
+                    return picket;
+
                 }
                 throw new SystemException(await client.Error(response));
             }

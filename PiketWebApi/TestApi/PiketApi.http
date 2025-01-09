@@ -20,8 +20,8 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "page": 2,
-  "pageSize": 2,
+  "page": 1,
+  "pageSize": 10,
   "searchTerm": null,
   "sortOrder": "desc",
   "columnOrder": null

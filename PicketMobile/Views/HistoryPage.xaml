@@ -1,12 +1,83 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:view="clr-namespace:PicketMobile.Views"
+                xmlns:sharedModel="clr-namespace:SharedModel.Responses;assembly=SharedModel"
+                x:DataType="view:HistoryPageViewModel"
+             BackgroundImageSource="background.jpg"
+             Shell.NavBarIsVisible="False"
              x:Class="PicketMobile.Views.HistoryPage"
              Title="HistoryPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <ContentPage.Resources>
+        <Style x:Key="titleContent" TargetType="Span">
+            <Setter Property="TextColor" Value="DarkSlateGrey"></Setter>
+        </Style>
+        <Style x:Key="textContent" TargetType="Span">
+            <Setter Property="TextColor" Value="White"></Setter>
+            <Setter Property="FontSize" Value="Body"></Setter>
+        </Style>
+    </ContentPage.Resources>
+    <Grid RowDefinitions="auto,*" Padding="10,0">
+        <StackLayout Padding="5,10">
+            <Label FontSize="Title" Text="Riwayat Piket"></Label>
+        </StackLayout>
+        <RefreshView Grid.Row="1" Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy }" Padding="30">
+            <CollectionView ItemsSource="{Binding Datas}" x:Name="clv" SelectionMode="Single"
+                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreDataCommand}" SelectionChangedCommand="{Binding SelectItemCommand}" 
+                            SelectedItem="{Binding SelectedItem}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border  Style="{StaticResource borderInput}" Opacity="0.85" Background="#AA9E7B" >
+                            <Grid RowDefinitions="auto,auto,auto, auto,auto" x:DataType="sharedModel:PicketResponse" Margin="5">
+                                <Label  HorizontalOptions="End" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span  TextColor="White" Text="{Binding Date, StringFormat='{0:dddd}'}"></Span>
+                                            <Span TextColor="White" Text=", "></Span>
+                                            <Span TextColor="White" Text="{Binding Date}"></Span>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Row="1" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Style="{StaticResource titleContent}"  Text="Cuaca : "></Span>
+                                            <Span Style="{StaticResource textContent}"  Text="{Binding Weather}"></Span>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Row="2" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Style="{StaticResource titleContent}"  Text="Jam Mulai : "></Span>
+                                            <Span Style="{StaticResource textContent}"  Text="{Binding StartAt}"></Span>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Row="3" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Style="{StaticResource titleContent}"  Text="Jam Selesai : "></Span>
+                                            <Span Style="{StaticResource textContent}"  Text="{Binding EndAt}"></Span>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Grid.Row="4" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Style="{StaticResource titleContent}"  Text="Dibuka Oleh : "></Span>
+                                            <Span Style="{StaticResource textContent}"  Text="{Binding  CreatedName}"></Span>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.Footer>
+                    <ActivityIndicator IsRunning="{Binding IsBusyDataMore }" IsVisible="{Binding IsBusyDataMore }" />
+                </CollectionView.Footer>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
 </ContentPage>
