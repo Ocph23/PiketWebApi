@@ -42,6 +42,7 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
+                
                 <Label Grid.Row="3" >
                     <Label.FormattedText>
                         <FormattedString>

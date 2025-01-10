@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<the49:BottomSheet xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
+             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+           HeightRequest="300"
+             x:Class="PicketMobile.Views.BottomSheets.ScanStudentBottmSheet">
+    <the49:BottomSheet.Detents>
+        <!-- Stop at 120dp -->
+        <the49:HeightDetent Height="300" />
+    </the49:BottomSheet.Detents>
+    <VerticalStackLayout>
+        <Grid RowDefinitions="auto,*,auto" Margin="10">
+            <HorizontalStackLayout >
+                <Button Text="X" BackgroundColor="Silver"></Button>
+                <Label Text="Scan"></Label>
+            </HorizontalStackLayout>
+            <Grid Grid.Row="1" Padding="10" >
+                <zxing:CameraBarcodeReaderView VerticalOptions="Fill" x:Name="cameraBarcodeReaderView"
+                            BarcodesDetected="cameraBarcodeReaderView_BarcodesDetected" />
+            </Grid>
+            <StackLayout Grid.Row="1">
+                <Label Text="{Binding IsDetecting}"></Label>
+                <Label x:Name="result" ></Label>
+            </StackLayout>
+        </Grid>
+    </VerticalStackLayout>
+</the49:BottomSheet>

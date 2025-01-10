@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using PicketMobile.Models;
 using PicketMobile.Services;
+using PicketMobile.Views.BottomSheets;
 using SharedModel;
 using SharedModel.Responses;
 using System.Collections.ObjectModel;
@@ -67,8 +68,10 @@ public partial class ToLatePageViewModel : BaseNotify
 
     private async Task AddStudentLateCommandByScanAction()
     {
-        var form = new ScanBarcodePage(LateAndGoHomeEarlyAttendanceStatus.Terlambat);
-        await Shell.Current.Navigation.PushModalAsync(form);
+        var bottomSheet = new ScanStudentBottmSheet();
+        await bottomSheet.ShowAsync();
+        //var form = new ScanBarcodePage(LateAndGoHomeEarlyAttendanceStatus.Terlambat);
+        //await Shell.Current.Navigation.PushModalAsync(form);
     }
 
     [Obsolete]
@@ -81,7 +84,7 @@ public partial class ToLatePageViewModel : BaseNotify
     private async Task AddStudentLateCommandAction()
     {
         var form = new AddLateAndEarlyHomePage(LateAndGoHomeEarlyAttendanceStatus.Terlambat);
-        await Shell.Current.Navigation.PushModalAsync(form);
+        await Shell.Current.Navigation.PushAsync(form);
         //var vm = form.BindingContext as AddTerlambatPageViewModel;
         //if (vm.Model.Id >= 0)
         //{

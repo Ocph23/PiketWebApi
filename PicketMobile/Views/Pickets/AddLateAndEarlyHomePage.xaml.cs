@@ -1,8 +1,10 @@
+using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using PicketMobile.Models;
 using PicketMobile.Services;
+using PicketMobile.Views.BottomSheets;
 using SharedModel;
 using SharedModel.Requests;
 using SharedModel.Responses;
@@ -16,7 +18,7 @@ public partial class AddLateAndEarlyHomePage : ContentPage
     public AddLateAndEarlyHomePage(LateAndGoHomeEarlyAttendanceStatus lateAndGoHomeStatus)
     {
         InitializeComponent();
-        BindingContext = new AddTerlambatPageViewModel(pickerStudent, lateAndGoHomeStatus);
+        BindingContext = new AddTerlambatPageViewModel(lateAndGoHomeStatus);
     }
 }
 
@@ -75,9 +77,8 @@ public partial class AddTerlambatPageViewModel : BaseNotify
     }
 
     [Obsolete]
-    public AddTerlambatPageViewModel(Picker pickerStudent, LateAndGoHomeEarlyAttendanceStatus lateAndGoHomeStatus)
+    public AddTerlambatPageViewModel(LateAndGoHomeEarlyAttendanceStatus lateAndGoHomeStatus)
     {
-        picker = pickerStudent;
         LateAndGoHomeEarlyStatus = lateAndGoHomeStatus;
         Model = new Models.StudentToLateAndHomeEarlyModel { AtTime = DateTime.Now.TimeOfDay };
         AddCommand = new AsyncRelayCommand<object>(AddAcommandAcation, AddCommandValidate);
@@ -101,6 +102,15 @@ public partial class AddTerlambatPageViewModel : BaseNotify
             }
 
         };
+
+        WeakReferenceMessenger.Default.Register<StudentSearchChangeMessage>(this, (r, m) =>
+        {
+            if (m.Value != null)
+            {
+                Model.Student = m.Value;
+            }
+        });
+
     }
 
     private void CloseAction(object? obj)
@@ -108,9 +118,10 @@ public partial class AddTerlambatPageViewModel : BaseNotify
         Shell.Current.CurrentPage.SendBackButtonPressed();
     }
 
-    private void ScanCommandAcation(object? obj)
+    private async void ScanCommandAcation(object? obj)
     {
-        throw new NotImplementedException();
+        var scannerPage = new ScanBarcodePage(LateAndGoHomeEarlyStatus);
+        await Shell.Current.Navigation.PushModalAsync(scannerPage);
     }
 
     private bool SearchCommandValidate(object? obj)
@@ -126,14 +137,15 @@ public partial class AddTerlambatPageViewModel : BaseNotify
             IsBusy = true;
             var studentService = ServiceHelper.GetService<IStudentService>();
             var students = await studentService.SearchStudent(SearchText);
-            Students.Clear();
+
             if (students.Any())
             {
-                foreach (var item in students)
-                {
-                    Students.Add(item);
-                }
-                picker.Focus();
+                var bs = new BrowseStudentBottomSheet(students);
+                await bs.ShowAsync();
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Info", "Data tidak ditemukan.", "Ok");
             }
         }
         catch (Exception ex)

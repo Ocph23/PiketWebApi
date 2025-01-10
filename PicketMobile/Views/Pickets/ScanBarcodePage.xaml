@@ -7,6 +7,7 @@
              Shell.NavBarIsVisible="False"
              BackgroundImageSource="background.jpg"
              Title="ScanBarcodePage">
+   
     <Grid RowDefinitions="50*,50*" Padding="50">
         <zxing:CameraBarcodeReaderView  
   x:Name="cameraBarcodeReaderView"

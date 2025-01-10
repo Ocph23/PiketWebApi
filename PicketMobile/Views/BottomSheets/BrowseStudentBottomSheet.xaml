@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<the49:BottomSheet xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
+                  xmlns:view="clr-namespace:PicketMobile.Views.Pickets"
+                  xmlns:sharedModelResponse="clr-namespace:SharedModel.Responses;assembly=SharedModel"
+                   CornerRadius="15" Padding="10"
+             x:Class="PicketMobile.Views.BottomSheets.BrowseStudentBottomSheet">
+    <the49:BottomSheet.Detents>
+        <!-- Stop at 120dp -->
+        <the49:HeightDetent Height="300" />
+    </the49:BottomSheet.Detents>
+    <VerticalStackLayout>
+        <Label Text="Hasil Pencarian Siswa" FontSize="Title"></Label>
+        <CollectionView ItemsSource="{Binding Datas}" Margin="0,10" SelectionMode="Single" SelectionChanged="CollectionView_SelectionChanged">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border  Style="{StaticResource borderInput}"  x:DataType="sharedModelResponse:StudentResponse">
+                        <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
+                           
+                            <StackLayout Grid.Column="1" VerticalOptions="Center" >
+                                <Label FontSize="16" Text="{Binding Name}" ></Label>
+                                <Label  FontSize="13" >
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span  Text="NIS/NISN :"></Span>
+                                            <Span  Text="{Binding NIS}"></Span>
+                                            <Span  Text=" / "></Span>
+                                            <Span  Text="{Binding NISN}"></Span>
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Grid ColumnDefinitions="*,auto">
+                                    <Label  FontSize="13" >
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span  Text="Kelas :"></Span>
+                                                <Span  Text="{Binding ClassRoomName}"></Span>
+                                                <Span  Text=" - "></Span>
+                                                <Span  Text="{Binding DepartmentName}"></Span>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label Text="{Binding CreateAt, StringFormat='{0:HH:mm}'}" FontSize="13"  Margin="10,0" HorizontalOptions="End" >
+
+                                    </Label>
+                                </Grid>
+                            </StackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</the49:BottomSheet>
