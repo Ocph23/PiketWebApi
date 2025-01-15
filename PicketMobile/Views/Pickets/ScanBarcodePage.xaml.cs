@@ -4,6 +4,7 @@ using PicketMobile.Services;
 using SharedModel;
 using SharedModel.Requests;
 using SharedModel.Responses;
+using System.Text.Json;
 using ZXing;
 using ZXing.Common;
 using ZXing.Net.Maui;
@@ -43,13 +44,6 @@ public partial class ScanBarcodePage : ContentPage
         {
             await DisplayAlert("Barcode Detected", first.Value, "OK");
             await Task.Delay(1000);
-
-
-
-
-
-
-
             IsDetecting = true;
             LastScan = string.Empty;
         });
@@ -124,6 +118,32 @@ public partial class ScanBarcodePage : ContentPage
 
     private void BarcodesDetected(object sender, BarcodeDetectionEventArgs e)
     {
+
+    }
+
+    private void Button_Clicked(object sender, EventArgs e)
+    {
+        var dataStudent = @"{
+                            ""nis"": ""3066247132"",
+                            ""nisn"": """",
+                            ""id"": 1,
+                            ""gender"": 0,
+                            ""name"": ""Aldrich"",
+                            ""placeOfBorn"": ""Makassar"",
+                            ""dateOfBorn"": ""2016-02-25"",
+                            ""email"": """",
+                            ""description"": """",
+                            ""photo"": """",
+                            ""userId"": """"
+                          }";
+
+        var student = JsonSerializer.Deserialize<StudentResponse>(dataStudent, Helper.JsonOption);
+        WeakReferenceMessenger.Default.Send(new StudentSearchChangeMessage(student));
+
+        if (student != null)
+        {
+            Shell.Current.Navigation.PopModalAsync();
+        }
 
     }
 }

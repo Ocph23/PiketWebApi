@@ -9,7 +9,7 @@
              Title="LoginPage">
 
     <Grid>
-        <ActivityIndicator IsVisible="{Binding IsBusy}" IsRunning="{Binding IsBusy}"  WidthRequest="50"></ActivityIndicator>
+       
         <ScrollView>
             <VerticalStackLayout
           Padding="30,0"
@@ -36,7 +36,7 @@
                         />
                     <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password"></Entry>
                 </StackLayout>
-
+                <ActivityIndicator IsVisible="{Binding IsBusy}" IsRunning="{Binding IsBusy}"  WidthRequest="50"></ActivityIndicator>
                 <Button
               Text="Login" 
              Command="{Binding LoginCommand}"

@@ -60,7 +60,7 @@ public partial class AddTerlambatPageViewModel : BaseNotify
 
     private ICommand scandCommand;
 
-    public ICommand ScandCommand
+    public ICommand ScanCommand
     {
         get { return scandCommand; }
         set { SetProperty(ref scandCommand, value); }
@@ -83,7 +83,7 @@ public partial class AddTerlambatPageViewModel : BaseNotify
         Model = new Models.StudentToLateAndHomeEarlyModel { AtTime = DateTime.Now.TimeOfDay };
         AddCommand = new AsyncRelayCommand<object>(AddAcommandAcation, AddCommandValidate);
         SearchCommand = new RelayCommand<object>(async (x) => await SearchCommandAcation(x), SearchCommandValidate);
-        ScandCommand = new RelayCommand<object>(ScanCommandAcation);
+        ScanCommand = new AsyncRelayCommand(ScanCommandAcation);
         CloseCommand = new RelayCommand<object>(CloseAction);
         this.PropertyChanged += (s, p) =>
         {
@@ -113,16 +113,17 @@ public partial class AddTerlambatPageViewModel : BaseNotify
 
     }
 
+    private async Task ScanCommandAcation()
+    {
+        var scannerPage = new ScanBarcodePage(LateAndGoHomeEarlyStatus);
+        await Shell.Current.Navigation.PushModalAsync(scannerPage);
+    }
+
     private void CloseAction(object? obj)
     {
         Shell.Current.CurrentPage.SendBackButtonPressed();
     }
 
-    private async void ScanCommandAcation(object? obj)
-    {
-        var scannerPage = new ScanBarcodePage(LateAndGoHomeEarlyStatus);
-        await Shell.Current.Navigation.PushModalAsync(scannerPage);
-    }
 
     private bool SearchCommandValidate(object? obj)
     {

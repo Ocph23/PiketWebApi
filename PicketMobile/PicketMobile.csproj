@@ -70,7 +70,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\smk8\PiketWebApi\SharedModel\SharedModel.csproj" />
+	  <ProjectReference Include="..\SharedModel\SharedModel.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

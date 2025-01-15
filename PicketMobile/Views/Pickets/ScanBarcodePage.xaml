@@ -7,14 +7,15 @@
              Shell.NavBarIsVisible="False"
              BackgroundImageSource="background.jpg"
              Title="ScanBarcodePage">
-   
-    <Grid RowDefinitions="50*,50*" Padding="50">
-        <zxing:CameraBarcodeReaderView  
-  x:Name="cameraBarcodeReaderView"
-  BarcodesDetected="cameraBarcodeReaderView_BarcodesDetected" />
+
+    <Grid RowDefinitions="30*,70*" Padding="50">
+        <zxing:CameraBarcodeReaderView    x:Name="cameraBarcodeReaderView"  BarcodesDetected="cameraBarcodeReaderView_BarcodesDetected" />
         <StackLayout Grid.Row="1">
-                <Label Text="{Binding IsDetecting}"></Label>
-                <Label x:Name="result" ></Label>
-            </StackLayout>
+            <Label Text="{Binding IsDetecting}"></Label>
+            <Label x:Name="result" ></Label>
+
+            <Button Text="Scan" Clicked="Button_Clicked"></Button>
+            
+        </StackLayout>
     </Grid>
 </ContentPage>
