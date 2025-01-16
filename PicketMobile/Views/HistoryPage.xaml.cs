@@ -54,7 +54,7 @@ public partial class HistoryPageViewModel : BaseNotify
     public HistoryPageViewModel()
     {
         currentPage = 1;
-        pageSize = 5;
+        pageSize = 10;
         SelectItemCommand = new AsyncRelayCommand(async (item) =>
         {
             await Shell.Current.Navigation.PushAsync(new PicketDetailPage(SelectedItem.Id));
@@ -62,6 +62,7 @@ public partial class HistoryPageViewModel : BaseNotify
 
         LoadDataCommand = new AsyncRelayCommand(LoadData);
         LoadMoreDataCommand = new AsyncRelayCommand(LoadMoreData);
+        IsBusy = true;
         LoadDataCommand.Execute(null);
     }
 
@@ -69,6 +70,7 @@ public partial class HistoryPageViewModel : BaseNotify
     {
         try
         {
+            IsBusy = true;
             CurrentPage = 1;
             Datas.Clear();
             var service = ServiceHelper.GetService<IPicketService>();

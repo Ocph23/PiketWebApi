@@ -1,3 +1,5 @@
+using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Mvvm.Messaging;
 using PicketMobile.Models;
 using PicketMobile.Services;
@@ -29,9 +31,8 @@ public partial class ScanBarcodePage : ContentPage
     }
 
 
-    private void cameraBarcodeReaderView_BarcodesDetected(object sender, ZXing.Net.Maui.BarcodeDetectionEventArgs e)
+    private async void cameraBarcodeReaderView_BarcodesDetected(object sender, ZXing.Net.Maui.BarcodeDetectionEventArgs e)
     {
-
         IsDetecting = false;
         var first = e.Results?.FirstOrDefault();
         if (first is null || first.Value == LastScan)
@@ -40,55 +41,32 @@ public partial class ScanBarcodePage : ContentPage
             return;
         }
         LastScan = first.Value;
-        Dispatcher.DispatchAsync(async () =>
+
+
+        var studentService = ServiceHelper.GetService<IStudentService>();
+        var students = await studentService.SearchStudent(LastScan);
+        if (students.Any())
         {
-            await DisplayAlert("Barcode Detected", first.Value, "OK");
-            await Task.Delay(1000);
+            Dispatcher.DispatchAsync(async () =>
+            {
+                WeakReferenceMessenger.Default.Send(new StudentSearchChangeMessage(students.First()));
+                await Task.Delay(1000);
+                await Shell.Current.Navigation.PopModalAsync();
+
+            });
+        }
+        else
+        {
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            ToastDuration duration = ToastDuration.Short;
+            double fontSize = 14;
+            var toast = Toast.Make("Data tidak ditemukan !", duration, fontSize);
+            await toast.Show(cancellationTokenSource.Token);
             IsDetecting = true;
             LastScan = string.Empty;
-        });
+        }
+       
     }
-
-    [Obsolete]
-    public async Task AddStudentToLateOrGoHomeEarly(StudentResponse student)
-    {
-        try
-        {
-            IsBusy = true;
-            var picketService = ServiceHelper.GetService<IPicketService>();
-            var result = await picketService.AddLateandEarly(
-                new StudentToLateAndEarlyRequest(student.Id,
-                DateTime.Now.TimeOfDay,
-                "Model.Description",
-                AttendanceStatus.Hadir,
-                lateAndGoHomeEarlyAttendanceStatus));
-
-
-            if (result != null)
-            {
-                if (lateAndGoHomeEarlyAttendanceStatus == LateAndGoHomeEarlyAttendanceStatus.Terlambat)
-                {
-                    WeakReferenceMessenger.Default.Send(new ToLateChangeMessage(result));
-                    await Shell.Current.DisplayAlert("Success", $"{student.Name} berhasil ditambahkan dalam daftar terlamabat", "OK");
-                }
-                else
-                {
-                    WeakReferenceMessenger.Default.Send(new ToEarlyGoHomeChangeMessage(result));
-                    await Shell.Current.DisplayAlert("Success", $"{student.Name} berhasil ditambahkan dalam daftar pulang", "OK");
-                }
-            }
-            IsBusy = false;
-        }
-        catch (Exception ex)
-        {
-            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
-        }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
 
 
     private bool isDetecting = true;
@@ -123,27 +101,25 @@ public partial class ScanBarcodePage : ContentPage
 
     private void Button_Clicked(object sender, EventArgs e)
     {
-        var dataStudent = @"{
-                            ""nis"": ""3066247132"",
-                            ""nisn"": """",
-                            ""id"": 1,
-                            ""gender"": 0,
-                            ""name"": ""Aldrich"",
-                            ""placeOfBorn"": ""Makassar"",
-                            ""dateOfBorn"": ""2016-02-25"",
-                            ""email"": """",
-                            ""description"": """",
-                            ""photo"": """",
-                            ""userId"": """"
-                          }";
+        //var dataStudent = @"{
+        //                    ""nis"": ""3066247132"",
+        //                    ""nisn"": """",
+        //                    ""id"": 1,
+        //                    ""gender"": 0,
+        //                    ""name"": ""Aldrich"",
+        //                    ""placeOfBorn"": ""Makassar"",
+        //                    ""dateOfBorn"": ""2016-02-25"",
+        //                    ""email"": """",
+        //                    ""description"": """",
+        //                    ""photo"": """",
+        //                    ""userId"": """"
+        //                  }";
 
-        var student = JsonSerializer.Deserialize<StudentResponse>(dataStudent, Helper.JsonOption);
-        WeakReferenceMessenger.Default.Send(new StudentSearchChangeMessage(student));
+        //var student = JsonSerializer.Deserialize<StudentResponse>(dataStudent, Helper.JsonOption);
+        //WeakReferenceMessenger.Default.Send(new StudentSearchChangeMessage(student));
 
-        if (student != null)
-        {
-            Shell.Current.Navigation.PopModalAsync();
-        }
+        Shell.Current.Navigation.PopModalAsync();
+
 
     }
 }

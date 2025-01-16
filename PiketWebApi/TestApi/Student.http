@@ -59,7 +59,7 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-    "nis": "125252",
+    "nis": "3066247132  ",
     "nisn": "",
     "id": 1,
     "name": "Aldrich",

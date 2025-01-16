@@ -21,8 +21,9 @@
         <StackLayout Padding="5,10">
             <Label FontSize="Title" Text="Riwayat Piket"></Label>
         </StackLayout>
-        <RefreshView Grid.Row="1" Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy }" Padding="30">
+        <RefreshView Grid.Row="1" Command="{Binding LoadDataCommand}"  IsRefreshing="{Binding IsBusy}" Padding="30">
             <CollectionView ItemsSource="{Binding Datas}" x:Name="clv" SelectionMode="Single"
+                            RemainingItemsThreshold="2"
                         RemainingItemsThresholdReachedCommand="{Binding LoadMoreDataCommand}" SelectionChangedCommand="{Binding SelectItemCommand}" 
                             SelectedItem="{Binding SelectedItem}">
                 <CollectionView.ItemTemplate>

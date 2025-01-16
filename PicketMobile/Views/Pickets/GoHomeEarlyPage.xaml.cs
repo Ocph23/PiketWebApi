@@ -42,11 +42,11 @@ public partial class GoHomeEarlyPageViewModel : BaseNotify
 
     private ICommand? addStudentLateByScanCommand;
 
-    public ICommand? AddStudentLateByScanCommand
-    {
-        get { return addStudentLateByScanCommand; }
-        set { SetProperty(ref addStudentLateByScanCommand, value); }
-    }
+    //public ICommand? AddStudentLateByScanCommand
+    //{
+    //    get { return addStudentLateByScanCommand; }
+    //    set { SetProperty(ref addStudentLateByScanCommand, value); }
+    //}
 
 
     public ICommand? SelectBrowseStudent { get; set; }
@@ -59,7 +59,6 @@ public partial class GoHomeEarlyPageViewModel : BaseNotify
             HasItems = DataStudentToEarly.Count > 0;
         });
         AsyncCommand = new Command(async () => await LoadAction());
-        AddStudentLateByScanCommand = new AsyncRelayCommand(AddStudentLateCommandByScanAction);
         AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
         IsBusy = true;
     }
@@ -79,7 +78,7 @@ public partial class GoHomeEarlyPageViewModel : BaseNotify
 
     private async Task AddStudentLateCommandAction()
     {
-        var form = new AddLateAndEarlyHomePage(LateAndGoHomeEarlyAttendanceStatus.Pulang);
+        var form = new AddLateAndEarlyHomePage(LateAndGoHomeEarlyAttendanceStatus.Pulang) { Title="Pulang Lebih Cepat" };
         await Shell.Current.Navigation.PushModalAsync(form);
     }
 

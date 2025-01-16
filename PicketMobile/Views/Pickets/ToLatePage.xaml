@@ -9,7 +9,6 @@
               BackgroundImageSource="background.jpg"
              Title="Picket Hari Ini">
     <ContentPage.ToolbarItems>
-        <ToolbarItem IconImageSource="scan.svg"  Command="{Binding AddStudentLateByScanCommand}"  />
         <ToolbarItem IconImageSource="addcircle.svg"  Command="{Binding AddStudentLateCommand}"  />
     </ContentPage.ToolbarItems>
     <ContentPage.Resources>
