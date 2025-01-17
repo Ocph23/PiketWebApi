@@ -35,6 +35,7 @@ namespace PiketWebApi.Abstractions
                 return columnName?.ToLower() switch
                 {
                     "createby" => query.OrderByDescending(x => x.CreatedBy.Name),
+                    "date" => query.OrderByDescending(x => x.Date),
                     _ => query.OrderByDescending(x => x.Id)
                 };
             }
@@ -43,6 +44,7 @@ namespace PiketWebApi.Abstractions
                 return columnName?.ToLower() switch
                 {
                     "createby" => query.OrderBy(x => x.CreatedBy.Name),
+                    "date" => query.OrderBy(x => x.Date),
                     _ => query.OrderBy(x => x.Id)
                 };
             }

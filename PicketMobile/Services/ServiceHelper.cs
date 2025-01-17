@@ -19,6 +19,11 @@ namespace PicketMobile.Services
             return JsonSerializer.Deserialize<T>(profile, Helper.JsonOption)!;
         }
 
+        internal static void RegisterService(IPicketService @object)
+        {
+            throw new NotImplementedException();
+        }
+
 #pragma warning disable CS0618 // Type or member is obsolete
         public static IServiceProvider? Current =>
 #if WINDOWS10_0_17763_0_OR_GREATER

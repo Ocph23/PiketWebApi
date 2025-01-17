@@ -26,11 +26,13 @@ public partial class HistoryPageViewModel : BaseNotify
     ObservableCollection<PicketResponse> datas = new ObservableCollection<PicketResponse>();
 
     [ObservableProperty]
-    private int currentPage;
+    private int currentPage=1;
 
     [ObservableProperty]
-    private int pageSize;
+    private int pageSize=6;
 
+    [ObservableProperty]
+    private string? orderColumn= "date";
 
     [ObservableProperty]
     private ICommand loadDataCommand;
@@ -53,8 +55,7 @@ public partial class HistoryPageViewModel : BaseNotify
 
     public HistoryPageViewModel()
     {
-        currentPage = 1;
-        pageSize = 5;
+
         SelectItemCommand = new AsyncRelayCommand(async (item) =>
         {
             await Shell.Current.Navigation.PushAsync(new PicketDetailPage(SelectedItem.Id));
@@ -65,14 +66,18 @@ public partial class HistoryPageViewModel : BaseNotify
         LoadDataCommand.Execute(null);
     }
 
-    private async Task LoadData()
+    public async Task LoadData()
     {
         try
         {
+            IsBusy= true;
+            IsBusyDataMore = true;
+            await Task.Delay(500);
+
             CurrentPage = 1;
             Datas.Clear();
             var service = ServiceHelper.GetService<IPicketService>();
-            var result = await service.Get(new SharedModel.Requests.PaginationRequest(CurrentPage, PageSize, "", "desc", ""));
+            var result = await service.Get(new SharedModel.Requests.PaginationRequest(CurrentPage, PageSize, "", "desc", OrderColumn!));
             if (result != null)
             {
                 foreach (var item in result.Data)
@@ -94,11 +99,12 @@ public partial class HistoryPageViewModel : BaseNotify
         }
         finally
         {
-            IsBusy = false;
+            IsBusy= false;
+            IsBusyDataMore = false;
         }
     }
 
-    private async Task LoadMoreData()
+    public async Task LoadMoreData()
     {
         try
         {
@@ -113,8 +119,8 @@ public partial class HistoryPageViewModel : BaseNotify
                     Datas.Add(item);
                 }
             }
-            hasNextItems = CurrentPage < result.TotalRecords / PageSize;
-            RemainingThreshold = hasNextItems ? 0 : -1;
+            hasNextItems = CurrentPage < Math.Ceiling(Convert.ToDouble(result.TotalRecords / PageSize));
+            RemainingThreshold = hasNextItems ? 5 : -1;
         }
         catch (Exception ex)
         {

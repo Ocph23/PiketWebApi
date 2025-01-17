@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:sharedModel="clr-namespace:SharedModel.Responses;assembly=SharedModel"
              x:Class="PicketMobile.Views.PicketDetailPage"
-             Shell.NavBarIsVisible="False"
+              BackgroundImageSource="background.jpg"
              Title="PicketDetailPage">
     <ContentPage.Resources>
         <Style x:Key="titleContent" TargetType="Span">
@@ -15,7 +15,7 @@
         </Style>
     </ContentPage.Resources>
     <VerticalStackLayout>
-        <Border  Style="{StaticResource borderInput}" Opacity="0.85" Background="#AA9E7B" >
+        <Border  Style="{StaticResource borderInput}" >
             <Grid RowDefinitions="auto,auto,auto, auto,auto" x:DataType="sharedModel:PicketResponse" Margin="5">
                 <Label  HorizontalOptions="End" >
                     <Label.FormattedText>
@@ -42,7 +42,7 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
-                
+
                 <Label Grid.Row="3" >
                     <Label.FormattedText>
                         <FormattedString>

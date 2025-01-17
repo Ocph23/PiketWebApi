@@ -13,28 +13,29 @@
             <Setter Property="TextColor" Value="DarkSlateGrey"></Setter>
         </Style>
         <Style x:Key="textContent" TargetType="Span">
-            <Setter Property="TextColor" Value="White"></Setter>
+            <Setter Property="TextColor" Value="Black"></Setter>
             <Setter Property="FontSize" Value="Body"></Setter>
         </Style>
     </ContentPage.Resources>
-    <Grid RowDefinitions="auto,*" Padding="10,0">
+    <Grid RowDefinitions="auto,*" Padding="5,10">
         <StackLayout Padding="5,10">
             <Label FontSize="Title" Text="Riwayat Piket"></Label>
         </StackLayout>
-        <RefreshView Grid.Row="1" Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsBusy }" Padding="30">
-            <CollectionView ItemsSource="{Binding Datas}" x:Name="clv" SelectionMode="Single"
-                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreDataCommand}" SelectionChangedCommand="{Binding SelectItemCommand}" 
+        <RefreshView Grid.Row="1" Command="{Binding LoadDataCommand}"  IsRefreshing="{Binding IsBusy, Mode=TwoWay}" Padding="30" >
+            <CollectionView ItemsSource="{Binding Datas}" x:Name="clv" SelectionMode="Single" 
+                            RemainingItemsThreshold="{Binding RemainingThreshold}"
+                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreDataCommand}"  SelectionChangedCommand="{Binding SelectItemCommand}" 
                             SelectedItem="{Binding SelectedItem}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Border  Style="{StaticResource borderInput}" Opacity="0.85" Background="#AA9E7B" >
+                        <Border  Style="{StaticResource borderInput}"    >
                             <Grid RowDefinitions="auto,auto,auto, auto,auto" x:DataType="sharedModel:PicketResponse" Margin="5">
                                 <Label  HorizontalOptions="End" >
                                     <Label.FormattedText>
                                         <FormattedString>
-                                            <Span  TextColor="White" Text="{Binding Date, StringFormat='{0:dddd}'}"></Span>
-                                            <Span TextColor="White" Text=", "></Span>
-                                            <Span TextColor="White" Text="{Binding Date}"></Span>
+                                            <Span   Text="{Binding Date, StringFormat='{0:dddd}'}"></Span>
+                                            <Span  Text=", "></Span>
+                                            <Span  Text="{Binding Date}"></Span>
                                         </FormattedString>
                                     </Label.FormattedText>
                                 </Label>
@@ -75,7 +76,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
                 <CollectionView.Footer>
-                    <ActivityIndicator IsRunning="{Binding IsBusyDataMore }" IsVisible="{Binding IsBusyDataMore }" />
+                    <ActivityIndicator BackgroundColor="White" WidthRequest="30" HeightRequest="30"  IsRunning="{Binding IsBusyDataMore }" IsVisible="{Binding IsBusyDataMore }" />
                 </CollectionView.Footer>
             </CollectionView>
         </RefreshView>

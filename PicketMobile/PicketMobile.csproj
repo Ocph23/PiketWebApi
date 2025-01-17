@@ -65,7 +65,15 @@
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.21" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+		<PackageReference Include="Moq" Version="4.20.72" />
 		<PackageReference Include="The49.Maui.BottomSheet" Version="8.0.3" />
+		<PackageReference Include="xunit.assert" Version="2.9.3" />
+		<PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="3.0.1">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.4.0" />
 	</ItemGroup>
 
@@ -140,6 +148,10 @@
 	  <PackageReference Include="Vapolia.The49.Maui.BottomSheet">
 	    <Version>8.0.4-ci-11839210783</Version>
 	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Test\" />
 	</ItemGroup>
 
 </Project>

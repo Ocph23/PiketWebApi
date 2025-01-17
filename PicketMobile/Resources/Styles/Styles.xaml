@@ -23,10 +23,16 @@
     <Style x:Key="borderInput" TargetType="Border">
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray500}}" />
         <Setter Property="StrokeThickness" Value="2"/>
-        <Setter Property="StrokeShape" Value="RoundRectangle 5,5,5,5"></Setter>
-        <Setter Property="Background" Value="Wheat"></Setter>
-        <Setter Property="Opacity" Value="0.7"></Setter>
-        <Setter Property="Padding" Value="15,5"></Setter>
+        <Setter Property="StrokeShape" Value="RoundRectangle 10,10,10,10"></Setter>
+        <Setter Property="Background" Value="WhiteSmoke"></Setter>
+        <Setter Property="Opacity" Value="0.9"></Setter>
+        <Setter Property="Padding" Value="10"></Setter>
+        <Setter Property="Margin" Value="5"></Setter>
+        <Setter Property="Shadow">
+            <Setter.Value>
+                <Shadow Brush="Silver" Opacity="0.7" Offset="5,2" Radius="5"/>
+            </Setter.Value>
+        </Setter>
     </Style>
     
 
