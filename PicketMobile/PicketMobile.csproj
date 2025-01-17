@@ -40,11 +40,27 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+		<AndroidSigningKeyStore>Ocph23.keystore</AndroidSigningKeyStore>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0-android|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>Sony@7777</AndroidSigningStorePass>
+	  <AndroidSigningKeyAlias>Ocph23</AndroidSigningKeyAlias>
+	  <AndroidSigningKeyPass>Sony@7777</AndroidSigningKeyPass>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0-android|AnyCPU'">
+	  <AndroidKeyStore>True</AndroidKeyStore>
+	  <AndroidSigningStorePass>Sony@7777</AndroidSigningStorePass>
+	  <AndroidSigningKeyAlias>Ocph23</AndroidSigningKeyAlias>
+	  <AndroidSigningKeyPass>Sony@7777</AndroidSigningKeyPass>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		
+		<MauiIcon Include="Resources\AppIcon\iconsmkn8.svg" BaseSize="125,125" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\logosplash.png" Color="#F7F8F3" BaseSize="128,128" />
@@ -61,19 +77,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\AppIcon\iconsmkn8.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="10.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.21" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-		<PackageReference Include="Moq" Version="4.20.72" />
 		<PackageReference Include="The49.Maui.BottomSheet" Version="8.0.3" />
-		<PackageReference Include="xunit.assert" Version="2.9.3" />
-		<PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="3.0.1">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="ZXing.Net.Maui.Controls" Version="0.4.0" />
 	</ItemGroup>
 
@@ -106,7 +118,19 @@
 	  <MauiXaml Update="Views\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\MyTabbed.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\PicketDetailPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\PicketDetails\DetailPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\PicketDetails\GoHomeEarly.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\PicketDetails\LatePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Pickets\AddLateAndEarlyHomePage.xaml">

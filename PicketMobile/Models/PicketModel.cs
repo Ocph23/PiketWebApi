@@ -32,9 +32,12 @@ namespace PicketMobile.Models
 
         [ObservableProperty]
         DateTime createAt = DateTime.Now.ToUniversalTime();
-
-        public ICollection<TeacherAttendanceResponse> TeacherAttendance { get; set; } = default;
-        public ICollection<LateAndGoHomeEarlyResponse> LateAndComeHomeEarly { get; set; } = default;
+        
+        [ObservableProperty]
+        ICollection<TeacherAttendanceResponse> teacherAttendance = default;
+        
+        [ObservableProperty]
+        ICollection<LateAndGoHomeEarlyResponse> lateAndComeHomeEarly = default;
 
     }
 }

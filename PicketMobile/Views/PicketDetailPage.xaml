@@ -1,66 +1,117 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:sharedModel="clr-namespace:SharedModel.Responses;assembly=SharedModel"
+               xmlns:view="clr-namespace:PicketMobile.Views"
                xmlns:model="clr-namespace:PicketMobile.Models"
-             x:Class="PicketMobile.Views.PicketDetailPage"
+                x:Class="PicketMobile.Views.PicketDetailPage"
+            x:DataType="view:PicketDetailPageViewModel"
+              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
               BackgroundImageSource="background.jpg"
-             Title="PicketDetailPage">
-    <ContentPage.Resources>
-        <Style x:Key="titleContent" TargetType="Span">
-            <Setter Property="TextColor" Value="DarkSlateGrey"></Setter>
-        </Style>
-        <Style x:Key="textContent" TargetType="Span">
-            <Setter Property="TextColor" Value="White"></Setter>
-            <Setter Property="FontSize" Value="Body"></Setter>
-        </Style>
-    </ContentPage.Resources>
-    <VerticalStackLayout>
-        <Border  Style="{StaticResource borderInput}" >
-            <Grid RowDefinitions="auto,auto,auto, auto,auto" x:DataType="sharedModel:PicketResponse" Margin="5">
-                <Label  HorizontalOptions="End" >
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span  TextColor="White" Text="{Binding Model.Date, StringFormat='{0:dddd}'}"></Span>
-                            <Span TextColor="White" Text=", "></Span>
-                            <Span TextColor="White" Text="{Binding Model.Date}"></Span>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Label Grid.Row="1" >
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Style="{StaticResource titleContent}"  Text="Cuaca : "></Span>
-                            <Span Style="{StaticResource textContent}"  Text="{Binding Model.Weather}"></Span>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Label Grid.Row="2" >
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Style="{StaticResource titleContent}"  Text="Jam Mulai : "></Span>
-                            <Span Style="{StaticResource textContent}"  Text="{Binding Model.StartAt}"></Span>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
+             Title="Detail Picket" Padding="30" >
+    <ContentPage Title="Detail"  BackgroundImageSource="background.jpg">
+        <VerticalStackLayout >
+            <Border  Style="{StaticResource borderInput}"  >
+                <VerticalStackLayout Margin="5" >
+                    <Label  HorizontalOptions="End" FontSize="17"  FontAttributes="Bold">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span   Text="{Binding Model.Date, StringFormat='{0:dddd}'}"></Span>
+                                <Span  Text=", "></Span>
+                                <Span  Text="{Binding Model.Date}"></Span>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <HorizontalStackLayout>
+                        <Label Style="{StaticResource  titleContent}" Text="Cuaca"></Label>
+                        <Label Style="{StaticResource textContent}" Text="{Binding Model.Weather, StringFormat=': {0}'}"></Label>
+                    </HorizontalStackLayout>
+                  
+                    <HorizontalStackLayout>
+                        <Label Style="{StaticResource  titleContent}" Text="Jam Mulai"></Label>
+                        <Label Style="{StaticResource textContent}" Text="{Binding Model.StartAt, StringFormat=': {0}'}"></Label>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout>
+                        <Label Style="{StaticResource  titleContent}" Text="Jam Selesai"></Label>
+                        <Label Style="{StaticResource textContent}" Text="{Binding Model.EndAt, StringFormat=': {0}'}"></Label>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout>
+                        <Label Style="{StaticResource  titleContent}" Text="Dibuka Oleh"></Label>
+                        <Label Style="{StaticResource textContent}" Text="{Binding Model.CreatedBy.Name, StringFormat=': {0}'}"></Label>
+                    </HorizontalStackLayout>
 
-                <Label Grid.Row="3" >
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Style="{StaticResource titleContent}"  Text="Jam Selesai : "></Span>
-                            <Span Style="{StaticResource textContent}"  Text="{Binding Model.EndAt}"></Span>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Label Grid.Row="4" >
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <Span Style="{StaticResource titleContent}"  Text="Dibuka Oleh : "></Span>
-                            <Span Style="{StaticResource textContent}"  Text="{Binding  Model.CreatedName}"></Span>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-            </Grid>
-        </Border>
-    </VerticalStackLayout>
-</ContentPage>
+                </VerticalStackLayout>
+
+            </Border>
+            <ActivityIndicator Margin="30" WidthRequest="30" HeightRequest="30" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"></ActivityIndicator>
+        </VerticalStackLayout>
+    </ContentPage>
+    <ContentPage Title="Siswa Terlambat"  BackgroundImageSource="background.jpg">
+        <VerticalStackLayout>
+            <CollectionView ItemsSource="{Binding LateSource}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border  Style="{StaticResource borderInput}"  x:DataType="sharedModel:LateAndGoHomeEarlyResponse">
+                            <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
+                                <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60" Text="{Binding StudentInitial}" TextColor="White"
+                     Margin="5,0" HeightRequest="60" CornerRadius="100" 
+                     BackgroundColor="#56d388"  />
+                                <StackLayout Grid.Column="1" VerticalOptions="Center" >
+                                    <Label FontSize="16" Text="{Binding StudentName}" ></Label>
+                                    <Grid ColumnDefinitions="*,auto">
+                                        <Label  FontSize="13" >
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span  Text="{Binding ClassRoomName}"></Span>
+                                                    <Span  Text=" - "></Span>
+                                                    <Span  Text="{Binding DepartmentName}"></Span>
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+                                        <Label Text="{Binding CreateAt, StringFormat='{0:HH:mm}'}" FontSize="13"  Margin="10,0" HorizontalOptions="End" >
+
+                                        </Label>
+                                    </Grid>
+                                </StackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ContentPage>
+    <ContentPage Title="Pulang Terlalu Cepat"  BackgroundImageSource="background.jpg">
+        <CollectionView ItemsSource="{Binding GoHomeSource}" >
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border  Style="{StaticResource borderInput}"  x:DataType="sharedModel:LateAndGoHomeEarlyResponse">
+                        <Grid Margin="0,0,0,2" Padding="0,3"  ColumnDefinitions="auto,*" >
+                            <toolkit:AvatarView HorizontalOptions="Start" WidthRequest="60" Text="{Binding StudentInitial}" TextColor="White"
+ Margin="5,0" HeightRequest="60" CornerRadius="100" 
+ BackgroundColor="#56d388"  />
+                            <StackLayout Grid.Column="1" VerticalOptions="Center" >
+                                <Label FontSize="16" Text="{Binding StudentName}" ></Label>
+                                <Grid ColumnDefinitions="*,auto">
+                                    <Label  FontSize="13" >
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span  Text="{Binding ClassRoomName}"></Span>
+                                                <Span  Text=" - "></Span>
+                                                <Span  Text="{Binding DepartmentName}"></Span>
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label Text="{Binding CreateAt, StringFormat='{0:HH:mm}'}" FontSize="13"  Margin="10,0" HorizontalOptions="End" >
+
+                                    </Label>
+                                </Grid>
+                            </StackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </ContentPage>
+
+
+</TabbedPage>

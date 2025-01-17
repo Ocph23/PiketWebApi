@@ -58,7 +58,7 @@ public partial class HistoryPageViewModel : BaseNotify
 
         SelectItemCommand = new AsyncRelayCommand(async (item) =>
         {
-            await Shell.Current.Navigation.PushAsync(new PicketDetailPage(SelectedItem.Id));
+            await Shell.Current.Navigation.PushModalAsync(new PicketDetailPage(SelectedItem.Id));
         });
 
         LoadDataCommand = new AsyncRelayCommand(LoadData);
@@ -90,7 +90,7 @@ public partial class HistoryPageViewModel : BaseNotify
             hasNextItems = CurrentPage < result.TotalRecords / PageSize;
             if (hasNextItems)
             {
-                RemainingThreshold = 0;
+                RemainingThreshold = 5;
             }
 
         }

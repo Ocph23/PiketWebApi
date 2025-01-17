@@ -33,4 +33,17 @@
     <Folder Include="NewFolder\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SharedModel\SharedModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="photos\student\tghk120g.muo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="photos\teacher\rckl4ekt.f3v.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

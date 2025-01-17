@@ -25,16 +25,26 @@
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 10,10,10,10"></Setter>
         <Setter Property="Background" Value="WhiteSmoke"></Setter>
-        <Setter Property="Opacity" Value="0.9"></Setter>
+        <Setter Property="Opacity" Value="0.8"></Setter>
         <Setter Property="Padding" Value="10"></Setter>
-        <Setter Property="Margin" Value="5"></Setter>
+        <Setter Property="Margin" Value="2"></Setter>
         <Setter Property="Shadow">
             <Setter.Value>
                 <Shadow Brush="Silver" Opacity="0.7" Offset="5,2" Radius="5"/>
             </Setter.Value>
         </Setter>
     </Style>
-    
+
+    <Style x:Key="titleContent" TargetType="Label">
+        <Setter Property="TextColor" Value="DarkSlateGrey"></Setter>
+        <Setter Property="MinimumWidthRequest" Value="120"></Setter>
+        <Setter Property="FontSize" Value="Body"></Setter>
+    </Style>
+    <Style x:Key="textContent" TargetType="Label">
+        <Setter Property="TextColor" Value="Black"></Setter>
+        <Setter Property="FontSize" Value="Body"></Setter>
+    </Style>
+
 
     <Style TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
