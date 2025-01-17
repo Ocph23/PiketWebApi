@@ -60,13 +60,13 @@ public partial class AddTerlambatPageViewModel : BaseNotify
 
     private ICommand scandCommand;
 
-    public ICommand ScandCommand
+    public ICommand ScanCommand
     {
         get { return scandCommand; }
         set { SetProperty(ref scandCommand, value); }
     }
 
-    public RelayCommand<object> CloseCommand { get; private set; }
+    public ICommand CloseCommand { get;  set; }
 
     private string searchText;
 
@@ -79,12 +79,17 @@ public partial class AddTerlambatPageViewModel : BaseNotify
     [Obsolete]
     public AddTerlambatPageViewModel(LateAndGoHomeEarlyAttendanceStatus lateAndGoHomeStatus)
     {
+
+        Title = lateAndGoHomeStatus == LateAndGoHomeEarlyAttendanceStatus.Terlambat ? 
+            "Tambah Siswa Terlambat" : "Tambah Siswa Pulang Lebih Cepat";
+
+
         LateAndGoHomeEarlyStatus = lateAndGoHomeStatus;
         Model = new Models.StudentToLateAndHomeEarlyModel { AtTime = DateTime.Now.TimeOfDay };
         AddCommand = new AsyncRelayCommand<object>(AddAcommandAcation, AddCommandValidate);
         SearchCommand = new RelayCommand<object>(async (x) => await SearchCommandAcation(x), SearchCommandValidate);
-        ScandCommand = new RelayCommand<object>(ScanCommandAcation);
-        CloseCommand = new RelayCommand<object>(CloseAction);
+        ScanCommand = new AsyncRelayCommand(ScanCommandAcation);
+        CloseCommand = new AsyncRelayCommand(CloseAction);
         this.PropertyChanged += (s, p) =>
         {
             if (p.PropertyName == "SearchText")
@@ -113,16 +118,17 @@ public partial class AddTerlambatPageViewModel : BaseNotify
 
     }
 
-    private void CloseAction(object? obj)
-    {
-        Shell.Current.CurrentPage.SendBackButtonPressed();
-    }
-
-    private async void ScanCommandAcation(object? obj)
+    private async Task ScanCommandAcation()
     {
         var scannerPage = new ScanBarcodePage(LateAndGoHomeEarlyStatus);
         await Shell.Current.Navigation.PushModalAsync(scannerPage);
     }
+
+    private async Task CloseAction()
+    {
+       await Shell.Current.Navigation.PopModalAsync();
+    }
+
 
     private bool SearchCommandValidate(object? obj)
     {

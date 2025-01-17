@@ -8,7 +8,7 @@
              x:Class="PicketMobile.Views.BottomSheets.BrowseStudentBottomSheet">
     <the49:BottomSheet.Detents>
         <!-- Stop at 120dp -->
-        <the49:HeightDetent Height="300" />
+        <the49:HeightDetent Height="600" />
     </the49:BottomSheet.Detents>
     <VerticalStackLayout>
         <Label Text="Hasil Pencarian Siswa" FontSize="Title"></Label>

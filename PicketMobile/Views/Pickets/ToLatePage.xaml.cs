@@ -40,13 +40,7 @@ public partial class ToLatePageViewModel : BaseNotify
         set { SetProperty(ref addStudentLateCommand, value); }
     }
 
-    private ICommand addStudentLateByScanCommand;
 
-    public ICommand AddStudentLateByScanCommand
-    {
-        get { return addStudentLateByScanCommand; }
-        set { SetProperty(ref addStudentLateByScanCommand, value); }
-    }
 
 
     public ICommand SelectBrowseStudent { get; set; }
@@ -60,36 +54,16 @@ public partial class ToLatePageViewModel : BaseNotify
             HasItems = DataStudentTolate.Count > 0;
         });
         AsyncCommand = new Command(async () => await LoadAction());
-        AddStudentLateByScanCommand = new AsyncRelayCommand(AddStudentLateCommandByScanAction);
         AddStudentLateCommand = new AsyncRelayCommand(AddStudentLateCommandAction);
         DataStudentTolate = new ObservableCollection<LateAndGoHomeEarlyResponse>();
         IsBusy = true;
     }
 
-    private async Task AddStudentLateCommandByScanAction()
-    {
-        var bottomSheet = new ScanStudentBottmSheet();
-        await bottomSheet.ShowAsync();
-        //var form = new ScanBarcodePage(LateAndGoHomeEarlyAttendanceStatus.Terlambat);
-        //await Shell.Current.Navigation.PushModalAsync(form);
-    }
-
-    [Obsolete]
-    private async Task<bool> AddStudentLateCommandValidation()
-    {
-        var scheduleService = ServiceHelper.GetService<IScheduleService>();
-        return await scheduleService.IamPicket();
-    }
 
     private async Task AddStudentLateCommandAction()
     {
         var form = new AddLateAndEarlyHomePage(LateAndGoHomeEarlyAttendanceStatus.Terlambat);
         await Shell.Current.Navigation.PushAsync(form);
-        //var vm = form.BindingContext as AddTerlambatPageViewModel;
-        //if (vm.Model.Id >= 0)
-        //{
-        //    DataStudentTolate.Add(vm.Model);
-        //}
     }
     private async Task LoadAction()
     {

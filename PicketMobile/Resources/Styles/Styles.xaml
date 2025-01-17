@@ -21,7 +21,7 @@
 
 
     <Style x:Key="borderInput" TargetType="Border">
-        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray500}}" />
+        <Setter Property="Stroke" Value="White" />
         <Setter Property="StrokeThickness" Value="2"/>
         <Setter Property="StrokeShape" Value="RoundRectangle 10,10,10,10"></Setter>
         <Setter Property="Background" Value="WhiteSmoke"></Setter>

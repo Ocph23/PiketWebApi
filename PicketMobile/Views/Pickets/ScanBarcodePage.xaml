@@ -7,14 +7,14 @@
              Shell.NavBarIsVisible="False"
              BackgroundImageSource="background.jpg"
              Title="ScanBarcodePage">
-   
-    <Grid RowDefinitions="50*,50*" Padding="50">
-        <zxing:CameraBarcodeReaderView  
-  x:Name="cameraBarcodeReaderView"
-  BarcodesDetected="cameraBarcodeReaderView_BarcodesDetected" />
-        <StackLayout Grid.Row="1">
-                <Label Text="{Binding IsDetecting}"></Label>
-                <Label x:Name="result" ></Label>
-            </StackLayout>
+
+    <Grid RowDefinitions="10*,60*,10*" Margin="10">
+        <StackLayout>
+            <Label FontSize="Title" Text="Scan QR Kartu Pelajar"></Label>
+        </StackLayout>
+        <zxing:CameraBarcodeReaderView Margin="10" Grid.Row="1"  x:Name="cameraBarcodeReaderView"  BarcodesDetected="cameraBarcodeReaderView_BarcodesDetected" />
+        <StackLayout Grid.Row="2" Margin="10">
+            <Button Text="Batal" Clicked="Button_Clicked"></Button>
+        </StackLayout>
     </Grid>
 </ContentPage>

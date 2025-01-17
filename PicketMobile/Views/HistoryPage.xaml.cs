@@ -63,6 +63,7 @@ public partial class HistoryPageViewModel : BaseNotify
 
         LoadDataCommand = new AsyncRelayCommand(LoadData);
         LoadMoreDataCommand = new AsyncRelayCommand(LoadMoreData);
+        IsBusy = true;
         LoadDataCommand.Execute(null);
     }
 

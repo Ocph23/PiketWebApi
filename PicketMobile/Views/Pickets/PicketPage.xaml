@@ -30,7 +30,6 @@
                         <Grid ColumnDefinitions="*,auto"  Padding="5">
                             <Label Text="Cuaca" VerticalOptions="Center"/>
                             <Picker HorizontalOptions="End" ItemsSource="{Binding Weathers}" SelectedItem="{Binding Model.Weather}"/>
-
                         </Grid>
                     </Border>
                     <Border Style="{StaticResource borderInput}" >

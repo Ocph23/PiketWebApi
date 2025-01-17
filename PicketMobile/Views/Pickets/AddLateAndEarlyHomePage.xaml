@@ -4,15 +4,18 @@
              x:Class="PicketMobile.Views.Pickets.AddLateAndEarlyHomePage"
                xmlns:view="clr-namespace:PicketMobile.Views.Pickets"
             xmlns:sharedModelResponse="clr-namespace:SharedModel.Responses;assembly=SharedModel"
+             xmlns:control="clr-namespace:PicketMobile.Controls"
              x:DataType="view:AddTerlambatPageViewModel"
              Shell.NavBarIsVisible="False"
-              BackgroundImageSource="background.jpg"
-             Title="">
+              BackgroundImageSource="background.jpg">
+    <ContentPage.Resources>
+        <control:IsShowStudentDetailConverter x:Key="isShowStudent"/>
+    </ContentPage.Resources>
 
     <VerticalStackLayout >
         <Grid>
             <StackLayout>
-                <Label Text="Tambah Siswa Terlambat" FontSize="18" Margin="20" FontAttributes="Bold"></Label>
+                <Label Text="{Binding Title}" FontSize="18" Margin="25" FontAttributes="Bold"></Label>
                 <Grid ColumnDefinitions="*,auto,auto">
                     <SearchBar x:Name="searchBar" Placeholder="Cari Siswa (NIS / Nama)"
                   Text="{Binding SearchText}"/>
@@ -24,7 +27,7 @@
                         Grid.Column="2" ImageSource="scan.svg" Padding="1"></Button>
                 </Grid>
                 <BoxView BackgroundColor="Silver" HeightRequest="1" Margin="20,5"></BoxView>
-                <StackLayout>
+                <StackLayout IsVisible="{Binding Model.Student, Converter={StaticResource isShowStudent }}">
                     <Border WidthRequest="75" HeightRequest="75" HorizontalOptions="Center" >
                         <Image HorizontalOptions="Center"></Image>
                     </Border>

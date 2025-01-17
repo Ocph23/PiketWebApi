@@ -2,11 +2,11 @@
 <Button xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="PicketMobile.Controls.AddButton"
-    ImageSource="addcircle.svg" 
-    BackgroundColor="{StaticResource Primary}" 
+    ImageSource="addcircle.svg" TextColor="White"
+    BackgroundColor="Teal" 
     CornerRadius="30" 
     HeightRequest="60" 
     WidthRequest="60" 
     VerticalOptions="End" 
     HorizontalOptions="End" 
-    Margin="30" />
+    Margin="30,100" />
