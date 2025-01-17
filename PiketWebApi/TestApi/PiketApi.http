@@ -24,7 +24,7 @@ Authorization : {{token}}
   "pageSize": 10,
   "searchTerm": null,
   "sortOrder": "desc",
-  "columnOrder": null
+  "columnOrder": "date"
 }
 
 

@@ -305,7 +305,7 @@ namespace PiketWebApi.Services
 
                 IQueryable<Picket> iq = dbContext.Picket.Include(x => x.CreatedBy);
 
-                iq = iq.GetPicketOrder(req.ColumnOrder, req.SortOrder);
+                    iq = iq.GetPicketOrder(req.ColumnOrder, req.SortOrder);
 
                 var totalData= await iq.CountAsync();
 
