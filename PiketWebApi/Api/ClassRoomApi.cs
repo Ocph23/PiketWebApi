@@ -9,7 +9,6 @@ using PiketWebApi.Services;
 using SharedModel.Models;
 using SharedModel.Requests;
 using SharedModel.Responses;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PiketWebApi.Api
 {

@@ -1,12 +1,5 @@
-
 @controller=classroom
-
-Get {{url}}/{{controller}} HTTP/1.1
-Content-Type:application/json
-Authorization : {{token}}
-
 ####
-
 Get {{url}}/{{controller}}/17 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}

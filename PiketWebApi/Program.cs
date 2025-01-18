@@ -115,6 +115,7 @@ builder.Services.AddScoped<IScheduleService, ScheduleService>();
 builder.Services.AddScoped<ISchoolYearService, SchoolYearService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddProblemDetails();
 
 
@@ -182,6 +183,7 @@ app.MapGroup("/api/department").MapDepartmentApi().WithOpenApi();
 app.MapGroup("/api/classroom").MapClassRoomApi().WithOpenApi();
 app.MapGroup("/api/schedule").MapScheduleApi().WithOpenApi();
 app.MapGroup("/api/picket").MapPickerApi().WithOpenApi();
+app.MapGroup("/api/report").MapReportApi().WithOpenApi();
 
 
 app.Run();
