@@ -1,6 +1,6 @@
 @controller=classroom
 ####
-Get {{url}}/{{controller}}/17 HTTP/1.1
+Get {{url}}/{{controller}}/1 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
@@ -17,8 +17,9 @@ Authorization : {{token}}
 
 {
   "name": "X",
-  "departmentId": 4,
-  "classRommLeaderId": 1,
+  "departmentId": 3,
+   "level": 2,
+  "classRommLeaderId": 2,
   "homeRoomTeacherId": 1
 }
 ####

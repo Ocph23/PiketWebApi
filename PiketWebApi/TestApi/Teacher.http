@@ -26,11 +26,11 @@ Authorization : {{token}}
 {
   "registerNumber": "111135252",
   "id": 0,
-  "name": "Afif sanjaya",
+  "name": "Fidel",
   "gender": 0,
-  "placeOfBorn": "Papua",
-  "dateOfBorn": "1979-02-23",
-  "email": "afif@gmail.com",
+  "placeOfBorn": "Jayapura",
+  "dateOfBorn": "1990-02-23",
+  "email": "fidel@picket.ocph23.com",
   "description": "",
   "photo": "",
   "userId": ""
@@ -43,16 +43,18 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-    "registerNumber": "22222",
+    "registerNumber": "111111111",
+    "id": 1,
+    "gender": 0,
     "name": "Yoseph Kungkung",
-    "gender": 1,
-    "placeOfBorn": "Sulawesi",
+    "placeOfBorn": "Jayapura",
     "dateOfBorn": "1979-02-23",
-    "email": "",
-    "description": "Deskripsi Baru",
+    "email": "ocph23.test@gmail.com",
+    "description": "",
     "photo": "",
-    "userId": ""
+    "userId": "26dfe92b-2d84-452e-9a8b-50a0aad5efe4"
   }
+
 ####
 
 

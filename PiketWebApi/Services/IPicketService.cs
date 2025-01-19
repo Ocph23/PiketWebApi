@@ -25,7 +25,10 @@ namespace PiketWebApi.Services
         Task<ErrorOr<bool>> UpdatePicket(int id, PicketRequest picket);
         Task<ErrorOr<PicketResponse>> GetById(int id);
         Task<ErrorOr<PaginationResponse<PicketResponse>>> GetWithPaginate(PaginationRequest req);
+        Task<ErrorOr<bool>> RemoveDailyJournal(int model);
+        Task<ErrorOr<DailyJournalResponse>> AddDailyJournal(DailyJournalRequest model);
     }
+
 
     public class PicketService : IPicketService
     {
@@ -333,6 +336,80 @@ namespace PiketWebApi.Services
             }
         }
 
-     
+        public async Task<ErrorOr<bool>> RemoveDailyJournal(int id)
+        {
+            try
+            {
+                var userClaim = await http.IsTeacherPicket(userManager, dbContext);
+                if (!userClaim.Item1)
+                    return Error.Unauthorized("Picket", "Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
+
+                var picket = dbContext.Picket
+                      .Include(x => x.DailyJournals).Where(x => x.DailyJournals.Any(x => x.Id == id)).FirstOrDefault();
+
+                var result = picket.DailyJournals.Where(x => x.Id == id).FirstOrDefault();
+                if (result == null)
+                    return Error.NotFound("Picket", "Data tidak ditemukan.");
+
+                if(result.Teacher.Id != userClaim.Item2.Id)
+                    return Error.Unauthorized("Picket", $"Maaf,Anda tidak dapat menghapus data ini. dibuat oleh  {result.Teacher.Name}");
+
+                picket.DailyJournals.Remove(result);
+                dbContext.SaveChanges();
+                return await Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                return Error.Conflict();
+            }
+        }
+
+        public async Task<ErrorOr<DailyJournalResponse>> AddDailyJournal(DailyJournalRequest model)
+        {
+            try
+            {
+                var userClaim = await http.IsTeacherPicket(userManager, dbContext);
+                if (!userClaim.Item1)
+                    return Error.Unauthorized("Picket", "Maaf, Anda tidak sedang piket/anda tidak memiliki akses !");
+
+                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                var picket = dbContext.Picket
+                        .Include(x => x.DailyJournals)
+                        .ThenInclude(x => x.Teacher)
+                        .FirstOrDefault(x => x.Date == date);
+                if (picket == null || DateOnly.FromDateTime(DateTime.Now) != picket.Date)
+                {
+                    return Error.Failure("Picket", "Piket Belum Di buka");
+                }
+                var dailyJournal = new DailyJournal
+                {
+                    Teacher = userClaim.Item2,
+                    CreateAt =model.CreateAt,
+                    Content = model.Content,
+                     Title = model.Title
+                };
+                picket.DailyJournals.Add(dailyJournal);
+                dbContext.SaveChanges();
+                var result = await GenerateDaeilyJournalResponse(dailyJournal);
+                return result;
+            }
+            catch (Exception)
+            {
+                return Error.Conflict();
+            }
+        }
+
+        private Task<DailyJournalResponse> GenerateDaeilyJournalResponse(DailyJournal dailyJournal)
+        {
+        var result = new DailyJournalResponse
+            ( dailyJournal.Id,
+              dailyJournal.Title,
+              dailyJournal.Content,
+              dailyJournal.Teacher==null?0:dailyJournal.Teacher.Id,
+              dailyJournal.Teacher==null?string.Empty:dailyJournal.Teacher.Name,
+              dailyJournal.CreateAt
+            );
+            return Task.FromResult(result);
+        }
     }
 }

@@ -40,15 +40,15 @@ Authorization : {{token}}
 
 {
   "id": 0,
-  "name": "Valent",
-  "gender": 0,
+  "name": "Ririn",
+  "gender": 1,
   "placeOfBorn": "Jayapura",
   "dateOfBorn": "2006-02-25",
   "email": "",
   "description": "",
   "photo": "",
   "userId": "",
-  "nis": "125252",
+  "nis": "222225",
   "nisn": ""
 }
 ####
