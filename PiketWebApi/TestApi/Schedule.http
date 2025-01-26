@@ -17,8 +17,8 @@ Authorization : {{token}}
 
 {
   "id": 0,
-  "dayOfWeek": 1,
-  "teacherId": 8
+  "dayOfWeek": 5,
+  "teacherId": 5
 }
 ####
 

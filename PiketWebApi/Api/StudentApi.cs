@@ -9,7 +9,6 @@ using PiketWebApi.Data;
 using PiketWebApi.Services;
 using SharedModel.Models;
 using SharedModel.Requests;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PiketWebApi.Api
 {
@@ -27,7 +26,35 @@ namespace PiketWebApi.Api
             group.MapPut("/{id}", PutStudent);
             group.MapDelete("/{id}", DeleteStudent);
             group.MapPut("/photo/{id}", UploadFoto);
+            group.MapGet("/photo/{fileName}", GetFoto).AllowAnonymous();
             return group.WithTags("student").RequireAuthorization(); ;
+        }
+
+        private static async Task<IResult> GetFoto(HttpContext context, string fileName)
+        {
+            // Set the directory where the files are stored
+            string fileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "photos/student");
+
+            // Ensure the directory exists
+            if (!Directory.Exists(fileDirectory))
+            {
+                return Results.BadRequest("File directory does not exist.");
+            }
+
+            // Build the full file path
+            string filePath = Path.Combine(fileDirectory, fileName);
+
+            // Check if the file exists
+            if (!System.IO.File.Exists(filePath))
+            {
+                return Results.BadRequest("File not found.");
+            }
+
+            // Read the file content
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+
+            // Return the file as a download
+           return Results.File(fileBytes, "application/octet-stream", fileName);
         }
 
         private static async Task<IResult> GetAllStudentWithPanitate(HttpContext context, IStudentService studentService, PaginationRequest req)
