@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/PicketWebApi/bin/Debug/net8.0/PicketWebApi.dll",
+            "program": "${workspaceFolder}/PiketWebApi/bin/Debug/net8.0/PiketWebApi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/PiketWebApi",
             "stopAtEntry": false,
             "serverReadyAction": {
                 "action": "openExternally",
@@ -23,8 +23,20 @@
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
             }
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        },
+        {
+            "name": "Docker .NET Launch",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "netCore": {
+                "appProject": "${workspaceFolder}/PiketWebApi/PiketWebApi.csproj"
+            }
         }
-        
-
     ]
 }

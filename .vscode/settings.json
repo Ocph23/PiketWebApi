@@ -1,0 +1,25 @@
+{
+    "rest-client.environmentVariables": {
+    "$shared": {
+      "developmentUrl":"http://localhost:5003/api",
+      "tokenAdmin": "bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ0ZmNjMmRhLTEwMTctNGIyOC04ZWRiLWQ5NmY3OTBhYmJiYiIsIm5hbWUiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJzdWIiOiJhZG1pbkBwaWNrZXQub2NwaDIzLnRlY2giLCJlbWFpbCI6ImFkbWluQHBpY2tldC5vY3BoMjMudGVjaCIsImp0aSI6ImU4YTNkYWRjLWEwNGQtNDNiMy05NjI5LTgzNGRhNmI3MzQ4NyIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTczNzMwMDU1NCwiZXhwIjoxNzM3OTA1MzU0LCJpYXQiOjE3MzczMDA1NTQsImlzcyI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyIsImF1ZCI6Imh0dHBzOi8vcGlja2V0Lm9jcGgyMy50ZWNoLyJ9.-1_LOhInxTj8ieLWq1_yorq15H4VN_0W2nGtHJdc6Y5cgEX56YGjAKMwDfp6ZhzbtthK5hLHXABa6w47YKisoA",
+      "tokenGuru": "bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU0MWNlNjZjLTIwYTctNGQ5Yi1iOGNjLTk2MjI5MTVhNzRiMSIsIm5hbWUiOiJvY3BoMjNAZ21haWwuY29tIiwic3ViIjoib2NwaDIzQGdtYWlsLmNvbSIsImVtYWlsIjoib2NwaDIzQGdtYWlsLmNvbSIsImp0aSI6IjI4ZjQ0MzAwLTk1Y2YtNDEzYS05MjM1LTA1YTI0YjUxMGNjOSIsInJvbGUiOiJUZWFjaGVyIiwibmJmIjoxNzM3MDgwNTAxLCJleHAiOjE3Mzc2ODUzMDEsImlhdCI6MTczNzA4MDUwMSwiaXNzIjoiaHR0cHM6Ly9waWNrZXQub2NwaDIzLnRlY2gvIiwiYXVkIjoiaHR0cHM6Ly9waWNrZXQub2NwaDIzLnRlY2gvIn0.njqYElhk0Iq1oJk31_ocdPRtK_BpD52l-juprUBAhDs04KjRJha51rQ_nG9DPlIMWCUHv1XqIe04Tsj9opiLhQ"
+    },
+    "Development":{
+      "url":"{{$shared developmentUrl}}",
+      "token":"{{$shared tokenAdmin}}"
+    },
+    "Production":{
+      "url":"https://picket.ocph23.tech/api",
+      "token":"{{$shared tokenAdmin}}"
+    },
+    "Development-Guru":{
+      "url":"{{$shared developmentUrl}}",
+     "token":"{{$shared tokenGuru}}"
+    },
+    "Production-Guru":{
+      "url":"https://picket.ocph23.tech/api",
+    "token":"{{$shared tokenGuru}}"
+    }
+  },
+}

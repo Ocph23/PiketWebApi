@@ -15,6 +15,7 @@ namespace PiketWebApi.Data
         public Teacher? CreatedBy { get; set; }
         public DateTime CreateAt { get; set; } = DateTime.Now.ToUniversalTime();
         public ICollection<LateAndGoHomeEarly> LateAndComeHomeEarly { get; set; } = default;
+        public ICollection<DailyJournal> DailyJournals { get; set; } = default;
         public static Picket? Create(Teacher teacher)
         {
             return new Picket()
