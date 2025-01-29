@@ -481,6 +481,39 @@ namespace PiketWebApi.Migrations
                     b.ToTable("Students");
                 });
 
+            modelBuilder.Entity("PiketWebApi.Data.StudentAttendace", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AttendanceStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("TimeIn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("TimeOut")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("StudentAttendaces");
+                });
+
             modelBuilder.Entity("PiketWebApi.Data.Teacher", b =>
                 {
                     b.Property<int>("Id")
@@ -538,22 +571,20 @@ namespace PiketWebApi.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int?>("PicketId")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("TeacherId")
                         .HasColumnType("integer");
 
-                    b.Property<TimeSpan?>("Time")
-                        .HasColumnType("interval");
+                    b.Property<DateTime>("TimeIn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("TimeOut")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PicketId");
-
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("TeacherAttendance");
+                    b.ToTable("TeacherAttendances");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -700,12 +731,19 @@ namespace PiketWebApi.Migrations
                     b.Navigation("Teacher");
                 });
 
+            modelBuilder.Entity("PiketWebApi.Data.StudentAttendace", b =>
+                {
+                    b.HasOne("PiketWebApi.Data.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("PiketWebApi.Data.TeacherAttendance", b =>
                 {
-                    b.HasOne("PiketWebApi.Data.Picket", null)
-                        .WithMany("TeacherAttendance")
-                        .HasForeignKey("PicketId");
-
                     b.HasOne("PiketWebApi.Data.Teacher", "Teacher")
                         .WithMany()
                         .HasForeignKey("TeacherId");
@@ -721,8 +759,6 @@ namespace PiketWebApi.Migrations
             modelBuilder.Entity("PiketWebApi.Data.Picket", b =>
                 {
                     b.Navigation("LateAndComeHomeEarly");
-
-                    b.Navigation("TeacherAttendance");
                 });
 #pragma warning restore 612, 618
         }

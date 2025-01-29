@@ -53,16 +53,16 @@ Authorization : {{token}}
 
 {
   "id": 0,
-  "name": "Valent",
+  "nis": "11111117",
+  "nisn": "",
+  "name": "James",
   "gender": 0,
   "placeOfBorn": "Jayapura",
   "dateOfBorn": "2006-02-25",
   "email": "",
   "description": "",
   "photo": "",
-  "userId": "",
-  "nis": "125252",
-  "nisn": ""
+  "userId": ""
 }
 ####
 

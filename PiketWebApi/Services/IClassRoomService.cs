@@ -29,12 +29,18 @@ namespace PiketWebApi.Services
         private ApplicationDbContext dbContext;
         private readonly ISchoolYearService schoolYearService;
 
-        public ClassRoomService(IHttpContextAccessor _http, UserManager<ApplicationUser> _userManager, ApplicationDbContext _dbContext, ISchoolYearService _schoolYearService)
+        public ClassRoomService(
+            IHttpContextAccessor _http, 
+            UserManager<ApplicationUser> _userManager,
+            ApplicationDbContext _dbContext, 
+            ISchoolYearService _schoolYearService
+          )
         {
             http = _http;
             userManager = _userManager;
             dbContext = _dbContext;
             schoolYearService = _schoolYearService;
+           
         }
 
         public async Task<ErrorOr<bool>> DeleteClassRoom(int id)
@@ -76,7 +82,7 @@ namespace PiketWebApi.Services
                     .Include(x => x.HomeroomTeacher)
                     .Include(x => x.ClassLeader)
                     .Include(x => x.Students).ThenInclude(x => x.Student).Where(x => x.SchoolYear.Id == schoolYearActive.Value.Id)
-                    .Select(x => new ClassRoomResponse(x.Id, x.Name, x.Level, x.SchoolYear.Id,  x.SchoolYear.Year,
+                    .Select(x => new ClassRoomResponse(x.Id, x.Name, x.Level, x.SchoolYear.Id, x.SchoolYear.Year,
                     x.Department.Id, x.Department.Name, x.Department.Initial, x.ClassLeader.Id, x.ClassLeader.Name,
                     x.HomeroomTeacher.Id, x.HomeroomTeacher.Name, null));
 
@@ -301,7 +307,7 @@ namespace PiketWebApi.Services
                 if (studentExists.Any())
                 {
                     var s = studentExists.FirstOrDefault();
-                    return Error.Failure("ClassRoom", $"{s.Students.Where(x=>x.Student.Id==student.Id).FirstOrDefault().Student.Name} sudah terdaftar di kelas {s.Name}-{s.Department.Initial}");
+                    return Error.Failure("ClassRoom", $"{s.Students.Where(x => x.Student.Id == student.Id).FirstOrDefault().Student.Name} sudah terdaftar di kelas {s.Name}-{s.Department.Initial}");
                 }
 
                 var member = new ClassRoomMember { Student = student };

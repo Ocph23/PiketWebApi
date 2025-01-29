@@ -8,8 +8,9 @@ namespace PiketWebApi.Data
     {
         public int Id { get; set; }
         public Teacher? Teacher { get; set; }
-        public TimeSpan? Time { get; set; } = DateTime.Now.TimeOfDay;
-        public AttendanceStatus AttendanceStatus { get; set; }
+        public  DateTime TimeIn { get; set; }   
+        public  DateTime? TimeOut{ get; set; }
+        public AttendanceStatus AttendanceStatus { get; set; } = AttendanceStatus.Hadir;
          public string? Description { get; set; }
         public DateTime CreateAt { get; set; }=DateTime.Now;
     }

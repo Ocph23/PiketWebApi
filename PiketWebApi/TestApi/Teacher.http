@@ -24,13 +24,13 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "registerNumber": "111135252",
+  "registerNumber": "111111115",
   "id": 0,
-  "name": "Afif sanjaya",
-  "gender": 0,
+  "name": "mira",
+  "gender": 1,
   "placeOfBorn": "Papua",
   "dateOfBorn": "1979-02-23",
-  "email": "afif@gmail.com",
+  "email": "cucu@picket.ocph23.tech",
   "description": "",
   "photo": "",
   "userId": ""

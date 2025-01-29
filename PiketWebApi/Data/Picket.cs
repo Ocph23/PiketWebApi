@@ -14,7 +14,6 @@ namespace PiketWebApi.Data
         public TimeSpan? EndAt { get; set; }
         public Teacher? CreatedBy { get; set; }
         public DateTime CreateAt { get; set; } = DateTime.Now.ToUniversalTime();
-        public ICollection<TeacherAttendance> TeacherAttendance { get; set; } = default;
         public ICollection<LateAndGoHomeEarly> LateAndComeHomeEarly { get; set; } = default;
         public static Picket? Create(Teacher teacher)
         {

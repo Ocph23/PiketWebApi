@@ -77,7 +77,6 @@ namespace PiketWebApi.Services
 
                 var ppicketToday = dbContext.Picket
                     .Include(x => x.CreatedBy)
-                    .Include(x => x.TeacherAttendance).ThenInclude(x => x.Teacher)
                     .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
                     .FirstOrDefault(x => x.Date == date);
                 if (ppicketToday == null || date != ppicketToday.Date)
@@ -278,7 +277,6 @@ namespace PiketWebApi.Services
             {
                 var ppicketToday = dbContext.Picket
                     .Include(x => x.CreatedBy)
-                    .Include(x => x.TeacherAttendance).ThenInclude(x => x.Teacher)
                     .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
                     .FirstOrDefault(x => x.Id == id);
 

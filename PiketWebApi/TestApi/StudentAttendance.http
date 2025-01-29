@@ -1,0 +1,44 @@
+@controller = studentattendance
+
+Get {{url}}/{{controller}} HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+####
+POST {{url}}/{{controller}} HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+{
+  "id": 1,
+  "studentId": 1,
+  "status": 1,
+  "timeIn": "2025-01-28T04:25:10.295Z",
+  "timeOut": "2025-01-28T10:43:03.495Z",
+  "description": "test"
+}
+####
+
+PUT {{url}}/{{controller}}/1 HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+{
+  "id": 1,
+  "studentId": 1,
+  "status": 1,
+  "timeIn": "2025-01-28T04:43:03.495Z",
+  "timeOut": "2025-01-28T10:43:03.495Z",
+  "description": "test"
+}
+
+
+
+####
+
+
+DELETE {{url}}/{{controller}}/5 HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+###
