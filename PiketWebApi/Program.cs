@@ -152,6 +152,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+DataSeeder.SeedData(app);
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();

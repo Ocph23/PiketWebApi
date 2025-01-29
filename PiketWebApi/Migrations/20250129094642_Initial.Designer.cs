@@ -12,7 +12,7 @@ using PiketWebApi.Data;
 namespace PiketWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250128024447_Initial")]
+    [Migration("20250129094642_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -287,6 +287,38 @@ namespace PiketWebApi.Migrations
                     b.ToTable("ClassRoomMember");
                 });
 
+            modelBuilder.Entity("PiketWebApi.Data.DailyJournal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("PicketId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PicketId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("DailyJournal");
+                });
+
             modelBuilder.Entity("PiketWebApi.Data.Department", b =>
                 {
                     b.Property<int>("Id")
@@ -486,11 +518,9 @@ namespace PiketWebApi.Migrations
 
             modelBuilder.Entity("PiketWebApi.Data.StudentAttendace", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AttendanceStatus")
                         .HasColumnType("integer");
@@ -559,11 +589,9 @@ namespace PiketWebApi.Migrations
 
             modelBuilder.Entity("PiketWebApi.Data.TeacherAttendance", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AttendanceStatus")
                         .HasColumnType("integer");
@@ -687,6 +715,21 @@ namespace PiketWebApi.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("PiketWebApi.Data.DailyJournal", b =>
+                {
+                    b.HasOne("PiketWebApi.Data.Picket", null)
+                        .WithMany("DailyJournals")
+                        .HasForeignKey("PicketId");
+
+                    b.HasOne("PiketWebApi.Data.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("PiketWebApi.Data.LateAndGoHomeEarly", b =>
                 {
                     b.HasOne("PiketWebApi.Data.Teacher", "CreatedBy")
@@ -761,6 +804,8 @@ namespace PiketWebApi.Migrations
 
             modelBuilder.Entity("PiketWebApi.Data.Picket", b =>
                 {
+                    b.Navigation("DailyJournals");
+
                     b.Navigation("LateAndComeHomeEarly");
                 });
 #pragma warning restore 612, 618

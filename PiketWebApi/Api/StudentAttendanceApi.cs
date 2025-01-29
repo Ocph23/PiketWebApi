@@ -21,10 +21,16 @@ namespace PiketWebApi.Api
             group.MapPost("/", Post);
             group.MapPut("/{id}", Put);
             group.MapDelete("/{id}", Delete);
+            group.MapPost("/sync", SyncData);
             return group.WithTags("studentattendance").RequireAuthorization(); ;
         }
 
-        private static async Task<IResult> Delete(HttpContext context, IStudentAttendaceService studentService, int id)
+        private static async Task<IResult> SyncData(HttpContext context, IStudentAttendaceService studentService, List<StudentAttendanceSyncRequest> data)
+        {
+            var result = await studentService.SyncData(data);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+        }
+        private static async Task<IResult> Delete(HttpContext context, IStudentAttendaceService studentService, Guid id)
         {
             var result = await studentService.DeleteAsync(id);
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
@@ -35,7 +41,7 @@ namespace PiketWebApi.Api
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
-        private static async Task<IResult> Put(HttpContext context, IStudentAttendaceService studentService, int id, StudentAttendenceRequest req)
+        private static async Task<IResult> Put(HttpContext context, IStudentAttendaceService studentService, Guid id, StudentAttendenceRequest req)
         {
             var result = await studentService.PutAsync(id, req);
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
@@ -47,9 +53,9 @@ namespace PiketWebApi.Api
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
-        private static async Task<IResult> GetById(HttpContext context, IStudentService studentService, int id)
+        private static async Task<IResult> GetById(HttpContext context, IStudentAttendaceService studentService, Guid id)
         {
-            var result = await studentService.GetStudentById(id);
+            var result = await studentService.GetByIdAsync(id);
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
     }

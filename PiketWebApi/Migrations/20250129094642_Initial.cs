@@ -235,8 +235,7 @@ namespace PiketWebApi.Migrations
                 name: "StudentAttendaces",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     StudentId = table.Column<int>(type: "integer", nullable: false),
                     TimeIn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TimeOut = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -349,8 +348,7 @@ namespace PiketWebApi.Migrations
                 name: "TeacherAttendances",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TeacherId = table.Column<int>(type: "integer", nullable: true),
                     TimeIn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TimeOut = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -389,6 +387,34 @@ namespace PiketWebApi.Migrations
                         name: "FK_ClassRoomMember_Students_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DailyJournal",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: true),
+                    Content = table.Column<string>(type: "text", nullable: true),
+                    TeacherId = table.Column<int>(type: "integer", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PicketId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DailyJournal", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DailyJournal_Picket_PicketId",
+                        column: x => x.PicketId,
+                        principalTable: "Picket",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DailyJournal_Teachers_TeacherId",
+                        column: x => x.TeacherId,
+                        principalTable: "Teachers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -496,6 +522,16 @@ namespace PiketWebApi.Migrations
                 column: "SchoolYearId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DailyJournal_PicketId",
+                table: "DailyJournal",
+                column: "PicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DailyJournal_TeacherId",
+                table: "DailyJournal",
+                column: "TeacherId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_LateAndGoHomeEarly_CreatedById",
                 table: "LateAndGoHomeEarly",
                 column: "CreatedById");
@@ -572,6 +608,9 @@ namespace PiketWebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "ClassRoomMember");
+
+            migrationBuilder.DropTable(
+                name: "DailyJournal");
 
             migrationBuilder.DropTable(
                 name: "LateAndGoHomeEarly");

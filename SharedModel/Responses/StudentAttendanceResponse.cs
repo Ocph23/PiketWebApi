@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SharedModel.Responses
 {
     public record StudentAttendanceResponse(
-        int Id,
+        Guid Id,
         int StudentId,
         string StudentName,
         string ClassName,

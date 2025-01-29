@@ -5,7 +5,7 @@
       "tokenGuru": "bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImU0MWNlNjZjLTIwYTctNGQ5Yi1iOGNjLTk2MjI5MTVhNzRiMSIsIm5hbWUiOiJvY3BoMjNAZ21haWwuY29tIiwic3ViIjoib2NwaDIzQGdtYWlsLmNvbSIsImVtYWlsIjoib2NwaDIzQGdtYWlsLmNvbSIsImp0aSI6IjI4ZjQ0MzAwLTk1Y2YtNDEzYS05MjM1LTA1YTI0YjUxMGNjOSIsInJvbGUiOiJUZWFjaGVyIiwibmJmIjoxNzM3MDgwNTAxLCJleHAiOjE3Mzc2ODUzMDEsImlhdCI6MTczNzA4MDUwMSwiaXNzIjoiaHR0cHM6Ly9waWNrZXQub2NwaDIzLnRlY2gvIiwiYXVkIjoiaHR0cHM6Ly9waWNrZXQub2NwaDIzLnRlY2gvIn0.njqYElhk0Iq1oJk31_ocdPRtK_BpD52l-juprUBAhDs04KjRJha51rQ_nG9DPlIMWCUHv1XqIe04Tsj9opiLhQ"
     },
     "Development":{
-      "url":"https://localhost:7203/api",
+      "url":"http://localhost:5003/api",
       "token":"{{$shared tokenAdmin}}"
     },
     "Production":{
@@ -13,7 +13,7 @@
       "token":"{{$shared tokenAdmin}}"
     },
     "Development-Guru":{
-      "url":"https://localhost:7203/api",
+      "url":"http://localhost:5003/api",
      "token":"{{$shared tokenGuru}}"
     },
     "Production-Guru":{

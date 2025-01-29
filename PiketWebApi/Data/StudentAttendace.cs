@@ -4,7 +4,7 @@ namespace PiketWebApi.Data
 {
     public class StudentAttendace
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public Student Student { get; set; }
         public DateTime TimeIn { get; set; }
         public DateTime? TimeOut { get; set; }

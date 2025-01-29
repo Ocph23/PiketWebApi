@@ -10,26 +10,28 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "id": 1,
   "studentId": 1,
   "status": 1,
-  "timeIn": "2025-01-28T04:25:10.295Z",
+  "timeIn": "2025-01-28T04:25:10.295ZZ",
   "timeOut": "2025-01-28T10:43:03.495Z",
   "description": "test"
 }
 ####
 
-PUT {{url}}/{{controller}}/1 HTTP/1.1
+PUT {{url}}/{{controller}}/fb141b3f-f45e-4f34-b1a5-e29dba9c875f HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "id": 1,
   "studentId": 1,
+  "studentName": "Valentinus Sipayung",
+  "className": "X",
+  "departmentName": "Rekayasa Perangkat Lunak",
   "status": 1,
-  "timeIn": "2025-01-28T04:43:03.495Z",
+  "timeIn": "2025-01-28T04:25:10.295ZZ",
   "timeOut": "2025-01-28T10:43:03.495Z",
-  "description": "test"
+  "description": "test",
+  "createAt": "2025-01-29T10:41:02.3607953Z"
 }
 
 
@@ -37,8 +39,54 @@ Authorization : {{token}}
 ####
 
 
-DELETE {{url}}/{{controller}}/5 HTTP/1.1
+DELETE {{url}}/{{controller}}/941302f3-253a-42a5-a141-0e2f30cb0077 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
+###
+
+
+
+post {{url}}/{{controller}}/sync HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+[
+  {
+    "id": "1c074721-21be-4c6b-adca-94e0edee2fa1",
+    "studentId": 4,
+    "studentName": "Andika Saja",
+    "className": "X",
+    "departmentName": "Rekayasa Perangkat Lunak",
+    "status": 2,
+    "timeIn": "2025-01-29T08:37:16.197034Z",
+    "timeOut": "2025-01-29T08:41:57.523296Z",
+    "description": null,
+    "createAt": "2025-01-29T11:21:22.953466Z"
+  },
+  {
+    "id": "4d274372-4883-43be-af86-9fd8c2078f74",
+    "studentId": 3,
+    "studentName": "Michael Saja",
+    "className": "X",
+    "departmentName": "Rekayasa Perangkat Lunak",
+    "status": 2,
+    "timeIn": "2025-01-29T08:36:12Z",
+    "timeOut": "2025-01-29T08:41:46Z",
+    "description": null,
+    "createAt": "2025-01-29T11:21:22.95344Z"
+  },
+  {
+    "id": "51393c41-1159-45a3-8bf4-67357ff6b483",
+    "studentId": 2,
+    "studentName": "Revo Barus",
+    "className": "XI",
+    "departmentName": "Design Komunikas dan Visual",
+    "status": 2,
+    "timeIn": "2025-01-29T08:37:16Z",
+    "timeOut": null,
+    "description": null,
+    "createAt": "2025-01-29T11:21:22.95336Z"
+  }
+]
 ###

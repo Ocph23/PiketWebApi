@@ -13,10 +13,11 @@ namespace PiketWebApi.Services
     public interface IStudentAttendaceService
     {
         Task<ErrorOr<IEnumerable<StudentAttendanceResponse>>> GetAsync();
-        Task<ErrorOr<StudentAttendanceResponse>> GetByIdAsync(int id);
-        Task<ErrorOr<bool>> DeleteAsync(int id);
-        Task<ErrorOr<bool>> PutAsync(int id, StudentAttendenceRequest model);
+        Task<ErrorOr<StudentAttendanceResponse>> GetByIdAsync(Guid id);
+        Task<ErrorOr<bool>> DeleteAsync(Guid id);
+        Task<ErrorOr<bool>> PutAsync(Guid id, StudentAttendenceRequest model);
         Task<ErrorOr<StudentAttendanceResponse>> PostAsync(StudentAttendenceRequest model);
+        Task<ErrorOr<IEnumerable<StudentAttendanceSyncRequest>>> SyncData(IEnumerable<StudentAttendanceSyncRequest> data);
     }
 
     public class StudentAttendaceService : IStudentAttendaceService
@@ -60,7 +61,7 @@ namespace PiketWebApi.Services
             }
         }
 
-        public async Task<ErrorOr<StudentAttendanceResponse>> GetByIdAsync(int id)
+        public async Task<ErrorOr<StudentAttendanceResponse>> GetByIdAsync(Guid id)
         {
             try
             {
@@ -81,7 +82,7 @@ namespace PiketWebApi.Services
             }
         }
 
-        public async Task<ErrorOr<bool>> DeleteAsync(int id)
+        public async Task<ErrorOr<bool>> DeleteAsync(Guid id)
         {
             try
             {
@@ -98,7 +99,7 @@ namespace PiketWebApi.Services
             }
         }
 
-        public async Task<ErrorOr<bool>> PutAsync(int id, StudentAttendenceRequest model)
+        public async Task<ErrorOr<bool>> PutAsync(Guid id, StudentAttendenceRequest model)
         {
             try
             {
@@ -108,7 +109,7 @@ namespace PiketWebApi.Services
                     return Error.NotFound("NotFound", "Data Absen Siswa tidak ditemukan.");
                 }
                 result.TimeIn = model.TimeIn.Value;
-                result.TimeOut = model.TimeOut==null?null:model.TimeOut.Value;
+                result.TimeOut = model.TimeOut == null ? null : model.TimeOut.Value;
                 result.AttendanceStatus = model.Status;
                 result.Description = model.Description;
                 dbContext.SaveChanges();
@@ -134,6 +135,7 @@ namespace PiketWebApi.Services
 
                 var model = new StudentAttendace
                 {
+                    Id = req.Id == Guid.Empty ? Guid.NewGuid() : req.Id,
                     Student = student,
                     AttendanceStatus = req.Status,
                     TimeIn = req.TimeIn.Value.ToUniversalTime(),
@@ -152,6 +154,41 @@ namespace PiketWebApi.Services
                 dbContext.StudentAttendaces.Add(model);
                 dbContext.SaveChanges();
                 return await GetByIdAsync(model.Id);
+            }
+            catch (Exception)
+            {
+                return Error.Conflict();
+            }
+        }
+
+        public async Task<ErrorOr<IEnumerable<StudentAttendanceSyncRequest>>> SyncData(IEnumerable<StudentAttendanceSyncRequest> req)
+        {
+            try
+            {
+                var datas = new List<StudentAttendace>();
+                foreach (var item in req)
+                {
+                    var model = new StudentAttendace
+                    {
+                        Id = item.Id == Guid.Empty ? Guid.NewGuid() : item.Id,
+                        Student = new Student { Id = item.StudentId },
+                        AttendanceStatus = item.Status,
+                        TimeIn = item.TimeIn.Value,
+                        TimeOut = item.TimeOut,
+                        Description = item.Description,
+                        CreateAt = DateTime.Now.ToUniversalTime()
+                    };
+
+                    datas.Add(model);
+                    dbContext.Entry(model.Student).State = EntityState.Unchanged;
+                    dbContext.Update(model);
+                }
+                dbContext.SaveChanges();
+                foreach (var item in req)
+                {
+                    item.IsSynced = true;
+                }
+                return req.ToList();
             }
             catch (Exception)
             {

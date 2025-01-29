@@ -1,7 +1,15 @@
 @controller=classroom
 ####
 
-Get {{url}}/{{controller}}/3 HTTP/1.1
+
+Get {{url}}/{{controller}} HTTP/1.1
+Content-Type:application/json
+Authorization : {{token}}
+
+#####
+
+
+Get {{url}}/{{controller}}/1 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
@@ -17,10 +25,11 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "name": "X",
-  "departmentId": 4,
-  "classRommLeaderId": 1,
-  "homeRoomTeacherId": 1
+  "name": "XI",
+  "departmentId": 2,
+  "level": 2,
+  "classRommLeaderId": 6,
+  "homeRoomTeacherId": 2
 }
 ####
 
@@ -60,12 +69,12 @@ Authorization : {{token}}
 ####
 
 ####
-POST {{url}}/{{controller}}/addstudent/3 HTTP/1.1
+POST {{url}}/{{controller}}/addstudent/1 HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "id": 6
+  "id": 5
 }
 ####
 

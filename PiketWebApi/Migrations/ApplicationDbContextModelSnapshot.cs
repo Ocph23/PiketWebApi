@@ -515,11 +515,9 @@ namespace PiketWebApi.Migrations
 
             modelBuilder.Entity("PiketWebApi.Data.StudentAttendace", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AttendanceStatus")
                         .HasColumnType("integer");
@@ -588,11 +586,9 @@ namespace PiketWebApi.Migrations
 
             modelBuilder.Entity("PiketWebApi.Data.TeacherAttendance", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("AttendanceStatus")
                         .HasColumnType("integer");
