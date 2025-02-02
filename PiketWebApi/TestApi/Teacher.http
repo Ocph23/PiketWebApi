@@ -24,13 +24,13 @@ Content-Type:application/json
 Authorization : {{token}}
 
 {
-  "registerNumber": "111111115",
+  "registerNumber": "111111110",
   "id": 0,
-  "name": "mira",
-  "gender": 1,
-  "placeOfBorn": "Papua",
-  "dateOfBorn": "1979-02-23",
-  "email": "cucu@picket.ocph23.tech",
+  "name": "markus pali, S.Th",
+  "gender": 0,
+  "placeOfBorn": "Toraja",
+  "dateOfBorn": "1976-02-23",
+  "email": "markus@picket.ocph23.tech",
   "description": "",
   "photo": "",
   "userId": ""

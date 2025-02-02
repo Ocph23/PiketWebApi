@@ -14,7 +14,6 @@ Authorization : {{token}}
 
 #####
 
-
 POST {{url}}/{{controller}}/paginate HTTP/1.1
 Content-Type:application/json
 Authorization : {{token}}

@@ -25,12 +25,19 @@ namespace PiketWebApi
                 {
                     throw new UnauthorizedAccessException();
                 }
+
                 var teacher = dbContext.Teachers.SingleOrDefault(x => x.UserId == user.Id);
                 if (teacher == null)
                 {
                     throw new UnauthorizedAccessException();
                 }
-                var schedule = dbContext.Schedules.Where(x => x.DayOfWeek == DateTime.Now.DayOfWeek && x.Teacher.Id == teacher.Id).Include(x => x.Teacher);
+
+                var schedule = dbContext.Schedules.Where(x => x.DayOfWeek == DateTime.Now.DayOfWeek && x.Teacher.Id == teacher.Id)
+                    .Include(x => x.Teacher);
+
+                if (!schedule.Any())
+                    throw new SystemException();
+
                 return (true, teacher);
             }
             catch (Exception)

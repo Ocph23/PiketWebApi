@@ -17,12 +17,27 @@ namespace PiketWebApi.Api
         {
             group.MapPost("/login", LoginAction);
             group.MapPost("/register", RegisterAction);
-            group.MapGet("/active", ActiveAccout);
+            group.MapGet("/active", ActiveAccout).RequireAuthorization();
+            group.MapGet("/setadmin/{userId}", SetAsAdmin);
             return group;
         }
 
 
-        [Authorize]
+        [Authorize(Roles ="Admin")]
+        private static async Task<IResult> SetAsAdmin(HttpContext context, UserManager<ApplicationUser> userManager, string userId)
+        {
+            try
+            {
+                var user = await userManager.FindByIdAsync(userId);
+                await userManager.AddToRoleAsync(user, "Admin");
+                return Results.Ok();
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        }
+
         private static IResult ActiveAccout(HttpContext context)
         {
             try
@@ -71,6 +86,8 @@ namespace PiketWebApi.Api
                     {
                         profile = dbContext.Students.FirstOrDefault(x => x.UserId == identity.Id);
                     }
+
+
                     return Results.Ok(new AuthenticateResponse
                     (user.Name, user.Email, roles, token, profile));
                 }
