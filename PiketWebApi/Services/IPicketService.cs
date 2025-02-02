@@ -211,10 +211,19 @@ namespace PiketWebApi.Services
                 Id = response.Id,
                 StartAt = response.StartAt,
                 Weather = response.Weather,
+                
                 StudentsLateAndComeHomeEarly = Enumerable.Empty<LateAndGoHomeEarlyResponse>().ToList()
             };
 
             var students = await studentService.GetAlStudentWithClass();
+
+            result.StudentAttendance = (from x in response.StudentAttendances
+                                        join s in students.Value on x.Student.Id equals s.Id into sGroup
+                                        from sx in sGroup.DefaultIfEmpty()
+                                        select new StudentAttendanceResponse(x.Id, x.PicketId, x.Student.Id,
+                                        x.Student.Name, sx.ClassRoomName, sx.DepartmenName,
+                                        x.AttendanceStatus, x.TimeIn, x.TimeOut, x.Description, x.CreateAt)
+                                        ).ToList();
 
             result.StudentsLateAndComeHomeEarly = (from x in response.LateAndComeHomeEarly
                                                    join s in students.Value on x.Student.Id equals s.Id into sGroup
@@ -281,6 +290,7 @@ namespace PiketWebApi.Services
                 var ppicketToday = dbContext.Picket
                     .Include(x => x.CreatedBy)
                     .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
+                    .Include(x => x.StudentAttendances).ThenInclude(x => x.Student)
                     .FirstOrDefault(x => x.Id == id);
 
                 if (ppicketToday == null)

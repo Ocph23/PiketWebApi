@@ -9,6 +9,7 @@ using PiketWebApi.Data;
 using PiketWebApi.Services;
 using SharedModel.Models;
 using SharedModel.Requests;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PiketWebApi.Api
 {
@@ -18,11 +19,18 @@ namespace PiketWebApi.Api
         {
             group.MapGet("/", Get);
             group.MapGet("/{id}", GetById);
+            group.MapGet("/{classroom}/{month}/{year}", GetByClassRoomAndMonthYear);
             group.MapPost("/", Post);
             group.MapPut("/{id}", Put);
             group.MapDelete("/{id}", Delete);
             group.MapPost("/sync", SyncData);
             return group.WithTags("studentattendance").RequireAuthorization(); ;
+        }
+
+        private static async Task<IResult> GetByClassRoomAndMonthYear(HttpContext context, IStudentAttendaceService studentService, int classroom, int month, int year)
+        {
+            var result = await studentService.GetAbsenByClassRoomMonthYear(classroom,month,year);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
         private static async Task<IResult> SyncData(HttpContext context, IStudentAttendaceService studentService, List<StudentAttendanceSyncRequest> data)

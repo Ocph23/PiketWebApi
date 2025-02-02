@@ -16,6 +16,7 @@ namespace PiketWebApi.Services;
 public interface IStudentService
 {
     Task<ErrorOr<IEnumerable<StudentClassRoom>>> GetAlStudentWithClass();
+    Task<ErrorOr<IEnumerable<StudentClassRoom>>> GetStudentsWithClassRoom(int classroomId);
     Task<ErrorOr<IEnumerable<StudentClassRoom>>> SearchStudent(string searchtext);
     Task<ErrorOr<bool>> DeleteStudent(int id);
     Task<ErrorOr<bool>> PutStudent(int id, Student model);
@@ -337,6 +338,46 @@ public class StudentService : IStudentService
 
         }
         catch (Exception ex)
+        {
+            return Error.Conflict();
+        }
+    }
+
+    public async Task<ErrorOr<IEnumerable<StudentClassRoom>>> GetStudentsWithClassRoom(int classroomId)
+    {
+       try
+        {
+
+            var schoolYearActive = await schoolYearService.GetActiveSchoolYear();
+            if (schoolYearActive.IsError)
+                return schoolYearActive.Errors;
+
+            List<StudentClassRoom> list = new List<StudentClassRoom>();
+
+            foreach (var item in dbContext.ClassRooms
+                .Include(x => x.SchoolYear)
+                .Include(x => x.Department).Include(x => x.Students)
+                .ThenInclude(x => x.Student)
+                .Where(x => x.Id == classroomId && x.SchoolYear.Id == schoolYearActive.Value.Id))
+            {
+                var data = item.Students.Select(x => new StudentClassRoom
+                {
+                    Gender = x.Student.Gender,
+                    Id = x.Student.Id,
+                    Name = x.Student.Name,
+                    NIS = x.Student.NIS,
+                    NISN = x.Student.NISN,
+                    Photo = x.Student.Photo,
+                    ClassRoomId = item.Id,
+                    ClassRoomName = item.Name,
+                    DepartmenId = item.Department.Id,
+                    DepartmenName = item.Department.Name,
+                });
+                list.AddRange(data.AsEnumerable());
+            }
+            return await Task.FromResult(list.ToList());
+        }
+        catch (Exception)
         {
             return Error.Conflict();
         }

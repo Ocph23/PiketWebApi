@@ -11,6 +11,7 @@ namespace SharedModel.Requests
     public class StudentAttendanceSyncRequest
     {
         public Guid Id { get; set; }
+        public int PicketId { get; set; }
         public int StudentId { get; set; }
         public AttendanceStatus Status { get; set; }
         public DateTime? TimeIn { get; set; }

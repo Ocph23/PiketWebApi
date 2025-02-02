@@ -112,6 +112,7 @@ namespace PiketWebApi.Services
                         return userResult.Errors;
                     }
                     result.UserId = userResult.Value.Id;
+                    result.Email = model.Email;
                 }
 
 

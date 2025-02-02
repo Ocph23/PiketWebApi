@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
 using PiketWebApi.Validators;
+using SharedModel;
 using SharedModel.Requests;
 using SharedModel.Responses;
 
@@ -18,6 +19,7 @@ namespace PiketWebApi.Services
         Task<ErrorOr<bool>> PutAsync(Guid id, StudentAttendenceRequest model);
         Task<ErrorOr<StudentAttendanceResponse>> PostAsync(StudentAttendenceRequest model);
         Task<ErrorOr<IEnumerable<StudentAttendanceSyncRequest>>> SyncData(IEnumerable<StudentAttendanceSyncRequest> data);
+        Task<ErrorOr<IEnumerable<StudentAttendanceReportResponse>>> GetAbsenByClassRoomMonthYear(int classroom, int month, int year);
     }
 
     public class StudentAttendaceService : IStudentAttendaceService
@@ -25,6 +27,7 @@ namespace PiketWebApi.Services
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationDbContext dbContext;
         private readonly IStudentService studentService;
+        private readonly IPicketService picketService;
         private readonly ISchoolYearService schoolYearService;
 
         public DateTime CreatedAt { get; private set; }
@@ -32,12 +35,13 @@ namespace PiketWebApi.Services
         public StudentAttendaceService(
             UserManager<ApplicationUser> _userManager,
             ApplicationDbContext _dbContext,
-              IStudentService _studentService
+              IStudentService _studentService, IPicketService _picketService
             )
         {
             userManager = _userManager;
             dbContext = _dbContext;
             studentService = _studentService;
+            picketService = _picketService;
         }
 
         public async Task<ErrorOr<IEnumerable<StudentAttendanceResponse>>> GetAsync()
@@ -50,7 +54,7 @@ namespace PiketWebApi.Services
 
                 var result = from a in dbContext.StudentAttendaces.Include(x => x.Student).AsEnumerable()
                              join b in students.Value on a.Student.Id equals b.Id
-                             select new StudentAttendanceResponse(a.Id,
+                             select new StudentAttendanceResponse(a.Id, a.PicketId,
                              b.Id, b.Name, b.ClassRoomName, b.DepartmenName,
                              a.AttendanceStatus, a.TimeIn, a.TimeOut, a.Description, a.CreateAt);
                 return result.ToList();
@@ -71,7 +75,7 @@ namespace PiketWebApi.Services
 
                 var result = from a in dbContext.StudentAttendaces.Include(x => x.Student).Where(x => x.Id == id).ToList()
                              join b in students.Value on a.Student.Id equals b.Id
-                             select new StudentAttendanceResponse(a.Id,
+                             select new StudentAttendanceResponse(a.Id, a.PicketId,
                              b.Id, b.Name, b.ClassRoomName, b.DepartmenName,
                              a.AttendanceStatus, a.TimeIn, a.TimeOut, a.Description, a.CreateAt);
                 return result.FirstOrDefault();
@@ -133,16 +137,18 @@ namespace PiketWebApi.Services
                 if (dbContext.StudentAttendaces.Any(x => x.Student.Id == student.Id && DateOnly.FromDateTime(x.TimeIn) == now))
                     return Error.Conflict("Exists StudentAttendance", $"{student.Name} sudah absen !");
 
-                var model = new StudentAttendace
+                var model = new StudentAttendance
                 {
                     Id = req.Id == Guid.Empty ? Guid.NewGuid() : req.Id,
                     Student = student,
+                    PicketId = req.PicketId,
                     AttendanceStatus = req.Status,
                     TimeIn = req.TimeIn.Value.ToUniversalTime(),
                     TimeOut = req.TimeOut == null ? null : req.TimeOut.Value.ToUniversalTime(),
                     Description = req.Description,
                     CreateAt = DateTime.Now.ToUniversalTime()
                 };
+
 
                 var validator = new StudentAttendanceValidator();
                 ValidationResult validateResult = validator.Validate(model);
@@ -151,6 +157,8 @@ namespace PiketWebApi.Services
                     return validateResult.GetErrors();
                 }
 
+                var picket = dbContext.Picket.SingleOrDefault(x => x.Id == req.PicketId);
+                //picket.StudentAttendances.Add(model);
                 dbContext.StudentAttendaces.Add(model);
                 dbContext.SaveChanges();
                 return await GetByIdAsync(model.Id);
@@ -165,13 +173,15 @@ namespace PiketWebApi.Services
         {
             try
             {
-                var datas = new List<StudentAttendace>();
+                var dataToInsert = new List<StudentAttendance>();
+                var dataToUpdate = new List<StudentAttendance>();
                 foreach (var item in req)
                 {
-                    var model = new StudentAttendace
+                    var model = new StudentAttendance
                     {
-                        Id = item.Id == Guid.Empty ? Guid.NewGuid() : item.Id,
+                        Id = item.Id,
                         Student = new Student { Id = item.StudentId },
+                        PicketId = item.PicketId,
                         AttendanceStatus = item.Status,
                         TimeIn = item.TimeIn.Value,
                         TimeOut = item.TimeOut,
@@ -179,10 +189,24 @@ namespace PiketWebApi.Services
                         CreateAt = DateTime.Now.ToUniversalTime()
                     };
 
-                    datas.Add(model);
-                    dbContext.Entry(model.Student).State = EntityState.Unchanged;
-                    dbContext.Update(model);
+                    var data = dbContext.StudentAttendaces.FirstOrDefault(x => x.Id == model.Id);
+                    if (data == null)
+                    {
+                        dataToInsert.Add(model);
+                        dbContext.Entry(model.Student).State = EntityState.Unchanged;
+                    }
+                    else
+                    {
+                        dbContext.Entry(data).CurrentValues.SetValues(model);
+                    }
+
                 }
+
+                if (dataToInsert.Count > 0)
+                {
+                    dbContext.AddRange(dataToInsert);
+                }
+
                 dbContext.SaveChanges();
                 foreach (var item in req)
                 {
@@ -190,10 +214,59 @@ namespace PiketWebApi.Services
                 }
                 return req.ToList();
             }
-            catch (Exception)
+            catch (Exception ex)
+            {
+                return Error.Conflict();
+            }
+        }
+
+
+
+        async Task<ErrorOr<IEnumerable<StudentAttendanceReportResponse>>> IStudentAttendaceService.GetAbsenByClassRoomMonthYear(int classroom, int month, int year)
+        {
+            try
+            {
+                var startDate = DateOnly.FromDateTime(new DateTime(year, month, 1));
+                var endDate = startDate.AddMonths(1).AddDays(-1);
+                var students = await studentService.GetStudentsWithClassRoom(classroom);
+                var pickets = dbContext.Picket.Where(x => x.Date >= startDate && x.Date <= endDate)
+                .Include(x => x.StudentAttendances).ThenInclude(x => x.Student).AsEnumerable();
+
+
+                List<StudentAttendanceReportResponse> result = new List<StudentAttendanceReportResponse>();
+                foreach (var item in pickets)
+                {
+                    var att = from a in students.Value
+                              join b in item.StudentAttendances on a.Id equals b.Student.Id into bGroup
+                              from b in bGroup.DefaultIfEmpty()
+                              where a.ClassRoomId == classroom
+                              select new StudentAttendanceReportResponse
+                              {
+                                  StudentId = a.Id,
+                                  StudentName = a.Name,
+                                  ClassRoomName = a.ClassRoomName,
+                                  DepartmentName = a.DepartmenName,
+                                  PicketId = item.Id,
+                                  PicketDate = item.Date,
+                                  Status = b == null ? SharedModel.AttendanceStatus.Alpa : b.AttendanceStatus,
+                                  TimeIn = b == null ? null : b.TimeIn,
+                                  TimeOut = b == null ? null : b.TimeOut,
+                                  Description = b == null ? null : b.Description
+                              };
+
+                    result.AddRange(att);
+                }
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
             {
                 return Error.Conflict();
             }
         }
     }
+
+
+
 }

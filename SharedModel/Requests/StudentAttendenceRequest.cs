@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace SharedModel.Requests
 {
-    public record StudentAttendenceRequest(Guid Id, int StudentId, AttendanceStatus Status, DateTime? TimeIn, DateTime? TimeOut,  string? Description);
+    public record StudentAttendenceRequest(Guid Id,int PicketId, int StudentId, AttendanceStatus Status, DateTime? TimeIn, DateTime? TimeOut,  string? Description);
 }

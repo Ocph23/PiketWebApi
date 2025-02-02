@@ -8,6 +8,7 @@ namespace SharedModel.Responses
 {
     public record StudentAttendanceResponse(
         Guid Id,
+        int PicketId,
         int StudentId,
         string StudentName,
         string ClassName,

@@ -4,7 +4,7 @@ using PiketWebApi.Data;
 
 namespace PiketWebApi.Validators
 {
-    internal class StudentAttendanceValidator : AbstractValidator<StudentAttendace>
+    internal class StudentAttendanceValidator : AbstractValidator<StudentAttendance>
     {
         public StudentAttendanceValidator()
         {

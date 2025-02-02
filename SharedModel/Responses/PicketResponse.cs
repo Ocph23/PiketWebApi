@@ -14,4 +14,5 @@ public class PicketResponse
     public DateTime CreateAt { get; set; } = DateTime.Now.ToUniversalTime();
     public ICollection<TeacherAttendanceResponse> TeacherAttendance { get; set; } = default;
     public ICollection<LateAndGoHomeEarlyResponse> StudentsLateAndComeHomeEarly { get; set; } = default;
+    public ICollection<StudentAttendanceResponse> StudentAttendance { get; set; }
 }

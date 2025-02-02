@@ -123,36 +123,10 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var dbcontext = scope.ServiceProvider.GetService<ApplicationDbContext>();
-    dbcontext.Database.EnsureCreated();
-
-    var userManager = scope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
-    var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
-
-    if (!dbcontext.Roles.Any())
-    {
-        await roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
-        await roleManager.CreateAsync(new IdentityRole { Name = "HeadOfSchool" });
-        await roleManager.CreateAsync(new IdentityRole { Name = "Teacher" });
-        await roleManager.CreateAsync(new IdentityRole { Name = "Student" });
-    }
-
-    if (!dbcontext.Users.Any())
-    {
-        var user = new ApplicationUser("admin@picket.ocph23.tech") { Name = "Admin", Email = "admin@picket.ocph23.tech", EmailConfirmed = true };
-        var result = await userManager.CreateAsync(user, "Password@123");
-        if (result.Succeeded)
-        {
-            await userManager.AddToRoleAsync(user, "Admin");
-        }
-        else
-        {
-            await userManager.DeleteAsync(user);
-        }
-    }
+    
 }
 
-DataSeeder.SeedData(app);
+await DataSeeder.SeedData(app);
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();

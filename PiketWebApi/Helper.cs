@@ -68,7 +68,7 @@ namespace PiketWebApi
 
         internal static bool IsMaxUpload(int length)
         {
-            const int max = 1; //1mb
+            const int max = 2048; //1mb
             return length / 2048 > max ? true : false;
         }
     }
