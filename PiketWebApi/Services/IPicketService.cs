@@ -81,6 +81,7 @@ namespace PiketWebApi.Services
                 var ppicketToday = dbContext.Picket
                     .Include(x => x.CreatedBy)
                     .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
+                    .Include(x => x.StudentAttendances).ThenInclude(x => x.Student)
                     .FirstOrDefault(x => x.Date == date);
                 if (ppicketToday == null || date != ppicketToday.Date)
                 {
@@ -211,19 +212,24 @@ namespace PiketWebApi.Services
                 Id = response.Id,
                 StartAt = response.StartAt,
                 Weather = response.Weather,
-                
+
                 StudentsLateAndComeHomeEarly = Enumerable.Empty<LateAndGoHomeEarlyResponse>().ToList()
             };
 
             var students = await studentService.GetAlStudentWithClass();
 
-            result.StudentAttendance = (from x in response.StudentAttendances
-                                        join s in students.Value on x.Student.Id equals s.Id into sGroup
-                                        from sx in sGroup.DefaultIfEmpty()
-                                        select new StudentAttendanceResponse(x.Id, x.PicketId, x.Student.Id,
-                                        x.Student.Name, sx.ClassRoomName, sx.DepartmenName,
-                                        x.AttendanceStatus, x.TimeIn, x.TimeOut, x.Description, x.CreateAt)
-                                        ).ToList();
+            if (!students.IsError && response.StudentAttendances.Any())
+            {
+                result.StudentAttendance = (from x in response.StudentAttendances
+                                            join s in students.Value on x.Student.Id equals s.Id into sGroup
+                                            from sx in sGroup.DefaultIfEmpty()
+                                            select new StudentAttendanceResponse(x.Id, x.PicketId, x.Student.Id,
+                                            x.Student.Name, sx.ClassRoomName, sx.DepartmenName,
+                                            x.AttendanceStatus, x.TimeIn, x.TimeOut, x.Description, x.CreateAt)
+                                            ).ToList();
+
+            }
+
 
             result.StudentsLateAndComeHomeEarly = (from x in response.LateAndComeHomeEarly
                                                    join s in students.Value on x.Student.Id equals s.Id into sGroup
@@ -316,24 +322,24 @@ namespace PiketWebApi.Services
 
                 IQueryable<Picket> iq = dbContext.Picket.Include(x => x.CreatedBy);
 
-                    iq = iq.GetPicketOrder(req.ColumnOrder, req.SortOrder);
+                iq = iq.GetPicketOrder(req.ColumnOrder, req.SortOrder);
 
-                var totalData= await iq.CountAsync();
+                var totalData = await iq.CountAsync();
 
-                var data = await iq.Skip((req.Page-1)*req.PageSize)
+                var data = await iq.Skip((req.Page - 1) * req.PageSize)
                     .Take(req.PageSize)
                     .Select(x => new PicketResponse()
-                     {
-                         CreateAt = x.CreateAt,
-                         CreatedId = x.CreatedBy.Id,
-                         CreatedName = x.CreatedBy.Name,
-                         CreatedNumber = x.CreatedBy.RegisterNumber,
-                         Date = x.Date,
-                         EndAt = x.EndAt,
-                         Id = x.Id,
-                         StartAt = x.StartAt,
-                         Weather = x.Weather
-                     }).ToListAsync();
+                    {
+                        CreateAt = x.CreateAt,
+                        CreatedId = x.CreatedBy.Id,
+                        CreatedName = x.CreatedBy.Name,
+                        CreatedNumber = x.CreatedBy.RegisterNumber,
+                        Date = x.Date,
+                        EndAt = x.EndAt,
+                        Id = x.Id,
+                        StartAt = x.StartAt,
+                        Weather = x.Weather
+                    }).ToListAsync();
 
                 return new PaginationResponse<PicketResponse>(data, req.Page, req.PageSize, totalData);
 
@@ -359,7 +365,7 @@ namespace PiketWebApi.Services
                 if (result == null)
                     return Error.NotFound("Picket", "Data tidak ditemukan.");
 
-                if(result.Teacher.Id != userClaim.Item2.Id)
+                if (result.Teacher.Id != userClaim.Item2.Id)
                     return Error.Unauthorized("Picket", $"Maaf,Anda tidak dapat menghapus data ini. dibuat oleh  {result.Teacher.Name}");
 
                 picket.DailyJournals.Remove(result);
@@ -392,9 +398,9 @@ namespace PiketWebApi.Services
                 var dailyJournal = new DailyJournal
                 {
                     Teacher = userClaim.Item2,
-                    CreateAt =model.CreateAt,
+                    CreateAt = model.CreateAt,
                     Content = model.Content,
-                     Title = model.Title
+                    Title = model.Title
                 };
                 picket.DailyJournals.Add(dailyJournal);
                 dbContext.SaveChanges();
@@ -409,14 +415,14 @@ namespace PiketWebApi.Services
 
         private Task<DailyJournalResponse> GenerateDaeilyJournalResponse(DailyJournal dailyJournal)
         {
-        var result = new DailyJournalResponse
-            ( dailyJournal.Id,
-              dailyJournal.Title,
-              dailyJournal.Content,
-              dailyJournal.Teacher==null?0:dailyJournal.Teacher.Id,
-              dailyJournal.Teacher==null?string.Empty:dailyJournal.Teacher.Name,
-              dailyJournal.CreateAt
-            );
+            var result = new DailyJournalResponse
+                (dailyJournal.Id,
+                  dailyJournal.Title,
+                  dailyJournal.Content,
+                  dailyJournal.Teacher == null ? 0 : dailyJournal.Teacher.Id,
+                  dailyJournal.Teacher == null ? string.Empty : dailyJournal.Teacher.Name,
+                  dailyJournal.CreateAt
+                );
             return Task.FromResult(result);
         }
     }

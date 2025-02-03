@@ -60,7 +60,7 @@ builder.Services.AddProblemDetails(x =>
     x.CustomizeProblemDetails = context =>
     {
         context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path} ";
-        if(context.Exception!=null && context.Exception.GetType() == typeof(BadRequestException))
+        if (context.Exception != null && context.Exception.GetType() == typeof(BadRequestException))
         {
             BadRequestException badRequest = (BadRequestException)context.Exception;
             context.ProblemDetails.Extensions.Add("errors", badRequest.Errors);
@@ -119,11 +119,18 @@ builder.Services.AddScoped<IStudentAttendaceService, StudentAttendaceService>();
 builder.Services.AddProblemDetails();
 
 
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("admin_policy", policy =>
+        policy
+            .RequireRole("admin"));
+
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    
+
 }
 
 await DataSeeder.SeedData(app);
