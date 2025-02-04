@@ -1,15 +1,11 @@
 ﻿using ErrorOr;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PiketWebApi.Abstractions;
 using PiketWebApi.Data;
 using PiketWebApi.Validators;
-using SharedModel.Models;
 using SharedModel.Requests;
 using SharedModel.Responses;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace PiketWebApi.Services;
 

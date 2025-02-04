@@ -223,10 +223,14 @@ namespace PiketWebApi.Services
                 result.StudentAttendance = (from x in response.StudentAttendances
                                             join s in students.Value on x.Student.Id equals s.Id into sGroup
                                             from sx in sGroup.DefaultIfEmpty()
-                                            select new StudentAttendanceResponse(x.Id, x.PicketId, x.Student.Id,
-                                            x.Student.Name, sx.ClassRoomName, sx.DepartmenName,
-                                            x.AttendanceStatus, x.TimeIn, x.TimeOut, x.Description, x.CreateAt)
-                                            ).ToList();
+                                            select new StudentAttendanceResponse(
+                                                x.Id, x.PicketId,
+                                                x.Student.Id,
+                                                x.Student.Name,
+                                                sx == null ? "" : sx.ClassRoomName,
+                                                sx == null ? "" : sx.DepartmenName,
+                                                x.AttendanceStatus, x.TimeIn, x.TimeOut, x.Description, x.CreateAt
+                                            )).ToList();
 
             }
 

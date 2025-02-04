@@ -30,9 +30,9 @@ namespace PiketWebApi.Services
         private readonly ISchoolYearService schoolYearService;
 
         public ClassRoomService(
-            IHttpContextAccessor _http, 
+            IHttpContextAccessor _http,
             UserManager<ApplicationUser> _userManager,
-            ApplicationDbContext _dbContext, 
+            ApplicationDbContext _dbContext,
             ISchoolYearService _schoolYearService
           )
         {
@@ -40,7 +40,7 @@ namespace PiketWebApi.Services
             userManager = _userManager;
             dbContext = _dbContext;
             schoolYearService = _schoolYearService;
-           
+
         }
 
         public async Task<ErrorOr<bool>> DeleteClassRoom(int id)
@@ -113,7 +113,10 @@ namespace PiketWebApi.Services
                       Id = x.Student.Id,
                       NIS = x.Student.NIS,
                       NISN = x.Student.NISN,
-                      Name = x.Student.Name
+                      Name = x.Student.Name,
+                      Gender = x.Student.Gender,
+                      PlaceOfBorn = x.Student.PlaceOfBorn,
+                      DateOfBorn = x.Student.DateOfBorn,
                   })));
 
                 if (!result.Any())
