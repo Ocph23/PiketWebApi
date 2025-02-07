@@ -11,7 +11,7 @@ public static class ReportApi
     {
         group.MapGet("/picket/month/{month}/{year}", GetPicketForAMount);
 
-        return group.WithTags("report").RequireAuthorization(); ;
+        return group.WithTags("report").RequireAuthorization();
     }
 
     private static async Task<IResult> GetPicketForAMount(HttpContext context, IReportService reportService, int month, int year)

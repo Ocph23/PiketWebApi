@@ -16,7 +16,7 @@ namespace PiketWebApi.Api
             group.MapPost("/lateandearly", AddLateandearly);
             group.MapDelete("/lateandearly/{id}", RemoveLateandearly);
             group.MapPost("/deilyjournal", AddDailyJournal);
-            group.MapPost("/deilyjournal/{id}", RemoveDailyJournal);
+            group.MapDelete("/deilyjournal/{id}", RemoveDailyJournal);
             return group.WithTags("picket").RequireAuthorization(); ;
         }
 

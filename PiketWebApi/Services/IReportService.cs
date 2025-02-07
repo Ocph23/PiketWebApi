@@ -34,7 +34,7 @@ public class ReportService : IReportService
                          x.StartAt, x.EndAt, x.CreatedBy.Name, x.CreatedBy.RegisterNumber,x.CreateAt,
                           x.LateAndComeHomeEarly.Count(x => x.LateAndGoHomeEarlyStatus == SharedModel.LateAndGoHomeEarlyAttendanceStatus.Terlambat),
                          x.LateAndComeHomeEarly.Count(x => x.LateAndGoHomeEarlyStatus == SharedModel.LateAndGoHomeEarlyAttendanceStatus.Pulang));
-            ;
+
             return await Task.FromResult(result.ToList());
         }
         catch (System.Exception)

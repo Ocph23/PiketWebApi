@@ -68,7 +68,7 @@ namespace PiketWebApi.Services
             }
             catch (Exception)
             {
-                throw;
+                return Error.Failure("Maaf , Terjadi Kesalahan!");
             }
         }
 

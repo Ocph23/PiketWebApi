@@ -32,11 +32,15 @@ namespace PiketWebApi
                     throw new UnauthorizedAccessException();
                 }
 
-                var schedule = dbContext.Schedules.Where(x => x.DayOfWeek == DateTime.Now.DayOfWeek && x.Teacher.Id == teacher.Id)
-                    .Include(x => x.Teacher);
+                if (!await userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    var schedule = dbContext.Schedules.Where(x => x.DayOfWeek == DateTime.Now.DayOfWeek && x.Teacher.Id == teacher.Id)
+                        .Include(x => x.Teacher);
 
-                if (!schedule.Any())
-                    throw new SystemException();
+                    if (!schedule.Any())
+                        throw new SystemException();
+                }
+
 
                 return (true, teacher);
             }
