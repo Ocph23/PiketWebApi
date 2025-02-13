@@ -43,7 +43,7 @@ namespace PicketMobile.Services
                 }
                 throw new SystemException($"'{response.RequestMessage.RequestUri.LocalPath}'  Anda Tidak Memiliki Akses !");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new SystemException("Maaf, Anda Tidak Memiliki Akses !");
             }

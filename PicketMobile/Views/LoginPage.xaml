@@ -9,7 +9,6 @@
              Title="LoginPage">
 
     <Grid>
-       
         <ScrollView>
             <VerticalStackLayout
           Padding="30,0"
@@ -18,29 +17,28 @@
                 Margin="0,30,0,0"
               Source="logo.png"
               HeightRequest="100"
-              Aspect="AspectFit"
-              SemanticProperties.Description="Logo Sekolah" />
-
+              Aspect="AspectFit">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShowURLCommand}" />
+                    </Image.GestureRecognizers>
+                </Image>
                 <Label Text="APLIKASI PIKET" Style="{StaticResource Headline}"></Label>
                 <Label Text="SMK 8 TIK KOTA JAYAPURA" Style="{StaticResource SubHeadline}"></Label>
                 <Label Margin="0,30,0,0" Text="Login" HorizontalOptions="Start" Style="{StaticResource SubHeadline}"></Label>
-
                 <StackLayout >
                     <Label Text="User Name"/>
                     <Entry Text="{Binding UserName}" Placeholder="User Name"></Entry>
                 </StackLayout>
 
-
                 <StackLayout>
-                    <Label Text="Password"
-                        />
+                    <Label Text="Password" />
                     <Entry Text="{Binding Password}" IsPassword="True" Placeholder="Password"></Entry>
                 </StackLayout>
                 <ActivityIndicator IsVisible="{Binding IsBusy}" IsRunning="{Binding IsBusy}"  WidthRequest="50"></ActivityIndicator>
-                <Button
-              Text="Login" 
-             Command="{Binding LoginCommand}"
-              HorizontalOptions="Fill" />
+                <Button Text="Login"  Command="{Binding LoginCommand}" HorizontalOptions="Fill" />
+                <StackLayout>
+                    <Entry IsVisible="{Binding ShowURL}" HorizontalOptions="CenterAndExpand" Text="{Binding URL}" Placeholder="URL"></Entry>
+                </StackLayout>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>
