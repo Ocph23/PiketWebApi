@@ -11,7 +11,7 @@ namespace PicketMobile.Services
 
         public RestClient()//:base(DependencyService.Get<Helpers.IHTTPClientHandlerCreationService>().GetInsecureHandler())
         {
-            string _server = "https://picket.ocph23.tech";
+            string _server = Preferences.Get("url", "http://localhost");
             this.BaseAddress = new Uri(_server);
             this.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
             var token = Preferences.Get("token", null);

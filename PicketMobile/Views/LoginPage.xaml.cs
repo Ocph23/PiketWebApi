@@ -18,8 +18,12 @@ internal class LoginPageViewModel : BaseNotify
 {
     public LoginPageViewModel()
     {
-
         LoginCommand = new AsyncRelayCommand(LoginCommandAction, LoginCommandValidate);
+
+        ShowURLCommand = new AsyncRelayCommand(async () => {
+            ShowURL = !ShowURL;
+        });
+
         this.PropertyChanged += (s, p) =>
         {
             if (p.PropertyName != "LoginCommand")
@@ -80,8 +84,22 @@ internal class LoginPageViewModel : BaseNotify
         set { SetProperty(ref password, value); }
     }
 
+    private string url = Preferences.Get("url", "http://localhost");
+    public string URL
+    {
+        get { return url; }
+        set { SetProperty(ref url, value);
+            Preferences.Set("url", value);
+        }
+    }
+        
+    private bool showUrl;
 
-
+    public bool ShowURL
+    {
+        get { return showUrl; }
+        set { SetProperty(ref showUrl, value); }
+    }
 
     private ICommand? loginCommand;
 
@@ -91,5 +109,12 @@ internal class LoginPageViewModel : BaseNotify
         set { SetProperty(ref loginCommand, value); }
     }
 
+    private ICommand showURLCommand;
+
+    public ICommand ShowURLCommand
+    {
+        get { return showURLCommand; }
+        set { SetProperty(ref showURLCommand, value); }
+    }
 
 }
