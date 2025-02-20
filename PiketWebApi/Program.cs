@@ -9,6 +9,7 @@ using PiketWebApi.Api;
 using PiketWebApi.Data;
 using PiketWebApi.Exceptions;
 using PiketWebApi.Services;
+using System.Security.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,15 @@ if (builder.Environment.IsProduction())
     {
         serverOptions.ListenLocalhost(5030);
     });
+
+
+    builder.WebHost.UseIISIntegration().UseKestrel(kestrelOptions =>
+    {
+        kestrelOptions.ConfigureHttpsDefaults(httpsOptions =>
+        {
+            httpsOptions.SslProtocols = SslProtocols.Tls12;
+        });
+    }).UseIIS();
 }
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
