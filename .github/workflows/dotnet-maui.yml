@@ -13,61 +13,15 @@ env:
 jobs:
   build-android:
     runs-on: windows-latest
-    name: Android Build
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      
-      - name: Setup keystore file
-        shell: bash
-        run: |
-          mkdir -pv distribution/whatsnew
-          echo "$whatnew" > ./distribution/whatsnew/whatsnew-id-ID
-          echo "${{ secrets.KEYSTOREFILE }}" > ocph23.keystore.asc
-          gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch ocph23.keystore.asc > ocph23.keystore
-      
-      - name: Setup .NET 9
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 9.0.x
-          include-prerelease: true
-     
-      - name: Install .NET MAUI
-        shell: bash
-        run: |
-          dotnet nuget locals all --clear 
-          dotnet workload install maui-android --source https://aka.ms/dotnet9/nuget/index.json --source https://api.nuget.org/v3/index.json
-          dotnet workload install android --source https://aka.ms/dotnet9/nuget/index.json --source https://api.nuget.org/v3/index.json
-    
-      - name: Restore Dependencies
-        run: dotnet restore PicketMobile/PicketMobile.csproj
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+    - name: Install MAUI workload
+      run: dotnet workload install maui
+    - name: Build
+      run: dotnet publish -f net9.0-android -c Release /p:AndroidSigningKeyStore=ocph23.keystore /p:AndroidSigningKeyAlias=Ocph23 /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
 
-      - name: Build MAUI Android
-        run: dotnet build PicketMobile/PicketMobile.csproj -c Release -f net9.0-android /p:AndroidSigningKeyStore=ocph23.keystore /p:AndroidSigningKeyAlias=Ocph23 /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
-
-      - name: Upload Android Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-ci-build
-          path: PicketMobile/bin/Release/net9.0-android/*Signed.aab
-
-
-      - name: Get appbundle from artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: android-ci-build
-
-      - name: Create service_account.json
-        run: |
-          ls
-          echo '${{ secrets.SERVICE_ACCOUNT_JSON }}' > service_account.json
-
-      - name: Deploy to Production
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJson: service_account.json
-          packageName: com.ocph23.picketsmkn8
-          releaseFiles: com.ocph23.picketsmkn8-Signed.aab
-          track: production
-          whatsNewDirectory: distribution/whatsnew
           
