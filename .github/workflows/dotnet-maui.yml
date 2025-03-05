@@ -38,10 +38,10 @@ jobs:
       run:  dotnet publish PicketMobile/PicketMobile.csproj -f net9.0-android -c Release /p:AndroidSigningKeyStore=ocph23.keystore /p:AndroidSigningKeyAlias=Ocph23 /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
  
     - name: Upload Android Artifact
-      uses: actions/upload-artifact@v3.1.0
+      uses: actions/upload-artifact@v4
       with:
           name: android-ci-build
-          path: ApsMobileApp/bin/Release/net9.0-android/*Signed.aab
+          path: PicketMobile/bin/Release/net9.0-android/*Signed.aab
  
     - name: Get appbundle from artifacts
       uses: actions/download-artifact@v2
