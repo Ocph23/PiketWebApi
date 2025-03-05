@@ -20,6 +20,7 @@ namespace PiketWebApi.Api
             group.MapPost("/login", LoginAction);
             group.MapPost("/register", RegisterAction);
             group.MapGet("/active", ActiveAccout).RequireAuthorization("admin_policy");
+            group.MapGet("/isadmin", IsAdmin).RequireAuthorization("admin_policy");
             group.MapGet("/setadmin/{userId}", SetAsAdmin);
             return group;
         }
@@ -45,6 +46,18 @@ namespace PiketWebApi.Api
         }
 
         private static IResult ActiveAccout(HttpContext context)
+        {
+            try
+            {
+                return TypedResults.Ok();
+            }
+            catch (Exception)
+            {
+                return TypedResults.Unauthorized();
+            }
+        }
+
+        private static IResult IsAdmin(HttpContext context)
         {
             try
             {

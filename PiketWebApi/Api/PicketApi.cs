@@ -17,12 +17,20 @@ namespace PiketWebApi.Api
             group.MapDelete("/lateandearly/{id}", RemoveLateandearly);
             group.MapPost("/deilyjournal", AddDailyJournal);
             group.MapDelete("/deilyjournal/{id}", RemoveDailyJournal);
+            group.MapPut("/deilyjournal/{id}", EditDailyJournal);
             return group.WithTags("picket").RequireAuthorization(); ;
         }
 
         private static async Task<IResult> RemoveDailyJournal(HttpContext context, IPicketService picketService, int id)
         {
            var result = await picketService.RemoveDailyJournal(id);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+        }
+
+
+        private static async Task<IResult> EditDailyJournal(HttpContext context, IPicketService picketService, int id, DailyJournalRequest model)
+        {
+            var result = await picketService.EditDailyJournal(id,model);
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
         }
 
