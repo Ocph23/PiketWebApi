@@ -44,7 +44,7 @@ jobs:
           path: PicketMobile/bin/Release/net9.0-android/*Signed.aab
  
     - name: Get appbundle from artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
           name: android-ci-build
 
