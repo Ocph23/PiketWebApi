@@ -1,0 +1,51 @@
+name: ANDROID
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env: 
+  whatnew : can set url
+
+
+jobs:
+  build-android:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+  
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.0.x
+  
+    - name: Restore Dependencies
+      run: dotnet restore PicketMobile/PicketMobile.csproj
+  
+    - name: Setup keystore file
+      shell: bash
+      run: |
+          mkdir -pv distribution/whatsnew
+          echo "$whatnew" > ./distribution/whatsnew/whatsnew-id-ID
+          echo "${{ secrets.KEYSTOREFILE }}" > ocph23.keystore.asc
+          gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch ocph23.keystore.asc > ocph23.keystore
+    - name: Install MAUI workload
+      run: dotnet workload install maui-android 
+
+    - name: Build
+      run:  dotnet publish PicketMobile/PicketMobile.csproj -f net9.0-android -c Release /p:AndroidSigningKeyStore=ocph23.keystore /p:AndroidSigningKeyAlias=Ocph23 /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
+ 
+    - name: Upload Android Artifact
+      uses: actions/upload-artifact@v4
+      with:
+          name: android-ci-build
+          path: PicketMobile/bin/Release/net9.0-android/*Signed.aab
+ 
+    - name: Get appbundle from artifacts
+      uses: actions/download-artifact@v4
+      with:
+          name: android-ci-build
+
+          
