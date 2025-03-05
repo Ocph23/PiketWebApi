@@ -19,8 +19,8 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 9.0.x
-    - name: Install MAUI workload
-      run: dotnet workload install maui-android
+    - name: Restore Dependencies
+      run: dotnet restore PicketMobile/PicketMobile.csproj
     - name: Setup keystore file
       shell: bash
       run: |
@@ -28,9 +28,9 @@ jobs:
           echo "$whatnew" > ./distribution/whatsnew/whatsnew-id-ID
           echo "${{ secrets.KEYSTOREFILE }}" > ocph23.keystore.asc
           gpg -d --passphrase "${{ secrets.KEYSTORE_PASSWORD }}" --batch ocph23.keystore.asc > ocph23.keystore
-
-      
+    - name: Install MAUI workload
+      run: dotnet workload install maui-android 
     - name: Build
-      run: dotnet publish -f net9.0-android -c Release /p:AndroidSigningKeyStore=ocph23.keystore /p:AndroidSigningKeyAlias=Ocph23 /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
+      run:  dotnet publish PicketMobile/PicketMobile.csproj -f net9.0-android -c Release /p:AndroidSigningKeyStore=ocph23.keystore /p:AndroidSigningKeyAlias=Ocph23 /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD }}" --no-restore
 
           
