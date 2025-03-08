@@ -2,9 +2,9 @@ name: ANDROID
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "android" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "android" ]
 
 env: 
   whatnew : can set url
