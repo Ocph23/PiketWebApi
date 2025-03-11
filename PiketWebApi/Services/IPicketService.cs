@@ -27,6 +27,7 @@ namespace PiketWebApi.Services
         Task<ErrorOr<PaginationResponse<PicketResponse>>> GetWithPaginate(PaginationRequest req);
         Task<ErrorOr<bool>> RemoveDailyJournal(int model);
         Task<ErrorOr<DailyJournalResponse>> AddDailyJournal(DailyJournalRequest model);
+        Task<ErrorOr<DailyJournalResponse>> EditDailyJournal(int id, DailyJournalRequest model);
     }
 
 
@@ -80,6 +81,7 @@ namespace PiketWebApi.Services
 
                 var ppicketToday = dbContext.Picket
                     .Include(x => x.CreatedBy)
+                    .Include(x => x.DailyJournals).ThenInclude(x => x.Teacher)
                     .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
                     .Include(x => x.StudentAttendances).ThenInclude(x => x.Student)
                     .FirstOrDefault(x => x.Date == date);
@@ -212,7 +214,6 @@ namespace PiketWebApi.Services
                 Id = response.Id,
                 StartAt = response.StartAt,
                 Weather = response.Weather,
-
                 StudentsLateAndComeHomeEarly = Enumerable.Empty<LateAndGoHomeEarlyResponse>().ToList()
             };
 
@@ -262,6 +263,12 @@ namespace PiketWebApi.Services
 
 
 
+
+            result.DailyJournal = (from x in response.DailyJournals
+                                   select new DailyJournalResponse(x.Id, x.Title, x.Content, x.Teacher.Id, x.Teacher.Name, x.CreateAt)).ToList();
+
+
+
             return result;
 
         }
@@ -299,6 +306,7 @@ namespace PiketWebApi.Services
             {
                 var ppicketToday = dbContext.Picket
                     .Include(x => x.CreatedBy)
+                    .Include(x => x.DailyJournals).ThenInclude(x => x.Teacher)
                     .Include(x => x.LateAndComeHomeEarly).ThenInclude(x => x.Student)
                     .Include(x => x.StudentAttendances).ThenInclude(x => x.Student)
                     .FirstOrDefault(x => x.Id == id);
@@ -402,11 +410,12 @@ namespace PiketWebApi.Services
                 var dailyJournal = new DailyJournal
                 {
                     Teacher = userClaim.Item2,
-                    CreateAt = model.CreateAt,
+                    CreateAt = model.CreateAt.ToUniversalTime(),
                     Content = model.Content,
                     Title = model.Title
                 };
                 picket.DailyJournals.Add(dailyJournal);
+                dbContext.Entry(dailyJournal.Teacher).State = EntityState.Unchanged;
                 dbContext.SaveChanges();
                 var result = await GenerateDaeilyJournalResponse(dailyJournal);
                 return result;
@@ -428,6 +437,20 @@ namespace PiketWebApi.Services
                   dailyJournal.CreateAt
                 );
             return Task.FromResult(result);
+        }
+
+        public async Task<ErrorOr<DailyJournalResponse>> EditDailyJournal(int id, DailyJournalRequest model)
+        {
+            var journal = dbContext.Picket.Include(x => x.DailyJournals).ThenInclude(x => x.Teacher).SelectMany(x => x.DailyJournals).FirstOrDefault(x => x.Id == id);
+            if (journal != null)
+            {
+                journal.Title = model.Title;
+                journal.Content = model.Content;
+                journal.CreateAt = model.CreateAt.ToUniversalTime();
+                dbContext.SaveChanges();
+                return new DailyJournalResponse(journal.Id,journal.Title, journal.Content, journal.Teacher.Id, journal.Teacher.Name, journal.CreateAt);
+            }
+            return Error.NotFound("Data tidak ditemukan !");
         }
     }
 }
