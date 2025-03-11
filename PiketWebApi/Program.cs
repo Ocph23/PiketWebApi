@@ -143,7 +143,7 @@ using (var scope = app.Services.CreateScope())
 
 }
 
-await DataSeeder.SeedData(app);
+//await DataSeeder.SeedData(app);
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();

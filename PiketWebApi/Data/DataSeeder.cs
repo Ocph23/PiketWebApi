@@ -49,19 +49,19 @@ namespace PiketWebApi.Data
                dbcontext.SaveChanges();
             }
 
-            if (!dbcontext.Students.Any())
-            {
-               dbcontext.Students.AddRange(new List<Student>
-                {
-                    new Student {NIS="11111111",  Name = "Valentinus Sipayung", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Medan"  },
-                    new Student {NIS="11111112",  Name = "Revo Barus", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Jayapura"  },
-                    new Student {NIS="11111113",  Name = "Michael Saja", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Jayapura"  },
-                    new Student {NIS="11111114",  Name = "Andika Saja", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Jayapura"  },
-                    new Student {NIS="11111115",  Name = "Duta Saja", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Jayapura"  },
-                    new Student {NIS="11111116",  Name = "Angela Guru", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Wanita, PlaceOfBorn="Soe"  },
-                });
-               dbcontext.SaveChanges();
-            }
+            //if (!dbcontext.Students.Any())
+            //{
+            //   dbcontext.Students.AddRange(new List<Student>
+            //    {
+            //        new Student {NIS="11111111",  Name = "Valentinus Sipayung", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Medan"  },
+            //        new Student {NIS="11111112",  Name = "Revo Barus", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Jayapura"  },
+            //        new Student {NIS="11111113",  Name = "Michael Saja", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Jayapura"  },
+            //        new Student {NIS="11111114",  Name = "Andika Saja", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Jayapura"  },
+            //        new Student {NIS="11111115",  Name = "Duta Saja", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Pria, PlaceOfBorn="Jayapura"  },
+            //        new Student {NIS="11111116",  Name = "Angela Guru", DateOfBorn = new DateOnly(2003,3,3), Gender= SharedModel.Gender.Wanita, PlaceOfBorn="Soe"  },
+            //    });
+            //   dbcontext.SaveChanges();
+            //}
 
 
             if (!dbcontext.Teachers.Any())
