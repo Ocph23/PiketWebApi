@@ -237,12 +237,11 @@ public class StudentService : IStudentService
     }
 
 
-
     public async Task<ErrorOr<IEnumerable<Student>>> GetAllStudent()
     {
         try
         {
-            return await Task.FromResult(dbContext.Students.ToList());
+            return await Task.FromResult(dbContext.Students.Where(x=>x.Status== SharedModel.StudentStatus.Aktif).ToList());
         }
         catch (Exception)
         {
@@ -313,7 +312,7 @@ public class StudentService : IStudentService
             if (!validateResult.IsValid)
                 return validateResult.GetErrors();
 
-            IQueryable<Student> iq = dbContext.Students;
+            IQueryable<Student> iq = dbContext.Students.Where(x=>x.Status== SharedModel.StudentStatus.Aktif);
             if (!string.IsNullOrEmpty(request.SearchTerm))
             {
                 iq = iq.Where(x => x.Name.ToLower().Contains(request.SearchTerm.ToLower()) ||
@@ -343,7 +342,6 @@ public class StudentService : IStudentService
     {
        try
         {
-
             var schoolYearActive = await schoolYearService.GetActiveSchoolYear();
             if (schoolYearActive.IsError)
                 return schoolYearActive.Errors;

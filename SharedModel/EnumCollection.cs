@@ -24,7 +24,7 @@
         Sakit,
         Izin,
         Bolos,
-        Lainnya 
+        Lainnya
     }
 
     public enum LateAndGoHomeEarlyAttendanceStatus
@@ -33,9 +33,11 @@
         Pulang,
     }
 
-
-
- 
-
-
+    public enum StudentStatus
+    {
+        Aktif,
+        Pindah,
+        Keluar,
+        TanpaStatus
+    }
 }
