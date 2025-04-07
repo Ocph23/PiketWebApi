@@ -1,0 +1,7 @@
+POST http://localhost:3000/send-message HTTP/1.1
+Content-Type: application/json
+
+{
+  "to":"628114801030",
+  "message": "Hello, World! mamiiiiiiiiiiiiiii22222222222"
+}
