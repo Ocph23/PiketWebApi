@@ -12,6 +12,7 @@ namespace PiketWebApi.Data
         public string NIS { get; set; }
         public string? NISN { get; set; }
         public StudentStatus Status { get;set;}
+        public string? ParentPhoneNumber  { get;set;}
 
     }
 }
