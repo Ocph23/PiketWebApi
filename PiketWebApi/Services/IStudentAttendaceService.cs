@@ -28,6 +28,8 @@ namespace PiketWebApi.Services
         private readonly ApplicationDbContext dbContext;
         private readonly IStudentService studentService;
         private readonly IPicketService picketService;
+        private readonly IHttpClientFactory factory;
+        private readonly HttpClient waAppClient;
         private readonly ISchoolYearService schoolYearService;
 
         public DateTime CreatedAt { get; private set; }
@@ -35,13 +37,15 @@ namespace PiketWebApi.Services
         public StudentAttendaceService(
             UserManager<ApplicationUser> _userManager,
             ApplicationDbContext _dbContext,
-              IStudentService _studentService, IPicketService _picketService
+              IStudentService _studentService, IPicketService _picketService, IHttpClientFactory _factory
             )
         {
             userManager = _userManager;
             dbContext = _dbContext;
             studentService = _studentService;
             picketService = _picketService;
+            factory = _factory;
+            this.waAppClient= factory.CreateClient("waapp");
         }
 
         public async Task<ErrorOr<IEnumerable<StudentAttendanceResponse>>> GetAsync()
@@ -180,7 +184,7 @@ namespace PiketWebApi.Services
                     var model = new StudentAttendance
                     {
                         Id = item.Id,
-                        Student = new Student { Id = item.StudentId },
+                        Student = dbContext.Students.FirstOrDefault(x => x.Id == item.StudentId)!,
                         PicketId = item.PicketId,
                         AttendanceStatus = item.Status,
                         TimeIn = item.TimeIn.Value,
@@ -194,6 +198,9 @@ namespace PiketWebApi.Services
                     {
                         dataToInsert.Add(model);
                         dbContext.Entry(model.Student).State = EntityState.Unchanged;
+
+                       _= SendMessageToStudentparent(model);
+
                     }
                     else
                     {
@@ -220,7 +227,18 @@ namespace PiketWebApi.Services
             }
         }
 
-
+        private async Task SendMessageToStudentparent(StudentAttendance model)
+        {
+            try
+            {
+                var result = await waAppClient
+                    .PostAsJsonAsync("absen", new { to = model.Student.ParentPhoneNumber, message=$"{model.Student.Name} Masuk Jam: {model.TimeIn}" });
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
 
         async Task<ErrorOr<IEnumerable<StudentAttendanceReportResponse>>> IStudentAttendaceService.GetAbsenByClassRoomMonthYear(int classroom, int month, int year)
         {
@@ -249,7 +267,7 @@ namespace PiketWebApi.Services
                                   PicketId = item.Id,
                                   PicketDate = item.Date,
                                   Status = b == null ? SharedModel.AttendanceStatus.Alpa : b.AttendanceStatus,
-                                  TimeIn = b == null ? null : b.TimeIn,
+                                  TimeIn = b?.TimeIn,
                                   TimeOut = b == null ? null : b.TimeOut,
                                   Description = b == null ? null : b.Description
                               };

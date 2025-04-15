@@ -5,3 +5,9 @@ Content-Type: application/json
   "to":"628114801030",
   "message": "test"
 }
+
+C:\Program Files\PostgreSQL\17\bin>pg_restore.exe -h localhost -p 5432 -U postgres -d piketdb -f "c:\dump-piketdb-202502111645.sql"
+pg_restore: error: options -d/--dbname and -f/--file cannot be used together
+pg_restore: hint: Try "pg_restore --help" for more information.
+
+C:\Program Files\PostgreSQL\17\bin>

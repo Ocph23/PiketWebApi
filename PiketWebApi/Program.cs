@@ -126,8 +126,8 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IStudentAttendaceService, StudentAttendaceService>();
 builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddProblemDetails();
-
+builder.Services.AddProblemDetails(); 
+builder.Services.AddHttpClient("waapp", c => c.BaseAddress = new System.Uri("http://localhost:3000"));
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("admin_policy", policy =>
