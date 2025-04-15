@@ -284,7 +284,4 @@ namespace PiketWebApi.Services
             }
         }
     }
-
-
-
 }
