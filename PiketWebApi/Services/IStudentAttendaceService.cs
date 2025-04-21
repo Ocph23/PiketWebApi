@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PiketWebApi.Data;
 using PiketWebApi.Validators;
-using SharedModel;
 using SharedModel.Requests;
 using SharedModel.Responses;
+using Error = ErrorOr.Error;
 
 namespace PiketWebApi.Services
 {
@@ -45,7 +45,7 @@ namespace PiketWebApi.Services
             studentService = _studentService;
             picketService = _picketService;
             factory = _factory;
-            this.waAppClient= factory.CreateClient("waapp");
+            this.waAppClient = factory.CreateClient("waapp");
         }
 
         public async Task<ErrorOr<IEnumerable<StudentAttendanceResponse>>> GetAsync()
@@ -111,7 +111,7 @@ namespace PiketWebApi.Services
         {
             try
             {
-                var result = dbContext.StudentAttendaces.SingleOrDefault(x => x.Id == id);
+                var result = dbContext.StudentAttendaces.Include(x => x.Student).SingleOrDefault(x => x.Id == id);
                 if (result == null)
                 {
                     return Error.NotFound("NotFound", "Data Absen Siswa tidak ditemukan.");
@@ -121,6 +121,7 @@ namespace PiketWebApi.Services
                 result.AttendanceStatus = model.Status;
                 result.Description = model.Description;
                 dbContext.SaveChanges();
+                _ = SendMessageToStudentparent(result.Student.Name, result.Student.ParentPhoneNumber, model.TimeOut.Value, false);
                 return await Task.FromResult(true);
             }
             catch (Exception)
@@ -165,6 +166,10 @@ namespace PiketWebApi.Services
                 //picket.StudentAttendances.Add(model);
                 dbContext.StudentAttendaces.Add(model);
                 dbContext.SaveChanges();
+
+                _ = SendMessageToStudentparent(model.Student.Name, model.Student.ParentPhoneNumber, model.TimeIn, true);
+
+
                 return await GetByIdAsync(model.Id);
             }
             catch (Exception)
@@ -177,13 +182,16 @@ namespace PiketWebApi.Services
         {
             try
             {
-                var dataToInsert = new List<StudentAttendance>();
-                var dataToUpdate = new List<StudentAttendance>();
-                foreach (var item in req)
+
+                var dataToInsert = req.Where(x => x.TimeOut == null).ToList();
+                var dataToUpdate = req.Where(x => x.TimeOut != null).ToList();
+
+
+                foreach (var item in dataToInsert)
                 {
                     var model = new StudentAttendance
                     {
-                        Id = item.Id,
+                        Id = item.AbsenId.Value,
                         Student = dbContext.Students.FirstOrDefault(x => x.Id == item.StudentId)!,
                         PicketId = item.PicketId,
                         AttendanceStatus = item.Status,
@@ -193,28 +201,23 @@ namespace PiketWebApi.Services
                         CreateAt = DateTime.Now.ToUniversalTime()
                     };
 
-                    var data = dbContext.StudentAttendaces.FirstOrDefault(x => x.Id == model.Id);
-                    if (data == null)
-                    {
-                        dataToInsert.Add(model);
-                        dbContext.Entry(model.Student).State = EntityState.Unchanged;
-
-                       _= SendMessageToStudentparent(model);
-
-                    }
-                    else
-                    {
-                        dbContext.Entry(data).CurrentValues.SetValues(model);
-                    }
+                    dbContext.Entry(model).State = EntityState.Unchanged;
+                    dbContext.StudentAttendaces.Add(model);
+                    _ = SendMessageToStudentparent(model.Student.Name, model.Student.ParentPhoneNumber, item.TimeIn.Value, true);
 
                 }
-
-                if (dataToInsert.Count > 0)
-                {
-                    dbContext.AddRange(dataToInsert);
-                }
-
                 dbContext.SaveChanges();
+
+                foreach (var item in dataToUpdate)
+                {
+                    var x = item.AbsenId.Value;
+                    var data = dbContext.StudentAttendaces.Include(x => x.Student).FirstOrDefault(x => x.Id == item.AbsenId.Value);
+                    dbContext.Entry(data).CurrentValues.SetValues(item);
+                    _ = SendMessageToStudentparent(data.Student.Name, data.Student.ParentPhoneNumber, item.TimeOut.Value, false);
+                }
+                
+                dbContext.SaveChanges();
+
                 foreach (var item in req)
                 {
                     item.IsSynced = true;
@@ -227,12 +230,22 @@ namespace PiketWebApi.Services
             }
         }
 
-        private async Task SendMessageToStudentparent(StudentAttendance model)
+        private async Task SendMessageToStudentparent(string studentName, string PhoneNumber, DateTime date, bool isTimeIn)
         {
             try
             {
-                var result = await waAppClient
-                    .PostAsJsonAsync("absen", new { to = model.Student.ParentPhoneNumber, message=$"{model.Student.Name} Masuk Jam: {model.TimeIn}" });
+
+                string status = isTimeIn ? "Masuk :" : "Pulang :";
+
+                var message = $"{studentName} | {status} {date.ToLocalTime().ToString("HH:mm | dd-MM-yyyy")}";
+
+                await waAppClient
+                      .PostAsJsonAsync("absen", new
+                      {
+                          to = PhoneNumber,
+                          message
+                      });
+
             }
             catch (Exception)
             {

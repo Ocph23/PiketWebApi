@@ -18,5 +18,10 @@ namespace SharedModel.Requests
         public DateTime? TimeOut { get; set; }
         public string? Description { get; set; }
         public bool IsSynced { get; set; }
+        public int AttandaceId { get; set; }
+        public Guid? AbsenId { get; set; }
+        public bool IsNew { get; set; } = true;
+        public bool IsSync { get; set; }
+
     }
 }
