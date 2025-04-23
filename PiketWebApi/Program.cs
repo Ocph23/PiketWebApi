@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using PiketWebApi;
 using PiketWebApi.Api;
@@ -22,20 +23,30 @@ if (builder.Environment.IsProduction())
     });
 
 
-    builder.WebHost.UseIISIntegration().UseKestrel(kestrelOptions =>
+    builder.WebHost.UseIISIntegration()
+        .UseKestrel(kestrelOptions =>
     {
         kestrelOptions.ConfigureHttpsDefaults(httpsOptions =>
         {
             httpsOptions.SslProtocols = SslProtocols.Tls12;
         });
+        kestrelOptions.Limits.MaxRequestBodySize = int.MaxValue;
     }).UseIIS();
 }
+
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
+
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodyBufferSize = 52428800; // 50MB
+    options.MaxRequestBodySize = 52428800; // 50MB
+});
+
 
 string policyName = "all";
 builder.Services.AddCors(options =>
@@ -126,7 +137,7 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IStudentAttendaceService, StudentAttendaceService>();
 builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddProblemDetails(); 
+builder.Services.AddProblemDetails();
 builder.Services.AddHttpClient("waapp", c => c.BaseAddress = new System.Uri("http://localhost:3000"));
 
 builder.Services.AddAuthorizationBuilder()

@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="NewFolder\" />
+    <Folder Include="photos\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,10 +39,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="photos\student\tghk120g.muo.png">
+    <None Update="photos\student\qfeyyc45.cx0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="photos\teacher\rckl4ekt.f3v.png">
+    <None Update="photos\teacher\qjkvsqeq.flr.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
