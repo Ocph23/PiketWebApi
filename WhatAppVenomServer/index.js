@@ -24,6 +24,7 @@ client.on("message", async (msg) => {
   try {
     var message = msg.body.toLowerCase();
     var messageSplit = message.split("#");
+    console.log("message: ", message);
     if (messageSplit[0] == "register") {
       console.log(messageSplit[1]);
       if (messageSplit[1] != "") {
