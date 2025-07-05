@@ -1,10 +1,21 @@
-const express = require("express");
-const qrcode = require("qrcode-terminal");
-const { Client, LocalAuth } = require("whatsapp-web.js");
-const db = require("./db.js");
-
+import express from 'express';
+import { engine } from 'express-handlebars';
+import path from 'path';
+import qrcode from "qrcode-terminal"
+import pkg from 'whatsapp-web.js';
+const { Client, LocalAuth } = pkg;
+import db from './db.js';
 const app = express();
 app.use(express.json());
+app.use(express.static('public'));
+//Sets our app to use the handlebars engine
+app.set('view engine', 'handlebars');
+//Sets handlebars configurations (we will go through them later on)
+app.engine('handlebars', engine());
+
+const qrCode = {};
+
+
 
 const client = new Client({
   authStrategy: new LocalAuth(),
@@ -13,10 +24,12 @@ const client = new Client({
 client.on("qr", (qr) => {
   // Generate and scan this code with your phone
   console.log("QR RECEIVED", qr);
+  qrCode.data = qr;
   qrcode.generate(qr, { small: true });
 });
 
 client.on("ready", () => {
+  qrCode.isReady = true;
   console.log("Client is ready!");
 });
 
@@ -113,12 +126,19 @@ async function registerNomorTelepon(nomorTelepon, nis) {
   }
 }
 
+
+app.get("/qrcode", async (req, res) => {
+  console.log(qrCode);
+  res.render('qrcode', { qrCode });
+});
+
+
 app.post("/absen", async (req, res) => {
   const { to, message } = req.body;
   const address = `${to}@c.us`;
   client.sendMessage(address, message).then((result) => {
-      console.log(result);
-      res.send(`Message sent to ${address}`);
+    console.log(result);
+    res.send(`Message sent to ${address}`);
   });
 });
 

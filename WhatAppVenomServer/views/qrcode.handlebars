@@ -1,0 +1,40 @@
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./qrcode.min.js">
+    </script>
+  </head>
+
+  <body>
+    <div
+      class="header"
+      style="height: 100vh; width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;"
+    >
+      <img style="width: 10%;" src="whatsapp-3d-icon-free-png.webp" />
+      <div class="box">
+        {{#if qrCode.isReady}}
+          <h1>
+            PERANGKAT TERHUBUNG
+          </h1>
+        {{else}}
+          <h1>
+            HUBUNGKAN PERANGKAT
+          </h1>
+          <button onclick="generateQrX('{{qrCode.data}}')">Lihat QR Code</button>
+          <hr />
+          <div
+            style="padding:10px; background-color:white; display: flex; justify-content: center; align-items: center; flex-direction: column;"
+          >
+            <div class="qrcode"></div>
+          </div>
+        {{/if}}
+
+      </div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+
+</html>
