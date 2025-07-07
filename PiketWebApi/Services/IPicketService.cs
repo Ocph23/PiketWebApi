@@ -37,21 +37,28 @@ namespace PiketWebApi.Services
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationDbContext dbContext;
         private readonly IStudentService studentService;
+        private readonly ISchoolYearService schoolYearService;
         private static PicketResponse picketToday;
 
         public PicketService(IHttpContextAccessor _http, UserManager<ApplicationUser> _userManager,
-            ApplicationDbContext _dbContext, IStudentService _studentService)
+            ApplicationDbContext _dbContext, IStudentService _studentService, ISchoolYearService schoolYearService)
         {
             http = _http;
             userManager = _userManager;
             dbContext = _dbContext;
             studentService = _studentService;
+            this.schoolYearService = schoolYearService;
         }
 
         public async Task<ErrorOr<PicketResponse>> CreateNewPicket()
         {
             try
             {
+                var schoolYearActive = await schoolYearService.GetActiveSchoolYear();
+                if (schoolYearActive.IsError) { 
+                    return schoolYearActive.Errors;
+                }
+
                 DateOnly dateNow = DateOnly.FromDateTime(DateTime.Now);
                 var userClaim = await http.IsTeacherPicket(userManager, dbContext);
                 if (!userClaim.Item1)
@@ -60,7 +67,7 @@ namespace PiketWebApi.Services
                 var ppicketToday = dbContext.Picket.SingleOrDefault(x => x.Date == dateNow);
                 if (ppicketToday == null)
                 {
-                    ppicketToday = Picket.Create(userClaim.Item2);
+                    ppicketToday = Picket.Create(userClaim.Item2, schoolYearActive.Value);
                     dbContext.Entry(ppicketToday.CreatedBy).State = EntityState.Unchanged;
                     dbContext.Picket.Add(ppicketToday);
                     dbContext.SaveChanges();

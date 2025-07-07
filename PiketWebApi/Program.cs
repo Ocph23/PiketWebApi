@@ -137,6 +137,7 @@ builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IStudentAttendaceService, StudentAttendaceService>();
 builder.Services.AddScoped<IReportService, ReportService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddProblemDetails();
 builder.Services.AddHttpClient("waapp", c => c.BaseAddress = new System.Uri("http://localhost:3000"));
 
@@ -187,6 +188,7 @@ app.MapGroup("/api/classroom").MapClassRoomApi().WithOpenApi();
 app.MapGroup("/api/schedule").MapScheduleApi().WithOpenApi();
 app.MapGroup("/api/picket").MapPickerApi().WithOpenApi();
 app.MapGroup("/api/report").MapReportApi().WithOpenApi();
+app.MapGroup("/api/dashboard").MapDashboardApi().WithOpenApi();
 app.MapGroup("/api/studentattendance").MapStudentAttendanceApi().WithOpenApi();
 
 

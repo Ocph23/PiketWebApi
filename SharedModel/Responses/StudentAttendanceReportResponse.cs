@@ -3,7 +3,7 @@ using System;
 namespace SharedModel.Responses;
 public class StudentAttendanceReportResponse
 {
-    public int StudentId { get; set; }
+    public int? StudentId { get; set; }
     public string? StudentName { get; set; }
     public string? ClassRoomName { get; set; }
     public string? DepartmentName { get; set; }
@@ -13,4 +13,5 @@ public class StudentAttendanceReportResponse
     public object TimeIn { get; set; }
     public DateTime? TimeOut { get; set; }
     public string? Description { get; set; }
+    public int SchoolYearId { get; set; }
 }

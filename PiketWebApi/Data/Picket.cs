@@ -17,7 +17,11 @@ namespace PiketWebApi.Data
         public ICollection<LateAndGoHomeEarly> LateAndComeHomeEarly { get; set; } = default;
         public ICollection<DailyJournal> DailyJournals { get; set; } = default;
         public ICollection<StudentAttendance> StudentAttendances{ get; set; } = default;
-        public static Picket? Create(Teacher teacher)
+        
+        public int SchoolYearId { get; set; }
+        public SchoolYear SchoolYear { get; set; }
+
+        public static Picket? Create(Teacher teacher, SchoolYear schoolYear)
         {
             return new Picket()
             {
@@ -25,7 +29,8 @@ namespace PiketWebApi.Data
                 CreatedBy = teacher,
                 Date = DateOnly.FromDateTime(DateTime.Now),                         
                 StartAt = new TimeSpan(7, 15, 0),
-                EndAt= new TimeSpan(15, 00, 0), Weather= Weather.Cerah
+                EndAt= new TimeSpan(15, 00, 0), Weather= Weather.Cerah ,
+                SchoolYear = schoolYear
             };
         }
     }

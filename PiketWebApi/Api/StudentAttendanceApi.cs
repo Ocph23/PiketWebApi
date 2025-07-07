@@ -19,12 +19,20 @@ namespace PiketWebApi.Api
         {
             group.MapGet("/", Get);
             group.MapGet("/{id}", GetById);
+            group.MapGet("/bystudentid/{schoolYearId}/{studentId}", GetAttendanceByStudentId);
             group.MapGet("/{classroom}/{month}/{year}", GetByClassRoomAndMonthYear);
             group.MapPost("/", Post);
             group.MapPut("/{id}", Put);
             group.MapDelete("/{id}", Delete);
             group.MapPost("/sync", SyncData);
             return group.WithTags("studentattendance").RequireAuthorization(); ;
+        }
+
+        private static async Task<IResult> GetAttendanceByStudentId(HttpContext context, IStudentAttendaceService studentService, int schoolYearId, int studentId)
+        {
+            var result = await studentService.GetAttendanceByStudentId(schoolYearId, studentId);
+            return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+
         }
 
         private static async Task<IResult> GetByClassRoomAndMonthYear(HttpContext context, IStudentAttendaceService studentService, int classroom, int month, int year)

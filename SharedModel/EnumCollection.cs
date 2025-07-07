@@ -37,6 +37,7 @@
     {
         Aktif,
         Pindah,
+        Tamat,
         Keluar,
         TanpaStatus
     }

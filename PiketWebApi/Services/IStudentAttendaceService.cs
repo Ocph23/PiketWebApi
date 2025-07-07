@@ -7,6 +7,7 @@ using PiketWebApi.Data;
 using PiketWebApi.Validators;
 using SharedModel.Requests;
 using SharedModel.Responses;
+using System.Net.Sockets;
 using Error = ErrorOr.Error;
 
 namespace PiketWebApi.Services
@@ -20,7 +21,9 @@ namespace PiketWebApi.Services
         Task<ErrorOr<StudentAttendanceResponse>> PostAsync(StudentAttendenceRequest model);
         Task<ErrorOr<IEnumerable<StudentAttendanceSyncRequest>>> SyncData(IEnumerable<StudentAttendanceSyncRequest> data);
         Task<ErrorOr<IEnumerable<StudentAttendanceReportResponse>>> GetAbsenByClassRoomMonthYear(int classroom, int month, int year);
-    }
+        Task<ErrorOr<IEnumerable<StudentAttendanceReportResponse>>> GetAttendanceByStudentId(int yearSchoolId, int studentId);
+    }                                                                                
+
 
     public class StudentAttendaceService : IStudentAttendaceService
     {
@@ -215,7 +218,7 @@ namespace PiketWebApi.Services
                     dbContext.Entry(data).CurrentValues.SetValues(item);
                     _ = SendMessageToStudentparent(data.Student.Name, data.Student.ParentPhoneNumber, item.TimeOut.Value, false);
                 }
-                
+
                 dbContext.SaveChanges();
 
                 foreach (var item in req)
@@ -294,6 +297,39 @@ namespace PiketWebApi.Services
             catch (Exception ex)
             {
                 return Error.Conflict();
+            }
+        }
+
+        public async Task<ErrorOr<IEnumerable<StudentAttendanceReportResponse>>> GetAttendanceByStudentId(int yearSchoolId, int studentId)
+        {
+            try
+            {
+                var result = from p in dbContext.Picket.Where(x=>x.SchoolYearId==yearSchoolId).Include(x=>x.SchoolYear)
+                             join a in dbContext.StudentAttendaces.Where(x=>x.StudentId== studentId) on p.Id equals a.PicketId into xattendate 
+                             from a in xattendate.DefaultIfEmpty()
+                             join s in dbContext.Students on a.StudentId equals s.Id into x
+                             from s in x.DefaultIfEmpty()
+                             select new StudentAttendanceReportResponse
+                             {
+                                 StudentId = s==null?null:s.Id,
+                                 StudentName = s == null ? null : s.Name,
+                                 PicketId = p.Id,
+                                 PicketDate = p.Date,
+                                 SchoolYearId = p.SchoolYearId,
+                                 Status = a == null ? SharedModel.AttendanceStatus.Alpa : a.AttendanceStatus,
+                                 TimeIn = a == null ? null : a.TimeIn,
+                                 TimeOut = a == null ? null : a.TimeOut,
+                                 Description = a == null ? null : a.Description
+                             };
+
+                return result.ToList();
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
         }
     }
