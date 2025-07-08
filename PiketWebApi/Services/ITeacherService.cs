@@ -13,6 +13,7 @@ namespace PiketWebApi.Services
         Task<ErrorOr<Teacher>> PostAsync(Teacher model);
         Task<ErrorOr<IEnumerable<Teacher>>> GetAsync();
         Task<ErrorOr<Teacher>> GetByIdAsync(int id);
+        Task<ErrorOr<Teacher>> GetByUserIdAsync(string id);
         Task<ErrorOr<IEnumerable<Teacher>>> SearchTextAsync(string text);
         Task<ErrorOr<string>> UploadPhoto(int teacherId, byte[] image);
     }
@@ -207,6 +208,21 @@ namespace PiketWebApi.Services
                 || x.RegisterNumber!.ToLower().Contains(txtSearch)).ToList();
 
                 return await Task.FromResult(result.ToList());
+            }
+            catch (Exception)
+            {
+                return Error.Conflict();
+            }
+        }
+
+        public async Task<ErrorOr<Teacher>> GetByUserIdAsync(string id)
+        {
+            try
+            {
+                var result = dbContext.Teachers.SingleOrDefault(x => x.UserId == id);
+                if (result == null)
+                    return Error.NotFound("NotFound", "Data guru tidak ditemukan");
+                return await Task.FromResult(result);
             }
             catch (Exception)
             {

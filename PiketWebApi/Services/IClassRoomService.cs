@@ -17,6 +17,7 @@ namespace PiketWebApi.Services
         Task<ErrorOr<IEnumerable<ClassRoomResponse>>> GetAllClassRoom();
         Task<ErrorOr<ClassRoomResponse>> GetClassRoomById(int id);
         Task<ErrorOr<IEnumerable<ClassRoomResponse>>> GetClassRoomBySchoolYear(int id);
+        Task<ErrorOr<IEnumerable<ClassRoomResponse>>> GetClassRoomByTeacherId(int id);
         Task<ErrorOr<ClassRoomResponse>> PostClassRoom(ClassRoomRequest req);
         Task<ErrorOr<bool>> PutClassRoom(int id, ClassRoomRequest req);
         Task<ErrorOr<bool>> RemoveStudentFromClassRoom(int classroomId, int studentId);
@@ -412,7 +413,7 @@ namespace PiketWebApi.Services
             foreach (var item in classroom.Students)
             {
                 dbContext.Entry(item.Student).State = EntityState.Unchanged;
-                newClassRoom.Students.Add(item);
+                newClassRoom.Students.Add(new ClassRoomMember { Student=item.Student });
             }
 
             dbContext.ClassRooms.Add(newClassRoom);
@@ -422,6 +423,28 @@ namespace PiketWebApi.Services
 
 
 
+        }
+
+        public async Task<ErrorOr<IEnumerable<ClassRoomResponse>>> GetClassRoomByTeacherId(int id)
+        {
+            try
+            {
+                var result = dbContext.ClassRooms
+                    .Include(x => x.SchoolYear)
+                    .Include(x => x.Department)
+                    .Include(x => x.HomeroomTeacher)
+                    .Include(x => x.ClassLeader)
+                    .Include(x => x.Students).ThenInclude(x => x.Student)
+                    .Where(x => x.HomeroomTeacher.Id == id)
+                    .Select(x => new ClassRoomResponse(x.Id, x.Name, x.Level, x.SchoolYear.Id, x.SchoolYear.Year,
+                    x.Department.Id, x.Department.Name, x.Department.Initial, x.ClassLeader.Id, x.ClassLeader.Name,
+                    x.HomeroomTeacher.Id, x.HomeroomTeacher.Name, null));
+                return await Task.FromResult(result.ToList());
+            }
+            catch (Exception)
+            {
+                return Error.Conflict();
+            }
         }
     }
 }

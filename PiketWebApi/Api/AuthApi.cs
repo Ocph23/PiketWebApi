@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PiketWebApi.Data;
 using PiketWebApi.Services;
@@ -99,6 +100,15 @@ namespace PiketWebApi.Api
                     if (roles.Contains("Teacher"))
                     {
                         profile = dbContext.Teachers.FirstOrDefault(x => x.UserId == identity.Id);
+                        var classrooms = from t in dbContext.Teachers.Where(x => x.UserId == user.Id)
+                                     join c in dbContext.ClassRooms.Include(x => x.HomeroomTeacher) on t.Id equals c.HomeroomTeacher.Id
+                                     select c;
+
+                        if (classrooms.Count() > 0)
+                        {
+                            roles.Add("HomeRoomTeacher");
+                        }
+
                     }
 
                     if (roles.Contains("Student"))

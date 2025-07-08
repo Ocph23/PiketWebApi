@@ -19,8 +19,9 @@ namespace PiketWebApi.Api
             group.MapGet("/", GetAllClassRoom);
             group.MapGet("/{id}", GetClassRoomById);
             group.MapGet("/schoolyear/{id}", GetClassRoomBySchoolYear);
+            group.MapGet("/byteacher", GetClassRoomByTeacher);
             group.MapPost("/", PostClassRoom);
-            group.MapPost("/classroomfromlast",CreateClassRoomFromLastClass);
+            group.MapPost("/classroomfromlast", CreateClassRoomFromLastClass);
             group.MapPut("/{id}", PutClassRoom);
             group.MapDelete("/{id}", DeleteClassRoom);
             group.MapPost("/addstudent/{classroomId}", AddStudentToClassRoom);
@@ -28,7 +29,19 @@ namespace PiketWebApi.Api
             return group.WithTags("classroom").RequireAuthorization(); ;
         }
 
-        private static async Task<IResult> CreateClassRoomFromLastClass(HttpContext context,IClassRoomService classRoomService,ClassRoomFromLastClassRequest req)
+        private static async Task<IResult> GetClassRoomByTeacher(HttpContext context, IClassRoomService classRoomService, ITeacherService teacherService)
+        {
+            var userId = context.User.Claims.FirstOrDefault(x=>x.Type=="id");
+            var teacher = await teacherService.GetByUserIdAsync(userId.Value);
+            if (!teacher.IsError)
+            {
+                var result = await classRoomService.GetClassRoomByTeacherId(teacher.Value.Id);
+                return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
+            }
+            return Results.BadRequest(teacher.CreateProblemDetail(context));
+        }
+
+        private static async Task<IResult> CreateClassRoomFromLastClass(HttpContext context, IClassRoomService classRoomService, ClassRoomFromLastClassRequest req)
         {
             var result = await classRoomService.CreateClassRoomFromLastClass(req);
             return result.Match(items => Results.Ok(items), errors => Results.BadRequest(result.CreateProblemDetail(context)));
