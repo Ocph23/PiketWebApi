@@ -5,9 +5,8 @@ namespace PiketWebApi.Data
 {
     public static class DataSeeder
     {
-        public static async Task SeedData(WebApplication app)
+        public static async Task SeedData(IServiceScope scope)
         {
-            using var scope = app.Services.CreateScope();
             var dbcontext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
             await dbcontext.Database.MigrateAsync(); // Apply pending migrations

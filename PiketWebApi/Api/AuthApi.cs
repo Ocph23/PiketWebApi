@@ -84,6 +84,8 @@ namespace PiketWebApi.Api
         {
             try
             {
+
+                var students = dbContext.Students.ToList();
                 AppSettings _appSettings = new AppSettings();
                 _config.GetSection("AppSettings").Bind(_appSettings);
                 var result = await signInManager.PasswordSignInAsync(request.Username.ToUpper(), request.Password, false, lockoutOnFailure: false);

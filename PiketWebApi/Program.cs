@@ -152,10 +152,10 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+  //  await DataSeeder.SeedData(scope);
 
 }
 
-await DataSeeder.SeedData(app);
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
